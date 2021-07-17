@@ -12,3 +12,10 @@ export interface Meta {
     plays: Number,
     likes: Number
 }
+
+export interface Location {
+    lat: number,
+    lng: number,
+    address: string,
+    name?: string
+}

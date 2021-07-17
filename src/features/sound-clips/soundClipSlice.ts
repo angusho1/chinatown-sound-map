@@ -22,7 +22,7 @@ export const fetchSoundClips = createAsyncThunk('soundClips/fetchSoundClips',
 );
 
 export const soundClipSlice = createSlice({
-    name: 'soundClip',
+    name: 'sounds',
     initialState,
     reducers: {
     },
@@ -37,5 +37,7 @@ export const soundClipSlice = createSlice({
             });
     }
 });
+
+export const selectSoundClips = (state: RootState) => state.sounds.soundClips;
 
 export default soundClipSlice.reducer;
