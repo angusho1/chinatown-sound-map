@@ -8,6 +8,7 @@ import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 export default function Map() {
     let map: google.maps.Map;
+    let infoWindow: google.maps.InfoWindow;
 
     const dispatch = useAppDispatch();
     const [loadedSoundClips, setLoadedSoundClips] = useState(false);
@@ -30,28 +31,31 @@ export default function Map() {
               zoom: 17,
             });
 
+            infoWindow = new google.maps.InfoWindow();
+
             const markers = soundClips.filter((soundClip: SoundClip) => soundClip.location.lat && soundClip.location.lng)
                 .map((soundClip: SoundClip) => {
-                const infowindow = new google.maps.InfoWindow({
-                    content: `<h5>"${soundClip.title}"</h5>
-                            <div>Author: ${soundClip.author}</div>
-                            <div>Date: ${soundClip.date}</div>`,
-                });
-
-                const marker = new google.maps.Marker({
-                    position: { lat: soundClip.location.lat, lng: soundClip.location.lng },
-                    map,
-                });
-
-                marker.addListener('click', () => {
-                    infowindow.open({
-                        anchor: marker,
-                        map
+                    const marker = new google.maps.Marker({
+                        position: { lat: soundClip.location.lat, lng: soundClip.location.lng },
+                        map,
                     });
-                });
 
-                return marker;
-            });
+                    marker.addListener('click', () => {
+                        infoWindow.setContent(
+                            `<h5>${soundClip.title}</h5>
+                            <div>${soundClip.content}</div>
+                            <div>Author: ${soundClip.author}</div>
+                            <div>Date: ${soundClip.date ? soundClip.date : 'unknown'}</div>`
+                        );
+
+                        infoWindow.open({
+                            anchor: marker,
+                            map
+                        });
+                    });
+
+                    return marker;
+                });
 
             const path = '/images';
 
@@ -60,7 +64,8 @@ export default function Map() {
                     imagePath: `${path}/m`, 
                     gridSize: 30,
                     averageCenter: true,
-                    zoomOnClick: false
+                    maxZoom: 18
+                    // zoomOnClick: false
                 });
         });
     });
