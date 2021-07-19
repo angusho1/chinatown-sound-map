@@ -4,6 +4,7 @@ import './Map.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, selectSoundClips } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'features/sound-clips/SoundClip';
+import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 export default function Map() {
     let map: google.maps.Map;
@@ -25,11 +26,12 @@ export default function Map() {
     useEffect(() => {
         loader.load().then(() => {
             map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-              center: { lat: 49.279992, lng: -123.104931 }, 
-              zoom: 16,
+              center: { lat: 49.279470, lng: -123.099721 }, 
+              zoom: 17,
             });
 
-            soundClips.forEach((soundClip: SoundClip) => {
+            const markers = soundClips.filter((soundClip: SoundClip) => soundClip.location.lat && soundClip.location.lng)
+                .map((soundClip: SoundClip) => {
                 const infowindow = new google.maps.InfoWindow({
                     content: `<h5>"${soundClip.title}"</h5>
                             <div>Author: ${soundClip.author}</div>
@@ -47,7 +49,19 @@ export default function Map() {
                         map
                     });
                 });
+
+                return marker;
             });
+
+            const path = '/images';
+
+            new MarkerClusterer(map, markers, 
+                { 
+                    imagePath: `${path}/m`, 
+                    gridSize: 30,
+                    averageCenter: true,
+                    zoomOnClick: false
+                });
         });
     });
 
