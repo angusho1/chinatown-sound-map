@@ -7,7 +7,6 @@ import SoundClip from 'features/sound-clips/SoundClip';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 export default function Map() {
-    let map: google.maps.Map;
     let infoWindow: google.maps.InfoWindow;
 
     const dispatch = useAppDispatch();
@@ -26,7 +25,7 @@ export default function Map() {
 
     useEffect(() => {
         loader.load().then(() => {
-            map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+            const map: google.maps.Map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
               center: { lat: 49.279470, lng: -123.099721 }, 
               zoom: 17,
             });
