@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
-    "@types/google.maps": "^3.48.6"
+    "@types/google.maps": "^3.48.6",
+    "msw": "^0.39.2"
   }
 }

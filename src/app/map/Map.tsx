@@ -7,8 +7,6 @@ import SoundClip from 'features/sound-clips/SoundClip';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 export default function Map() {
-    let infoWindow: google.maps.InfoWindow;
-
     const dispatch = useAppDispatch();
     const [loadedSoundClips, setLoadedSoundClips] = useState(false);
     const soundClips = useAppSelector(selectSoundClips);
@@ -30,7 +28,7 @@ export default function Map() {
               zoom: 17,
             });
 
-            infoWindow = new google.maps.InfoWindow();
+            const infoWindow = new google.maps.InfoWindow();
 
             const markers = soundClips.filter((soundClip: SoundClip) => soundClip.location.lat && soundClip.location.lng)
                 .map((soundClip: SoundClip) => {
