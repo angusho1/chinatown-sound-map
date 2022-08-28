@@ -3,7 +3,7 @@ import soundClipReducer from '../features/sound-clips/soundClipSlice';
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
-  sounds: soundClipReducer
+  soundClips: soundClipReducer
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

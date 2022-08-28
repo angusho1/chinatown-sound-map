@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from 'app/store';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from 'app/store';
 import SoundClip from 'features/sound-clips/SoundClip';
 import { getSoundClips } from './soundClipAPI';
 
@@ -22,7 +22,7 @@ export const fetchSoundClips = createAsyncThunk('soundClips/fetchSoundClips',
 );
 
 export const soundClipSlice = createSlice({
-    name: 'sounds',
+    name: 'soundClips',
     initialState,
     reducers: {
     },
@@ -38,6 +38,6 @@ export const soundClipSlice = createSlice({
     }
 });
 
-export const selectSoundClips = (state: RootState) => state.sounds.soundClips;
+export const selectSoundClips = (state: RootState) => state.soundClips.soundClips;
 
 export default soundClipSlice.reducer;

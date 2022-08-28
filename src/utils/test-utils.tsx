@@ -22,7 +22,7 @@ export function renderWithProviders(
   {
     preloadedState = {},
     // Automatically create a store instance if no store was passed in
-    store = configureStore({ reducer: { sounds: soundClipReducer }, preloadedState }),
+    store = configureStore({ reducer: { soundClips: soundClipReducer }, preloadedState }),
     ...renderOptions
   }: ExtendedRenderOptions = {}
 ) {
