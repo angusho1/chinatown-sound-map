@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import { setupStore } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { MantineProvider } from '@mantine/core';
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from 'app/App.routes';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,7 +15,9 @@ ReactDOM.render(
         primaryColor: 'yellow',
         primaryShade: 8
       }}>
-        <App />
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
       </MantineProvider>
     </Provider>
   </React.StrictMode>,

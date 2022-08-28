@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { Header, Container, Group, Burger, Paper, Transition, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import './AppNavBar.css'
+import { Link, NavLink } from 'react-router-dom';
 
 const HEADER_HEIGHT = 60;
 
@@ -13,27 +13,26 @@ export interface AppNavBarProps {
 
 export function AppNavBar({ routes }: AppNavBarProps) {
   const [opened, { toggle, close }] = useDisclosure(false);
-  const [active, setActive] = useState(routes[0].url);
 
   const items = routes.map((route) => (
-    <a
+    <NavLink
+      to={route.url}
       key={route.label}
-      href={route.url}
-      className={`link ${active === route.url ? 'link-active' : ''}`}
+      className="link"
       onClick={(event) => {
-        event.preventDefault();
-        setActive(route.url);
         close();
       }}
     >
       {route.label}
-    </a>
+    </NavLink>
   ));
 
   return (
     <Header height={HEADER_HEIGHT} className="header">
       <Container className="container">
-        <Text>Chinatown Sound Map</Text>
+        <Text size="lg" color="orange" weight={500}>
+          <Link to="" style={{ color: 'inherit', textDecoration: 'inherit'}}>Chinatown Sound Map</Link>
+        </Text>
         <Group spacing={5} className="links">
           {items}
         </Group>

@@ -1,20 +1,20 @@
-import Map from './app/map/Map';
 import './App.css';
 import { Footer } from '@mantine/core';
 import { AppNavBar, AppNavBarProps } from 'app/components/nav-bar/AppNavBar';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   const links: AppNavBarProps["routes"] = [
     {
-      url: '/about',
+      url: 'about',
       label: 'About'
     },
     {
-      url: '/contribute',
+      url: 'contribute',
       label: 'Contribute'
     },
     {
-      url: '/contact',
+      url: 'contact',
       label: 'Contact'
     }
   ] 
@@ -22,7 +22,7 @@ function App() {
   return (
       <div className="App">
         <AppNavBar routes={links}  />
-        <Map></Map>
+        <Outlet />
         <Footer height={60} p="md">
         </Footer>
       </div>

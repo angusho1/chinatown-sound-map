@@ -37,7 +37,7 @@
     background-color: var(--mantine-color-yellow-0);
 }
 
-.link-active, .link-active:hover {
+.active, .active:hover {
     background-color: var(--mantine-color-yellow-1);
     color: var(--mantine-color-orange-8);
 }
