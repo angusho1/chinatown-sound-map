@@ -28,18 +28,18 @@
     padding: 8px 12px;
     border-radius: var(--mantine-radius-sm);
     text-decoration: none;
-    color: #495057;    /* theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7] */
+    color: var(--mantine-color-orange-6);
     font-size: var(--mantine-font-size-sm);
     font-weight: 500;
 }
 
 .link:hover {
-    background-color: #f8f9fa; /* theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0] */
+    background-color: var(--mantine-color-yellow-0);
 }
 
 .link-active, .link-active:hover {
-    background-color: rgba(231, 245, 255, 1);   /* theme.fn.variant({ variant: 'light', color: theme.primaryColor }).background */
-    color: #228be6; /* theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color */
+    background-color: var(--mantine-color-yellow-1);
+    color: var(--mantine-color-orange-8);
 }
 
 @media (max-width: 769px) {

@@ -5,11 +5,17 @@ import App from './App';
 import { setupStore } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
+import { MantineProvider } from '@mantine/core';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={setupStore()}>
-      <App />
+      <MantineProvider withCSSVariables theme={{
+        primaryColor: 'yellow',
+        primaryShade: 8
+      }}>
+        <App />
+      </MantineProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
