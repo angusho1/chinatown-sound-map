@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { MantineProvider } from '@mantine/core';
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from 'app/App.routes';
+import App from 'app/App';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -16,7 +16,7 @@ ReactDOM.render(
         primaryShade: 8
       }}>
         <BrowserRouter>
-          <AppRoutes />
+          <App />
         </BrowserRouter>
       </MantineProvider>
     </Provider>
