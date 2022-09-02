@@ -68,7 +68,7 @@ export default function Map() {
     });
 
     return (
-        <div id="map">
+        <div id="map" data-testid="sound-map">
         </div>
     )
 }
