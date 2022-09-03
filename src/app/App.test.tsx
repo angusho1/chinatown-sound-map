@@ -1,5 +1,23 @@
 import App from './App';
 import { customRender } from 'utils/test-utils';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { soundClipMock1 } from 'mocks/soundClips.mock';
+
+// Mock requests
+const server = setupServer(
+  rest.get('/sound-clips', (req, res, ctx) => {
+    return res(ctx.json([ soundClipMock1 ]));
+  }),
+);
+
+// establish API mocking before all tests
+beforeAll(() => server.listen())
+// reset any request handlers that are declared as a part of our tests
+// (i.e. for testing one-time error scenarios)
+afterEach(() => server.resetHandlers())
+// clean up once the tests are done
+afterAll(() => server.close())
 
 test('Renders title', () => {
   const { getByText } = customRender(<App />);
