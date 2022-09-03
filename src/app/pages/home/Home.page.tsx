@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Map from './map/Map';
+import Map from '../../components/map/Map';
 
 export default function HomePage() {
   useEffect(() => {
