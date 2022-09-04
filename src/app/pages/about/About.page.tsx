@@ -7,7 +7,7 @@ export default function AboutPage() {
   });
 
   return (
-    <Container py="xl">
+    <Container py="xl" className="page-body">
       <Title order={1}>About</Title>
       <Space h="lg" />
       <Text size="md">

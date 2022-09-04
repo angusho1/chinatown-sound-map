@@ -8,7 +8,7 @@ export default function ContactPage() {
   });
 
   return (
-    <Container py="xl">
+    <Container py="xl" className="page-body">
       <Title order={1}>Contact</Title>
       <Space h="lg" />
       <Text>Have a suggestion or interested in getting in touch? Please fill out the following form!</Text>

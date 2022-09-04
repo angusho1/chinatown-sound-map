@@ -12,7 +12,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={setupStore()}>
       <MantineProvider withCSSVariables theme={{
-        primaryColor: 'yellow',
+        primaryColor: 'pink',
         primaryShade: 8
       }}>
         <BrowserRouter>

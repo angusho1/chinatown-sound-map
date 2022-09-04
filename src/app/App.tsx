@@ -23,7 +23,7 @@ function App() {
       <div className="App">
         <AppNavBar routes={links} />
         <AppRoutes />
-        <Footer height={60} p="md" >
+        <Footer height={60} p="md" className="footer">
         </Footer>
       </div>
   );

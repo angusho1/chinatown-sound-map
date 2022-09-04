@@ -1,3 +1,11 @@
 .App {
   height: 100%;
 }
+
+.page-body {
+  min-height: 90vh;
+}
+
+.footer {
+  background-color: var(--mantine-color-pink-8) !important;
+}

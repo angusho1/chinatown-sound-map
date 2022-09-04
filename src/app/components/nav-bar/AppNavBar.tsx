@@ -30,7 +30,7 @@ export function AppNavBar({ routes }: AppNavBarProps) {
   return (
     <Header height={HEADER_HEIGHT} className="header">
       <Container className="container">
-        <Text size="lg" color="orange" weight={500}>
+        <Text size="lg" color="white" weight={500}>
           <Link to="" style={{ color: 'inherit', textDecoration: 'inherit'}}>Chinatown Sound Map</Link>
         </Text>
         <Group spacing={5} className="links">

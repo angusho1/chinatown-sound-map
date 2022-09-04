@@ -8,7 +8,7 @@ export default function ContributePage() {
   });
 
   return (
-    <Container py="xl">
+    <Container py="xl" className="page-body">
       <Title order={1}>Contribute</Title>
       <Space h="lg" />
       <Grid>
