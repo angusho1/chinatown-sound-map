@@ -39,7 +39,7 @@ export default function SubmissionForm() {
     }
 
     return (
-        <Container size="xs" style={{ marginLeft: 0 }}>
+        <Container size="sm" style={{ marginLeft: 0 }}>
             <Paper radius="lg" p="lg" withBorder>
                 <form onSubmit={form.onSubmit(submitForm)}>
                     <FileInput 
