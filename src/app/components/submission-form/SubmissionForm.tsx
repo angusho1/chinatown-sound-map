@@ -1,11 +1,13 @@
 import { Button, Container, FileInput, Group, Paper, Space, Textarea, TextInput } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 
 interface SubmissionFormValues {
-    title: string;
-    recording: File;
+    title?: string;
+    recording?: File;
     email?: string;
-    description: string;
+    description?: string;
+    date?: Date;
 }
 
 const MAX_TITLE_LEN = 100;
@@ -15,9 +17,10 @@ export default function SubmissionForm() {
     const form = useForm({
         initialValues: {
             title: '',
-            recording: null,
+            recording: undefined,
             email: '',
-            description: ''
+            description: '',
+            date: undefined
         },
     
         validate: {
@@ -26,14 +29,19 @@ export default function SubmissionForm() {
                 if (value.length > MAX_TITLE_LEN) return `Title must ${MAX_TITLE_LEN} characters or less`;
                 return null;
             },
+            recording: value => value !== null ? null : 'Please choose an audio file',
             email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
         },
     });
 
+    const submitForm = (values: SubmissionFormValues) => {
+        console.log(values);
+    }
+
     return (
         <Container size="xs" style={{ marginLeft: 0 }}>
             <Paper radius="lg" p="lg" withBorder>
-                <form onSubmit={form.onSubmit((values) => console.log(values))}>
+                <form onSubmit={form.onSubmit(submitForm)}>
                     <FileInput 
                         label="Upload Recording" 
                         placeholder="Upload Recording" 
@@ -62,6 +70,15 @@ export default function SubmissionForm() {
                         minRows={2}
                         maxRows={10}
                         {...form.getInputProps('description')}
+                    />
+
+                    <Space h="md" />
+                    <DatePicker
+                        label="Date Recorded"
+                        placeholder="Pick date"
+                        firstDayOfWeek="sunday"
+                        maxDate={new Date()}
+                        {...form.getInputProps('date')}
                     />
 
                     <Group position="right" mt="md">
