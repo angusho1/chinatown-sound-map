@@ -12,7 +12,7 @@ export default function ContributePage() {
       <Title order={1}>Contribute</Title>
       <Space h="lg" />
       <Grid>
-        <Grid.Col span={6}>
+        <Grid.Col span={5}>
           <Text size="md">
             Contributions to the Chinatown Sound Map are welcomed and will be accepted on a rolling basis. To upload a field recording, please fill out the following form.
           </Text>
@@ -24,7 +24,7 @@ export default function ContributePage() {
             <List.Item>Take pictures or notes to identify when/where your submission was recorded. Pictures can be uploaded on SoundCloud along with your audio clip to help illustrate your recordings.</List.Item>
           </List>
         </Grid.Col>
-        <Grid.Col span={6}>
+        <Grid.Col span={7}>
           <SubmissionForm />
         </Grid.Col>
       </Grid>

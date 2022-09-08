@@ -1,6 +1,8 @@
-import { Button, Container, FileInput, Group, Paper, Space, Textarea, TextInput } from '@mantine/core';
+import { Button, Container, FileInput, Group, Modal, Paper, Space, Textarea, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { useState } from 'react';
+import LocationPicker, { MapLocation } from '../location-picker/LocationPicker';
 
 interface SubmissionFormValues {
     title?: string;
@@ -13,6 +15,8 @@ interface SubmissionFormValues {
 const MAX_TITLE_LEN = 100;
 
 export default function SubmissionForm() {
+    const [locationModalOpened, setLocationModalOpened] = useState(false);
+    const defaultLocation = { lat: 49.279470, lng: -123.099721 };
 
     const form = useForm({
         initialValues: {
@@ -20,7 +24,8 @@ export default function SubmissionForm() {
             recording: undefined,
             email: '',
             description: '',
-            date: undefined
+            date: undefined,
+            location: ''
         },
     
         validate: {
@@ -37,6 +42,11 @@ export default function SubmissionForm() {
     const submitForm = (values: SubmissionFormValues) => {
         console.log(values);
     }
+
+    const closeLocationModal = (location: MapLocation) => {
+        setLocationModalOpened(false);
+        console.log('New Location', location);
+    };
 
     return (
         <Container size="sm" style={{ marginLeft: 0 }}>
@@ -55,6 +65,14 @@ export default function SubmissionForm() {
                         placeholder="My Chinatown Recording"
                         withAsterisk
                         {...form.getInputProps('title')}
+                    />
+                    <Space h="md" />
+                    <TextInput
+                        label="Location"
+                        placeholder="Where was this recorded?"
+                        withAsterisk
+                        {...form.getInputProps('location')}
+                        onClick={() => setLocationModalOpened(true)}
                     />
                     <Space h="md" />
                     <TextInput
@@ -86,6 +104,12 @@ export default function SubmissionForm() {
                     </Group>
                 </form>
             </Paper>
+
+            <LocationPicker location={defaultLocation} opened={locationModalOpened} onClose={closeLocationModal} />
+
+            {/* <Modal centered size="lg" opened={locationModalOpened} onClose={closeLocationModal} >
+                <LocationPicker location={defaultLocation} />
+            </Modal> */}
         </Container>
 
     );
