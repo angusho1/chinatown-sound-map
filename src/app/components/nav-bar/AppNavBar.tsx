@@ -37,7 +37,7 @@ export function AppNavBar({ routes }: AppNavBarProps) {
           {items}
         </Group>
 
-        <Burger opened={opened} onClick={toggle} className="burger" size="sm" />
+        <Burger color="white" opened={opened} onClick={toggle} className="burger" size="sm" />
 
         <Transition transition="pop-top-right" duration={200} mounted={opened}>
           {(styles) => (

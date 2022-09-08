@@ -13,7 +13,7 @@ ReactDOM.render(
     <Provider store={setupStore()}>
       <MantineProvider withCSSVariables theme={{
         primaryColor: 'pink',
-        primaryShade: 8
+        primaryShade: 7
       }}>
         <BrowserRouter>
           <App />

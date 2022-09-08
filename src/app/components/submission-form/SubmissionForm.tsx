@@ -29,7 +29,7 @@ export default function SubmissionForm() {
                 if (value.length > MAX_TITLE_LEN) return `Title must ${MAX_TITLE_LEN} characters or less`;
                 return null;
             },
-            recording: value => value !== null ? null : 'Please choose an audio file',
+            recording: value => !!value ? null : 'Please choose an audio file',
             email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
         },
     });
