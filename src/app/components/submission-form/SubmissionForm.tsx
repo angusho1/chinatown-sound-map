@@ -106,10 +106,6 @@ export default function SubmissionForm() {
             </Paper>
 
             <LocationPicker location={defaultLocation} opened={locationModalOpened} onClose={closeLocationModal} />
-
-            {/* <Modal centered size="lg" opened={locationModalOpened} onClose={closeLocationModal} >
-                <LocationPicker location={defaultLocation} />
-            </Modal> */}
         </Container>
 
     );
