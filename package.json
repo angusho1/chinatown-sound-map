@@ -6,7 +6,7 @@
     "@googlemaps/js-api-loader": "^1.14.3",
     "@googlemaps/markerclustererplus": "^1.2.10",
     "@mantine/core": "^5.3.0",
-    "@mantine/dates": "^5.2.5",
+    "@mantine/dates": "^5.3.0",
     "@mantine/form": "^5.2.5",
     "@mantine/hooks": "^5.2.4",
     "@reduxjs/toolkit": "^1.8.5",
