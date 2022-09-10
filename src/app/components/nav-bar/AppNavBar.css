@@ -1,6 +1,5 @@
 .header {
     position: sticky !important;
-    z-index: 1;
     background-color: var(--mantine-color-pink-7) !important;
 }
 

@@ -29,7 +29,7 @@ export function AppNavBar({ routes }: AppNavBarProps) {
   ));
 
   return (
-    <Header height={HEADER_HEIGHT} className="header">
+    <Header height={HEADER_HEIGHT} className="header" zIndex={2}>
       <Container className="container">
         <Text size="lg" color="white" weight={500}>
           <Link aria-label="chinatown-sound-map" to="" style={{ color: 'inherit', textDecoration: 'inherit'}}>Chinatown Sound Map</Link>
