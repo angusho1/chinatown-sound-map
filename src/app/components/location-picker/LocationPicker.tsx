@@ -1,23 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
 import { Modal } from '@mantine/core';
-
-export interface MapLocation {
-    lat: number;
-    lng: number;
-}
+import { RecordingLocation } from 'models/RecordingLocation.model';
 
 interface LocationPickerProps {
     opened: boolean;
-    location: MapLocation;
-    onClose: (location: MapLocation) => any;
+    location: RecordingLocation;
+    onClose: (location: RecordingLocation) => any;
 }
 
 export default function LocationPicker({ location, opened, onClose }: LocationPickerProps) {
     const markerRef = useRef<google.maps.Marker>();
     const mapRef = useRef<google.maps.Map>();
     const isMapLoaded = useRef<boolean>(false);
-    const [pinLocation, setPinLocation] = useState<MapLocation | null>(null);
+    const [pinLocation, setPinLocation] = useState<RecordingLocation | null>(null);
     const mapElementId = 'picker-map';
     
     const closeLocationModal = () => {
@@ -25,7 +21,7 @@ export default function LocationPicker({ location, opened, onClose }: LocationPi
         isMapLoaded.current = false;
     };
 
-    const getCurrLocation = (): MapLocation => {
+    const getCurrLocation = (): RecordingLocation => {
         return pinLocation !== null ? { lat: pinLocation.lat, lng: pinLocation.lng } : { lat: location.lat, lng: location.lng };
     }
     
@@ -40,7 +36,7 @@ export default function LocationPicker({ location, opened, onClose }: LocationPi
 
         await loader.load();
 
-        const loc: MapLocation = getCurrLocation();
+        const loc: RecordingLocation = getCurrLocation();
 
         mapRef.current = new google.maps.Map(document.getElementById(mapElementId) as HTMLElement, {
           center: loc, 
@@ -54,7 +50,7 @@ export default function LocationPicker({ location, opened, onClose }: LocationPi
      * Add marker. Should only be called on the first render
      */
     const addMarker = () => {        
-        const loc: MapLocation = getCurrLocation();
+        const loc: RecordingLocation = getCurrLocation();
     
         const marker = new google.maps.Marker({
             position: loc,

@@ -1,18 +1,13 @@
 import { Button, Container, FileInput, Group, Input, Paper, Space, Textarea, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { RecordingLocation } from 'models/RecordingLocation.model';
+import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
-import LocationPicker, { MapLocation } from '../location-picker/LocationPicker';
+import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
 
-interface SubmissionFormValues {
-    title?: string;
-    recording?: File;
-    email?: string;
-    description?: string;
-    date?: Date;
-    location?: MapLocation;
-}
+type SubmissionFormValues = Partial<SoundClipSubmission>;
 
 const MAX_TITLE_LEN = 100;
 
@@ -45,17 +40,16 @@ export default function SubmissionForm() {
         console.log(values);
     }
 
-    const closeLocationModal = (location: MapLocation) => {
+    const closeLocationModal = (location: RecordingLocation) => {
         setLocationModalOpened(false);
         form.setFieldValue('location', location);
-        console.log('New Location', location);
     };
 
-    const isLocationSet = (location: MapLocation) => {
+    const isLocationSet = (location: RecordingLocation) => {
         return location.lat !== defaultLocation.lat || location.lng !== defaultLocation.lng;
     }
 
-    const getLocationText = (location: MapLocation) => {
+    const getLocationText = (location: RecordingLocation) => {
         if (!isLocationSet(location)) {
             return 'Find Location';
         } else {

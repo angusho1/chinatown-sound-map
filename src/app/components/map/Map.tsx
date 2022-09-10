@@ -3,7 +3,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import './Map.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, selectSoundClips } from 'features/sound-clips/soundClipSlice';
-import SoundClip from 'features/sound-clips/SoundClip';
+import SoundClip from 'models/SoundClip.model';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
 
 export default function Map() {

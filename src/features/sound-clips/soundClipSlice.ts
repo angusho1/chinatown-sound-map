@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import SoundClip from 'features/sound-clips/SoundClip';
+import SoundClip from 'models/SoundClip.model';
 import { getSoundClips } from './soundClipAPI';
 
 export interface SoundClipState {
