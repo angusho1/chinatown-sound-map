@@ -5,7 +5,7 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.3",
     "@googlemaps/markerclustererplus": "^1.2.10",
-    "@mantine/core": "^5.2.4",
+    "@mantine/core": "^5.3.0",
     "@mantine/dates": "^5.2.5",
     "@mantine/form": "^5.2.5",
     "@mantine/hooks": "^5.2.4",
@@ -13,7 +13,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.0.0",
     "@types/node": "^17.0.45",
     "@types/react": "^17.0.48",
     "@types/react-dom": "^17.0.17",
