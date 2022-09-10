@@ -16,7 +16,6 @@ const initialState: SoundClipState = {
 export const fetchSoundClips = createAsyncThunk('soundClips/fetchSoundClips',
     async () => {
         const res: SoundClip[] = await getSoundClips();
-        console.log(res);
         return res;
     }
 );

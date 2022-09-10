@@ -3,6 +3,7 @@ import { customRender } from 'utils/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { soundClipMock1 } from 'mocks/soundClips.mock';
+import { screen } from '@testing-library/react';
 
 // Mock requests
 const server = setupServer(
@@ -27,31 +28,27 @@ test('Renders title', () => {
 });
 
 test('Routes to About Page', async () => {
-  const { getByText } = customRender(<App />, { route: '/about '});
-
-  expect(getByText(/About Page/i)).toBeInTheDocument();
+  customRender(<App />, { route: '/about '});
+  expect(document.title).toEqual('About');
 });
 
 test('Navigates to pages using menu', async () => {
-  const { user, getByText } = customRender(<App />);
+  const { user } = customRender(<App />);
 
-  await user.click(getByText(/About/i));
+  await user.click(screen.getByRole('link', { name: /about/i }));
   expect(document.title).toEqual('About');
-  expect(getByText(/About Page/i)).toBeInTheDocument();
 
-  await user.click(getByText(/Contribute/i));
+  await user.click(screen.getByRole('link', { name: /contribute/i }));
   expect(document.title).toEqual('Contribute');
-  expect(getByText(/Contribute Page/i)).toBeInTheDocument();
 
-  await user.click(getByText(/Contact/i));
+  await user.click(screen.getByRole('link', { name: /contact/i }));
   expect(document.title).toEqual('Contact');
-  expect(getByText(/Contact Page/i)).toBeInTheDocument();
 });
 
 test('Navigates to home page using header', async () => {
-  const { user, getByText, queryByTestId } = customRender(<App />, { route: '/about '});
+  const { user, queryByTestId } = customRender(<App />, { route: '/about '});
 
-  await user.click(getByText(/Chinatown Sound Map/i));
+  await user.click(screen.getByRole('link', { name: /chinatown-sound-map/i }));
   expect(document.title).toEqual('Chinatown Sound Map');
   expect(queryByTestId('sound-map')).toBeInTheDocument();
 });

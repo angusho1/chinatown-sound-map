@@ -22,6 +22,7 @@ export function AppNavBar({ routes }: AppNavBarProps) {
       onClick={(event) => {
         close();
       }}
+      aria-label={route.url.toLowerCase()}
     >
       {route.label}
     </NavLink>
@@ -31,7 +32,7 @@ export function AppNavBar({ routes }: AppNavBarProps) {
     <Header height={HEADER_HEIGHT} className="header">
       <Container className="container">
         <Text size="lg" color="white" weight={500}>
-          <Link to="" style={{ color: 'inherit', textDecoration: 'inherit'}}>Chinatown Sound Map</Link>
+          <Link aria-label="chinatown-sound-map" to="" style={{ color: 'inherit', textDecoration: 'inherit'}}>Chinatown Sound Map</Link>
         </Text>
         <Group spacing={5} className="links">
           {items}
