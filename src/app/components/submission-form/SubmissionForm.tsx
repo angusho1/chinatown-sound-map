@@ -1,8 +1,9 @@
-import { Button, Container, FileInput, Group, Modal, Paper, Space, Textarea, TextInput } from '@mantine/core';
+import { Button, Container, FileInput, Group, Input, Paper, Space, Textarea, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useState } from 'react';
 import LocationPicker, { MapLocation } from '../location-picker/LocationPicker';
+import './SubmissionForm.css';
 
 interface SubmissionFormValues {
     title?: string;
@@ -10,6 +11,7 @@ interface SubmissionFormValues {
     email?: string;
     description?: string;
     date?: Date;
+    location?: MapLocation;
 }
 
 const MAX_TITLE_LEN = 100;
@@ -25,7 +27,7 @@ export default function SubmissionForm() {
             email: '',
             description: '',
             date: undefined,
-            location: ''
+            location: defaultLocation
         },
     
         validate: {
@@ -45,8 +47,21 @@ export default function SubmissionForm() {
 
     const closeLocationModal = (location: MapLocation) => {
         setLocationModalOpened(false);
+        form.setFieldValue('location', location);
         console.log('New Location', location);
     };
+
+    const isLocationSet = (location: MapLocation) => {
+        return location.lat !== defaultLocation.lat || location.lng !== defaultLocation.lng;
+    }
+
+    const getLocationText = (location: MapLocation) => {
+        if (!isLocationSet(location)) {
+            return 'Find Location';
+        } else {
+            return `${form.values.location.lat.toFixed(5)}, ${form.values.location.lng.toFixed(5)}`;
+        }
+    }
 
     return (
         <Container size="sm" style={{ marginLeft: 0 }}>
@@ -67,13 +82,22 @@ export default function SubmissionForm() {
                         {...form.getInputProps('title')}
                     />
                     <Space h="md" />
-                    <TextInput
+                    <Input.Wrapper
                         label="Location"
-                        placeholder="Where was this recorded?"
                         withAsterisk
-                        {...form.getInputProps('location')}
-                        onClick={() => setLocationModalOpened(true)}
-                    />
+                        description="Tell us where you recorded this clip."
+                    >
+                        <Input 
+                            id="location-input" 
+                            type="button"
+                            pointer
+                            {...form.getInputProps('location')}
+                            onClick={() => setLocationModalOpened(true)}
+                            className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
+                            value={getLocationText(form.values.location)}
+                        >
+                        </Input>
+                    </Input.Wrapper>
                     <Space h="md" />
                     <TextInput
                         label="Email"
