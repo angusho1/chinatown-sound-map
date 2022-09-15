@@ -5,13 +5,12 @@ import { submitRecording } from 'features/submissions/submissionsAPI';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
+import { submissionEmailValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
 import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
 
 type SubmissionFormValues = Partial<SoundClipSubmission>;
 type SubmissionState = 'idle' | 'pending' | 'success' | 'rejected';
-
-const MAX_TITLE_LEN = 100;
 
 export default function SubmissionForm() {
     const [locationModalOpened, setLocationModalOpened] = useState(false);
@@ -29,14 +28,11 @@ export default function SubmissionForm() {
         },
     
         validate: {
-            title: (value) => {
-                if (!value) return 'Please give your recording a title';
-                if (value.length > MAX_TITLE_LEN) return `Title must ${MAX_TITLE_LEN} characters or less`;
-                return null;
-            },
-            recording: value => !!value ? null : 'Please choose an audio file',
-            email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+            title: submissionTitleValidator,
+            recording: submissionRecordingValidator,
+            email: submissionEmailValidator,
         },
+        validateInputOnChange: ['recording']
     });
 
     const submitForm = (values: SubmissionFormValues) => {

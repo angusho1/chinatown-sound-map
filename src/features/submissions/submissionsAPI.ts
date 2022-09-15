@@ -12,10 +12,6 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
 
     const res = await fetch('/submissions', {
         method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data'
-        },
         body: formData
     });
 
