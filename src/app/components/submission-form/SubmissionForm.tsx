@@ -1,4 +1,4 @@
-import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput } from '@mantine/core';
+import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput, FileButton, List, Text, Avatar, Stack, CloseButton } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { submitRecording } from 'features/submissions/submissionsAPI';
@@ -15,6 +15,7 @@ type SubmissionState = 'idle' | 'pending' | 'success' | 'rejected';
 export default function SubmissionForm() {
     const [locationModalOpened, setLocationModalOpened] = useState(false);
     const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
+    const [images, setImages] = useState<File[]>([]);
     const defaultLocation = { lat: 49.279470, lng: -123.099721 };
 
     const form = useForm({
@@ -65,6 +66,12 @@ export default function SubmissionForm() {
         } else {
             return `${form.values.location.lat.toFixed(5)}, ${form.values.location.lng.toFixed(5)}`;
         }
+    }
+
+    const removeImage = (index: number) => {
+        const imgs = images.slice();
+        imgs.splice(index, 1);
+        setImages(imgs);
     }
 
     return (
@@ -127,6 +134,29 @@ export default function SubmissionForm() {
                         maxDate={new Date()}
                         {...form.getInputProps('date')}
                     />
+
+                    <Space h="md" />
+                    <Group position="left">
+                        <FileButton onChange={setImages} accept="image/png,image/jpeg" multiple>
+                            {(props) => <Button color={'orange'} {...props}>Upload images</Button>}
+                        </FileButton>
+                    </Group>
+
+                    {images.length > 0 && (
+                        <Text size="sm" mt="sm" mb="sm">
+                            Picked files:
+                        </Text>
+                    )}
+
+                    <Stack spacing={'sm'}>
+                        {images.map((file: File, index) => (
+                            <Group position="left" key={index}>
+                                <Avatar size={'sm'} radius={'xs'} src={URL.createObjectURL(file)}/>
+                                <Text size="sm">{file.name}</Text>
+                                <CloseButton aria-label="Remove image" onClick={() => removeImage(index)} />
+                            </Group>
+                        ))}
+                    </Stack>
 
                     <Group position="right" mt="md">
                         <Button type="submit">Submit</Button>
