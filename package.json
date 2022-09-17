@@ -50,6 +50,6 @@
   },
   "devDependencies": {
     "@types/google.maps": "^3.50.0",
-    "msw": "^0.39.2"
+    "msw": "^0.47.3"
   }
 }
