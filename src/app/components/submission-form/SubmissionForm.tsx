@@ -5,7 +5,7 @@ import { submitRecording } from 'features/submissions/submissionsAPI';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
-import { submissionEmailValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import { DEFAULT_SUBMISSION_LOCATION, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
@@ -16,7 +16,7 @@ type SubmissionState = 'idle' | 'pending' | 'success' | 'rejected';
 export default function SubmissionForm() {
     const [locationModalOpened, setLocationModalOpened] = useState(false);
     const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
-    const defaultLocation = { lat: 49.279470, lng: -123.099721 };
+    const defaultLocation = DEFAULT_SUBMISSION_LOCATION;
 
     const form = useForm({
         initialValues: {
@@ -33,8 +33,10 @@ export default function SubmissionForm() {
             title: submissionTitleValidator,
             recording: submissionRecordingValidator,
             email: submissionEmailValidator,
+            location: submissionLocationValidator,
+            images: submissionImagesValidator,
         },
-        validateInputOnChange: ['recording']
+        validateInputOnChange: ['recording', 'images']
     });
 
     const submitForm = (values: SubmissionFormValues) => {
@@ -99,12 +101,14 @@ export default function SubmissionForm() {
                         label="Location"
                         withAsterisk
                         description="Tell us where you recorded this clip."
+                        error={form.getInputProps('location').error}
                     >
                         <Input 
                             id="location-input" 
                             type="button"
                             pointer
                             {...form.getInputProps('location')}
+                            invalid={!!form.getInputProps('location').error}
                             onClick={() => setLocationModalOpened(true)}
                             className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
                             value={getLocationText(form.values.location)}
