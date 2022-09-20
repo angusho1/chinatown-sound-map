@@ -1,4 +1,4 @@
-import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput, FileButton, List, Text, Avatar, Stack, CloseButton } from '@mantine/core';
+import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { submitRecording } from 'features/submissions/submissionsAPI';
@@ -6,6 +6,7 @@ import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
 import { submissionEmailValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
 
@@ -15,7 +16,6 @@ type SubmissionState = 'idle' | 'pending' | 'success' | 'rejected';
 export default function SubmissionForm() {
     const [locationModalOpened, setLocationModalOpened] = useState(false);
     const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
-    const [images, setImages] = useState<File[]>([]);
     const defaultLocation = { lat: 49.279470, lng: -123.099721 };
 
     const form = useForm({
@@ -25,7 +25,8 @@ export default function SubmissionForm() {
             email: '',
             description: '',
             date: undefined,
-            location: defaultLocation
+            location: defaultLocation,
+            images: []
         },
     
         validate: {
@@ -69,10 +70,10 @@ export default function SubmissionForm() {
     }
 
     const removeImage = (index: number) => {
-        const imgs = images.slice();
+        const imgs = form.values.images.slice();
         imgs.splice(index, 1);
-        setImages(imgs);
-    }
+        form.setFieldValue('images', imgs);
+    };
 
     return (
         <Container size="sm" style={{ marginLeft: 0, position: 'relative' }}>
@@ -81,7 +82,7 @@ export default function SubmissionForm() {
                     <LoadingOverlay visible={submissionState === 'pending'} overlayBlur={2} zIndex={1} />
                     <FileInput 
                         label="Upload Recording" 
-                        placeholder="Upload Recording" 
+                        placeholder="Click to Upload" 
                         accept="audio/mp4,audio/mpeg,audio/x-wav" 
                         withAsterisk
                         {...form.getInputProps('recording')}
@@ -136,27 +137,10 @@ export default function SubmissionForm() {
                     />
 
                     <Space h="md" />
-                    <Group position="left">
-                        <FileButton onChange={setImages} accept="image/png,image/jpeg" multiple>
-                            {(props) => <Button color={'orange'} {...props}>Upload images</Button>}
-                        </FileButton>
-                    </Group>
-
-                    {images.length > 0 && (
-                        <Text size="sm" mt="sm" mb="sm">
-                            Picked files:
-                        </Text>
-                    )}
-
-                    <Stack spacing={'sm'}>
-                        {images.map((file: File, index) => (
-                            <Group position="left" key={index}>
-                                <Avatar size={'sm'} radius={'xs'} src={URL.createObjectURL(file)}/>
-                                <Text size="sm">{file.name}</Text>
-                                <CloseButton aria-label="Remove image" onClick={() => removeImage(index)} />
-                            </Group>
-                        ))}
-                    </Stack>
+                    <ImageUploadInput
+                        removeImage={removeImage}
+                        inputProps={form.getInputProps('images')}
+                    />
 
                     <Group position="right" mt="md">
                         <Button type="submit">Submit</Button>

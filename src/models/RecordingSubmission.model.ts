@@ -7,6 +7,7 @@ export default interface SoundClipSubmission {
     email: string;
     description?: string;
     date?: Date;
+    images?: File[];
 }
 
 export interface SubmissionResponse {
