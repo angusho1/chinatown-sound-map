@@ -10,6 +10,10 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     formData.append('description', submission.description ? submission.description : '');
     formData.append('date', submission.date ? submission.date.toUTCString() : '');
 
+    if (submission.images) {
+        submission.images.forEach(image => formData.append('image', image));
+    }
+
     const res = await fetch('/submissions', {
         method: 'POST',
         body: formData

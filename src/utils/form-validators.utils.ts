@@ -4,6 +4,7 @@ export const MAX_TITLE_LEN = 100;
 export const MAX_RECORDING_UPLOAD_SIZE = 5 * (10 ** 6);
 export const MAX_IMAGE_UPLOAD_SIZE = 3 * (10 ** 6);
 export const DEFAULT_SUBMISSION_LOCATION = { lat: 49.279470, lng: -123.099721 };
+export const MAX_IMAGE_UPLOAD_COUNT = 3;
 
 export const submissionTitleValidator = (value: string): string | null => {
     if (!value) return 'Please give your recording a title';
@@ -30,6 +31,7 @@ export const submissionLocationValidator = (value: RecordingLocation): string | 
 }
 
 export const submissionImagesValidator = (value: File[]): string | null => {
+    if (value.length > MAX_IMAGE_UPLOAD_COUNT) return `You may only select up to ${MAX_IMAGE_UPLOAD_COUNT} images`;
     if (value.length > 0) {
         for (let image of value) {
             if (image.size > MAX_IMAGE_UPLOAD_SIZE) return 'Image sizes cannot exceed 3MB';
