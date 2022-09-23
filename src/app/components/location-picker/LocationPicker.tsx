@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
 import { Modal } from '@mantine/core';
 import { RecordingLocation } from 'models/RecordingLocation.model';
+import { GOOGLE_MAPS_STYLES } from '../map/mapStyles';
 
 interface LocationPickerProps {
     opened: boolean;
@@ -41,6 +42,8 @@ export default function LocationPicker({ location, opened, onClose }: LocationPi
         mapRef.current = new google.maps.Map(document.getElementById(mapElementId) as HTMLElement, {
           center: loc, 
           zoom: 17,
+          gestureHandling: 'greedy',
+          styles: GOOGLE_MAPS_STYLES
         });
 
         isMapLoaded.current = true;

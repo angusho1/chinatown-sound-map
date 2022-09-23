@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, selectSoundClips } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
 import MarkerClusterer from '@googlemaps/markerclustererplus';
+import { GOOGLE_MAPS_STYLES } from './mapStyles';
 
 export default function Map() {
     const dispatch = useAppDispatch();
@@ -26,6 +27,8 @@ export default function Map() {
             const map: google.maps.Map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
               center: { lat: 49.279470, lng: -123.099721 }, 
               zoom: 17,
+              gestureHandling: 'greedy',
+              styles: GOOGLE_MAPS_STYLES
             });
 
             const infoWindow = new google.maps.InfoWindow();
@@ -62,7 +65,6 @@ export default function Map() {
                     gridSize: 30,
                     averageCenter: true,
                     maxZoom: 18
-                    // zoomOnClick: false
                 });
         });
     });
