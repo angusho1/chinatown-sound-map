@@ -4,7 +4,7 @@ import './Map.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, selectSoundClips } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
-import MarkerClusterer from '@googlemaps/markerclustererplus';
+import { GridAlgorithm, MarkerClusterer } from '@googlemaps/markerclusterer';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 
 export default function Map() {
@@ -57,15 +57,14 @@ export default function Map() {
                     return marker;
                 });
 
-            const path = '/images';
-
-            new MarkerClusterer(map, markers, 
-                { 
-                    imagePath: `${path}/m`, 
-                    gridSize: 30,
-                    averageCenter: true,
-                    maxZoom: 18
-                });
+            new MarkerClusterer({
+                algorithm: new GridAlgorithm({
+                    gridSize: 40,
+                    maxZoom: 17,
+                }),
+                map,
+                markers
+            });
         });
     });
 

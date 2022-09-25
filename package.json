@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.3",
-    "@googlemaps/markerclustererplus": "^1.2.10",
+    "@googlemaps/markerclusterer": "^2.0.11",
     "@mantine/core": "^5.3.0",
     "@mantine/dates": "^5.3.0",
     "@mantine/form": "^5.3.0",
