@@ -1,6 +1,6 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 
-export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse[]> {
+export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
 
     formData.append('title', submission.title);

@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import type { AppStore, RootState } from '../app/store';
 // As a basic setup, import your same slice reducers
 import soundClipReducer from '../features/sound-clips/soundClipSlice';
+import submissionReducer from '../features/submissions/submissionsSlice';
 import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -25,7 +26,13 @@ export const renderWithProviders = (ui: React.ReactElement,
     {
       preloadedState = {},
       // Automatically create a store instance if no store was passed in
-      store = configureStore({ reducer: { soundClips: soundClipReducer }, preloadedState }),
+      store = configureStore({
+        reducer: {
+          soundClips: soundClipReducer,
+          submissions: submissionReducer
+        }, 
+        preloadedState 
+      }),
       route = '/',
       history = createMemoryHistory({initialEntries: [route]}),
       ...renderOptions
@@ -54,7 +61,13 @@ export const customRender = (ui: React.ReactElement,
       preloadedState = {},
       // Automatically create a store instance if no store was passed in
       route = '/',
-      store = configureStore({ reducer: { soundClips: soundClipReducer }, preloadedState }),
+      store = configureStore({
+        reducer: {
+          soundClips: soundClipReducer,
+          submissions: submissionReducer
+        }, 
+        preloadedState 
+      }),
       ...renderOptions
     }: ExtendedRenderOptions = {}
   ) => {

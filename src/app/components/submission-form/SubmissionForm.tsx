@@ -1,7 +1,8 @@
 import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { submitRecording } from 'features/submissions/submissionsAPI';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { createSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
@@ -11,11 +12,11 @@ import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
 
 type SubmissionFormValues = Partial<SoundClipSubmission>;
-type SubmissionState = 'idle' | 'pending' | 'success' | 'rejected';
 
 export default function SubmissionForm() {
+    const dispatch = useAppDispatch();
     const [locationModalOpened, setLocationModalOpened] = useState(false);
-    const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
+    const submissionStatus = useAppSelector(selectSubmissionStatus);
     const defaultLocation = DEFAULT_SUBMISSION_LOCATION;
 
     const form = useForm({
@@ -40,18 +41,8 @@ export default function SubmissionForm() {
     });
 
     const submitForm = (values: SubmissionFormValues) => {
-        console.log(values);
         const submission = values as SoundClipSubmission;
-        try {
-            submitRecording(submission)
-                .then(res => new Promise(res => setTimeout(() => res(1), 2000)))
-                .then(() => setSubmissionState('success'))
-                .catch(e => new Promise(res => setTimeout(() => res(1), 2000)))
-                .then(e => setSubmissionState('rejected'))
-            setSubmissionState('pending');
-        } catch (e) {
-            console.error(e);
-        }
+        dispatch(createSubmission(submission));
     }
 
     const closeLocationModal = (location: RecordingLocation) => {
@@ -81,7 +72,7 @@ export default function SubmissionForm() {
         <Container size="sm" style={{ marginLeft: 0, position: 'relative' }}>
             <Paper radius="lg" p="lg" withBorder>
                 <form onSubmit={form.onSubmit(submitForm)}>
-                    <LoadingOverlay visible={submissionState === 'pending'} overlayBlur={2} zIndex={1} />
+                    <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
                     <FileInput 
                         label="Upload Recording" 
                         placeholder="Click to Upload" 
