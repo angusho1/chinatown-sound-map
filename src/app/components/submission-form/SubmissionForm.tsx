@@ -1,8 +1,8 @@
-import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Textarea, TextInput } from '@mantine/core';
+import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Stack, Text, Textarea, TextInput, Title } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { createSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
+import { createSubmission, resetSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import { useState } from 'react';
@@ -68,79 +68,120 @@ export default function SubmissionForm() {
         form.setFieldValue('images', imgs);
     };
 
+    const resetForm = () => {
+        form.reset();
+        dispatch(resetSubmission());
+    };
+
+    const returnToForm = () => {
+        dispatch(resetSubmission());
+    };
+
+    const renderForm = () => (
+        <form onSubmit={form.onSubmit(submitForm)}>
+            <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
+            <FileInput 
+                label="Upload Recording" 
+                placeholder="Click to Upload" 
+                accept="audio/mp4,audio/mpeg,audio/x-wav" 
+                withAsterisk
+                {...form.getInputProps('recording')}
+            />
+            <Space h="md" />
+            <TextInput
+                label="Title"
+                placeholder="My Chinatown Recording"
+                withAsterisk
+                {...form.getInputProps('title')}
+            />
+            <Space h="md" />
+            <Input.Wrapper
+                label="Location"
+                withAsterisk
+                description="Tell us where you recorded this clip."
+                error={form.getInputProps('location').error}
+            >
+                <Input 
+                    id="location-input" 
+                    type="button"
+                    pointer
+                    {...form.getInputProps('location')}
+                    invalid={!!form.getInputProps('location').error}
+                    onClick={() => setLocationModalOpened(true)}
+                    className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
+                    value={getLocationText(form.values.location)}
+                >
+                </Input>
+            </Input.Wrapper>
+            <Space h="md" />
+            <TextInput
+                label="Email"
+                placeholder="your@email.com"
+                {...form.getInputProps('email')}
+            />
+            <Space h="md" />
+            <Textarea
+                placeholder="Please tell us more about your recording"
+                label="Description"
+                autosize
+                minRows={2}
+                maxRows={10}
+                {...form.getInputProps('description')}
+            />
+
+            <Space h="md" />
+            <DatePicker
+                label="Date Recorded"
+                placeholder="Pick date"
+                firstDayOfWeek="sunday"
+                maxDate={new Date()}
+                {...form.getInputProps('date')}
+            />
+
+            <Space h="md" />
+            <ImageUploadInput
+                removeImage={removeImage}
+                inputProps={form.getInputProps('images')}
+            />
+
+            <Group position="right" mt="md">
+                <Button type="submit">Submit</Button>
+            </Group>
+        </form>
+    );
+
+    const renderSubmissionResult = () => (
+        <>
+            {submissionStatus === 'succeeded' && (
+                <Stack>
+                    <Title align="center" order={3}>Submission was successful</Title>
+                    <Text size="md">Thanks for your submission! We will get in touch with you if it is approved.</Text>
+                    <Button onClick={resetForm} className="submission-result-btn" variant="outline">
+                        Submit Another Recording
+                    </Button>
+                </Stack>
+            )}
+            {submissionStatus === 'failed' && (
+                <Stack>
+                    <Title align="center" order={3}>There was an error with your submission.</Title>
+                    <Text size="md">There was an error with your submission. Please try again.</Text>
+                    <Button onClick={returnToForm} className="submission-result-btn" variant="outline">
+                        Go back
+                    </Button>
+                </Stack>
+            )}
+        </>
+    );
+
     return (
         <Container size="sm" style={{ marginLeft: 0, position: 'relative' }}>
             <Paper radius="lg" p="lg" withBorder>
-                <form onSubmit={form.onSubmit(submitForm)}>
-                    <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
-                    <FileInput 
-                        label="Upload Recording" 
-                        placeholder="Click to Upload" 
-                        accept="audio/mp4,audio/mpeg,audio/x-wav" 
-                        withAsterisk
-                        {...form.getInputProps('recording')}
-                    />
-                    <Space h="md" />
-                    <TextInput
-                        label="Title"
-                        placeholder="My Chinatown Recording"
-                        withAsterisk
-                        {...form.getInputProps('title')}
-                    />
-                    <Space h="md" />
-                    <Input.Wrapper
-                        label="Location"
-                        withAsterisk
-                        description="Tell us where you recorded this clip."
-                        error={form.getInputProps('location').error}
-                    >
-                        <Input 
-                            id="location-input" 
-                            type="button"
-                            pointer
-                            {...form.getInputProps('location')}
-                            invalid={!!form.getInputProps('location').error}
-                            onClick={() => setLocationModalOpened(true)}
-                            className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
-                            value={getLocationText(form.values.location)}
-                        >
-                        </Input>
-                    </Input.Wrapper>
-                    <Space h="md" />
-                    <TextInput
-                        label="Email"
-                        placeholder="your@email.com"
-                        {...form.getInputProps('email')}
-                    />
-                    <Space h="md" />
-                    <Textarea
-                        placeholder="Please tell us more about your recording"
-                        label="Description"
-                        autosize
-                        minRows={2}
-                        maxRows={10}
-                        {...form.getInputProps('description')}
-                    />
-
-                    <Space h="md" />
-                    <DatePicker
-                        label="Date Recorded"
-                        placeholder="Pick date"
-                        firstDayOfWeek="sunday"
-                        maxDate={new Date()}
-                        {...form.getInputProps('date')}
-                    />
-
-                    <Space h="md" />
-                    <ImageUploadInput
-                        removeImage={removeImage}
-                        inputProps={form.getInputProps('images')}
-                    />
-
-                    <Group position="right" mt="md">
-                        <Button type="submit">Submit</Button>
-                    </Group>
-                </form>
+                {
+                    ((submissionStatus === 'idle' || submissionStatus === 'pending')
+                    && renderForm()) ||
+                    ((submissionStatus === 'succeeded' || submissionStatus === 'failed')
+                    && renderSubmissionResult())
+                }
             </Paper>
 
             <LocationPicker location={defaultLocation} opened={locationModalOpened} onClose={closeLocationModal} />

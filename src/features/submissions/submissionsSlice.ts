@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
+import { NetworkRequestStatus } from "types/state/state.types";
 import { submitRecording } from "./submissionsAPI";
 
-export type SubmissionStatus = 'idle' | 'pending' | 'succeeded' | 'failed';
-
 export interface SubmissionState {
-    status: SubmissionStatus
+    status: NetworkRequestStatus;
 }
 
 const initialState: SubmissionState = {
@@ -23,6 +22,9 @@ export const submissionSlice = createSlice({
     name: 'submissions',
     initialState,
     reducers: {
+        resetSubmission: (state) => {
+            state.status = 'idle'
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -39,5 +41,7 @@ export const submissionSlice = createSlice({
 });
 
 export const selectSubmissionStatus = (state: RootState) => state.submissions.status;
+
+export const { resetSubmission } = submissionSlice.actions;
 
 export default submissionSlice.reducer;

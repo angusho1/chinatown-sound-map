@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 import SoundClip from 'models/SoundClip.model';
+import { NetworkRequestStatus } from 'types/state/state.types';
 import { getSoundClips } from './soundClipAPI';
 
 export interface SoundClipState {
     soundClips: SoundClip[];
-    status: 'idle' | 'loading' | 'failed';
+    status: NetworkRequestStatus;
 }
 
 const initialState: SoundClipState = {
@@ -28,7 +29,7 @@ export const soundClipSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchSoundClips.pending, (state) => {
-                state.status = 'loading';
+                state.status = 'pending';
             })
             .addCase(fetchSoundClips.fulfilled, (state, action) => {
                 state.status = 'idle';

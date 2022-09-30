@@ -1,3 +1,7 @@
 .grey-input input {
     color: var(--mantine-color-gray-5) !important;
 }
+
+.submission-result-btn {
+    margin: auto;
+}

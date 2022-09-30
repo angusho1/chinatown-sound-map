@@ -1,0 +1,1 @@
+export type NetworkRequestStatus = 'idle' | 'pending' | 'succeeded' | 'failed';
