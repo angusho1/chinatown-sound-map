@@ -8,3 +8,9 @@ export function getSoundClips(): Promise<SoundClip[]> {
 export function getSoundRecordings(): Promise<SoundRecording[]> {
     return fetch('/sound-recordings').then(res => res.json());
 }
+
+export async function getSoundRecordingFile(id: string): Promise<Blob> {
+    const res = await fetch(`sound-recording/${id}/download`);
+    const buffer = await res.arrayBuffer();
+    return new Blob([buffer]);
+}

@@ -7,6 +7,7 @@ import SoundClip from 'models/SoundClip.model';
 import { GridAlgorithm, MarkerClusterer } from '@googlemaps/markerclusterer';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
+import { getSoundRecordingFile } from 'features/sound-clips/soundClipAPI';
 
 export default function Map() {
     const dispatch = useAppDispatch();
@@ -64,9 +65,13 @@ export default function Map() {
             opacity: 0.5
         });
 
-        marker.addListener('click', () => {
+        marker.addListener('click', async () => {
+            const fileBlob = await getSoundRecordingFile(soundRecording.id);
+            const src = URL.createObjectURL(fileBlob);
+
             infoWindow.setContent(
                 `<h5>${soundRecording.title}</h5>
+                <audio controls src="${src}"></audio>
                 <div>Author: ${soundRecording.author}</div>
                 <div>Date: ${soundRecording.dateRecorded ? soundRecording.dateRecorded : 'unknown'}</div>`
             );
