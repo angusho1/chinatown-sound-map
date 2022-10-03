@@ -1,5 +1,6 @@
-import { RecordingLocation } from "./RecordingLocation.model"
+import { RecordingLocation } from "./RecordingLocation.model";
 
+// Legacy
 export default interface SoundClip {
     title: string;
     author: string;
