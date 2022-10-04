@@ -1,7 +1,9 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 import SoundClip from 'models/SoundClip.model';
 import SoundRecording from 'models/SoundRecording.model';
+import { SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
+import { SoundRecordingFileMap } from 'types/state/sound-recording-state.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
 import { getSoundClips, getSoundRecordings } from './soundClipAPI';
 
@@ -9,12 +11,14 @@ export interface SoundClipState {
     soundClips: SoundClip[];
     soundRecordings: SoundRecording[];
     status: NetworkRequestStatus;
+    soundRecordingFiles: SoundRecordingFileMap;
 }
 
 const initialState: SoundClipState = {
     soundClips: [],
     soundRecordings: [],
-    status: 'idle'
+    status: 'idle',
+    soundRecordingFiles: {}
 }
 
 export const fetchSoundRecordings = createAsyncThunk('soundClips/fetchSoundRecordings',
@@ -35,6 +39,9 @@ export const soundClipSlice = createSlice({
     name: 'soundClips',
     initialState,
     reducers: {
+        setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
+            state.soundRecordingFiles[action.payload.recordingId] = action.payload.fileSrc;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -53,5 +60,8 @@ export const soundClipSlice = createSlice({
 
 export const selectSoundClips = (state: RootState) => state.soundClips.soundClips;
 export const selectSoundRecordings = (state: RootState) => state.soundClips.soundRecordings;
+export const selectSoundRecordingFiles = (state: RootState) => state.soundClips.soundRecordingFiles;
+
+export const { setSoundRecordingFile } = soundClipSlice.actions;
 
 export default soundClipSlice.reducer;
