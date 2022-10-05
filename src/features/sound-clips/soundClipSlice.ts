@@ -60,7 +60,7 @@ export const soundClipSlice = createSlice({
 
 export const selectSoundClips = (state: RootState) => state.soundClips.soundClips;
 export const selectSoundRecordings = (state: RootState) => state.soundClips.soundRecordings;
-export const selectSoundRecordingFiles = (state: RootState) => state.soundClips.soundRecordingFiles;
+export const selectSoundRecordingFileById = (state: RootState, recordingId: string) => state.soundClips.soundRecordingFiles[recordingId];
 
 export const { setSoundRecordingFile } = soundClipSlice.actions;
 

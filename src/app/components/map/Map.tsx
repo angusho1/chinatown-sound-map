@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
 import './Map.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { fetchSoundClips, fetchSoundRecordings, selectSoundClips, selectSoundRecordingFiles, selectSoundRecordings, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
+import { fetchSoundClips, fetchSoundRecordings, selectSoundClips, selectSoundRecordings } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
 import { GridAlgorithm, MarkerClusterer } from '@googlemaps/markerclusterer';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
-import { getSoundRecordingFile } from 'features/sound-clips/soundClipAPI';
+import * as ReactDOMServer from 'react-dom/server';
+import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
 
 export default function Map() {
     const dispatch = useAppDispatch();
@@ -15,7 +16,6 @@ export default function Map() {
     const [loadedSoundRecordings, setLoadedSoundRecordings] = useState(false);
     const soundClips = useAppSelector(selectSoundClips);
     const soundRecordings = useAppSelector(selectSoundRecordings);
-    const recordingFiles = useAppSelector(selectSoundRecordingFiles);
 
     if (!loadedSoundClips) {
         dispatch(fetchSoundClips());
@@ -67,23 +67,12 @@ export default function Map() {
         });
 
         marker.addListener('click', async () => {
-            let recordingFileSrc: string;
-            if (!recordingFiles[soundRecording.id]) {
-                const fileBlob = await getSoundRecordingFile(soundRecording.id);
-                recordingFileSrc = URL.createObjectURL(fileBlob);
-                dispatch(setSoundRecordingFile({
-                    recordingId: soundRecording.id,
-                    fileSrc: recordingFileSrc
-                }));
-            } else {
-                recordingFileSrc = recordingFiles[soundRecording.id];
-            }
 
+            const content = ReactDOMServer.renderToString(
+                <SoundRecordingPopover soundRecording={soundRecording} />
+            )
             infoWindow.setContent(
-                `<h5>${soundRecording.title}</h5>
-                <audio controls src="${recordingFileSrc}"></audio>
-                <div>Author: ${soundRecording.author}</div>
-                <div>Date: ${soundRecording.dateRecorded ? soundRecording.dateRecorded : 'unknown'}</div>`
+                content
             );
     
             infoWindow.open({
