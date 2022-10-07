@@ -1,6 +1,10 @@
 import React from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { Loader } from '@mantine/core';
+import { Center, Container, Loader, Stack, Text, Title } from '@mantine/core';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
 
 export type SoundRecordingPopoverProps = {
     soundRecording: SoundRecording;
@@ -9,16 +13,30 @@ export type SoundRecordingPopoverProps = {
 
 export default function SoundRecordingPopover(props: SoundRecordingPopoverProps) {
     const { soundRecording, recordingFile } = props;
+    const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
     return (
-        <div>
-            <h5>{soundRecording.title}</h5>
-            {recordingFile && (
-                <audio controls src={recordingFile}></audio>
-            )}
-            {!recordingFile && <Loader />}
-            <div>Author: {soundRecording.author}</div>
-            <div>Date: {soundRecording.dateRecorded ? soundRecording.dateRecorded : 'unknown'}</div>
-        </div>
+        <Container size={300} px="xs">
+            <Stack>
+                <Stack spacing={2}>
+                    <Title order={4}>{soundRecording.title}</Title>
+                    <Text size="sm">Recorded by {soundRecording.author}</Text>
+                    <Text size="sm">Date: {dateStr}</Text>
+                </Stack>
+                {recordingFile && (
+                    <audio controls src={recordingFile}></audio>
+                )}
+                {!recordingFile && (
+                    <Center>
+                        <Loader color={'pink'} />
+                    </Center>
+                )}
+                <Stack spacing={2}>
+                    <p>
+                        {soundRecording.description}
+                    </p>
+                </Stack>
+            </Stack>
+        </Container>
     )
 }

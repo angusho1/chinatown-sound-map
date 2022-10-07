@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectCurrentSoundRecording, selectSoundRecordingFileById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
+import { selectCurrentSoundRecording, selectSoundRecordingFileById, setSelectedSoundRecording, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
 import { getSoundRecordingFile } from 'features/sound-clips/soundClipAPI';
 import SoundRecordingPopover from './SoundRecordingPopover';
 import * as ReactDOMServer from 'react-dom/server';
@@ -58,6 +58,11 @@ export default function SoundRecordingPopoverLoader(props: SoundRecordingPopover
                 infoWindow.open({
                     anchor: marker,
                     map
+                });
+
+                infoWindow.addListener('closeclick', () => {
+                    dispatch(setSelectedSoundRecording(null));
+                    google.maps.event.clearInstanceListeners(infoWindow);
                 });
             }
         }

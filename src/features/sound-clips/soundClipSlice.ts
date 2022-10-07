@@ -13,7 +13,7 @@ export interface SoundClipState {
     soundClipStatus: NetworkRequestStatus;
     soundRecordingFiles: SoundRecordingFileMap;
     soundRecordingStatus: NetworkRequestStatus;
-    selectedSoundRecording?: SoundRecording;
+    selectedSoundRecording: SoundRecording | null;
 }
 
 const initialState: SoundClipState = {
@@ -21,7 +21,8 @@ const initialState: SoundClipState = {
     soundRecordings: [],
     soundRecordingStatus: 'idle',
     soundClipStatus: 'idle',
-    soundRecordingFiles: {}
+    soundRecordingFiles: {},
+    selectedSoundRecording: null
 }
 
 export const fetchSoundRecordings = createAsyncThunk('soundClips/fetchSoundRecordings',
@@ -45,7 +46,7 @@ export const soundClipSlice = createSlice({
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
             state.soundRecordingFiles[action.payload.recordingId] = action.payload.fileSrc;
         },
-        setSelectedSoundRecording(state, action: PayloadAction<SoundRecording>) {
+        setSelectedSoundRecording(state, action: PayloadAction<SoundRecording | null>) {
             state.selectedSoundRecording = action.payload;
         }
     },
