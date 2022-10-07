@@ -1,33 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectSoundRecordingFileById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
-import { getSoundRecordingFile } from 'features/sound-clips/soundClipAPI';
+import { Loader } from '@mantine/core';
 
 export type SoundRecordingPopoverProps = {
     soundRecording: SoundRecording;
+    recordingFile: string | null;
 }
 
 export default function SoundRecordingPopover(props: SoundRecordingPopoverProps) {
-    const { soundRecording } = props;
-    const dispatch = useAppDispatch();
-    const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
-
-    console.log(recordingFile);
-
-    useEffect(() => {
-        if (!recordingFile) {
-            getSoundRecordingFile(soundRecording.id)
-                .then(fileBlob => {
-                    const recordingFileSrc = URL.createObjectURL(fileBlob);
-                    console.log(recordingFileSrc);
-                    dispatch(setSoundRecordingFile({
-                        recordingId: soundRecording.id,
-                        fileSrc: recordingFileSrc
-                    }));
-                });
-        }
-    });
+    const { soundRecording, recordingFile } = props;
 
     return (
         <div>
@@ -35,6 +16,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
             {recordingFile && (
                 <audio controls src={recordingFile}></audio>
             )}
+            {!recordingFile && <Loader />}
             <div>Author: {soundRecording.author}</div>
             <div>Date: {soundRecording.dateRecorded ? soundRecording.dateRecorded : 'unknown'}</div>
         </div>

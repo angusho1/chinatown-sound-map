@@ -10,14 +10,17 @@ import { getSoundClips, getSoundRecordings } from './soundClipAPI';
 export interface SoundClipState {
     soundClips: SoundClip[];
     soundRecordings: SoundRecording[];
-    status: NetworkRequestStatus;
+    soundClipStatus: NetworkRequestStatus;
     soundRecordingFiles: SoundRecordingFileMap;
+    soundRecordingStatus: NetworkRequestStatus;
+    selectedSoundRecording?: SoundRecording;
 }
 
 const initialState: SoundClipState = {
     soundClips: [],
     soundRecordings: [],
-    status: 'idle',
+    soundRecordingStatus: 'idle',
+    soundClipStatus: 'idle',
     soundRecordingFiles: {}
 }
 
@@ -41,27 +44,38 @@ export const soundClipSlice = createSlice({
     reducers: {
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
             state.soundRecordingFiles[action.payload.recordingId] = action.payload.fileSrc;
+        },
+        setSelectedSoundRecording(state, action: PayloadAction<SoundRecording>) {
+            state.selectedSoundRecording = action.payload;
         }
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchSoundClips.pending, (state) => {
-                state.status = 'pending';
+                state.soundClipStatus = 'pending';
             })
             .addCase(fetchSoundClips.fulfilled, (state, action) => {
-                state.status = 'succeeded';
+                state.soundClipStatus = 'succeeded';
                 state.soundClips = action.payload;
             })
+            .addCase(fetchSoundRecordings.pending, (state) => {
+                state.soundRecordingStatus = 'pending';
+            })
             .addCase(fetchSoundRecordings.fulfilled, (state, action) => {
+                state.soundRecordingStatus = 'succeeded';
                 state.soundRecordings = action.payload;
             });
     }
 });
 
 export const selectSoundClips = (state: RootState) => state.soundClips.soundClips;
+export const selectSoundClipStatus = (state: RootState) => state.soundClips.soundClipStatus;
 export const selectSoundRecordings = (state: RootState) => state.soundClips.soundRecordings;
-export const selectSoundRecordingFileById = (state: RootState, recordingId: string) => state.soundClips.soundRecordingFiles[recordingId];
+export const selectSoundRecordingStatus = (state: RootState) => state.soundClips.soundRecordingStatus;
+export const selectSoundRecordingFiles = (state: RootState) => state.soundClips.soundRecordingFiles;
+export const selectSoundRecordingFileById = (state: RootState, recordingId: string | undefined) => recordingId ? state.soundClips.soundRecordingFiles[recordingId] : null;
+export const selectCurrentSoundRecording = (state: RootState) => state.soundClips.selectedSoundRecording;
 
-export const { setSoundRecordingFile } = soundClipSlice.actions;
+export const { setSoundRecordingFile, setSelectedSoundRecording } = soundClipSlice.actions;
 
 export default soundClipSlice.reducer;
