@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
-import './Map.css';
+import './SoundRecordingMap.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, fetchSoundRecordings, selectSoundClips, selectSoundRecordings } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
@@ -10,7 +10,7 @@ import SoundRecording from 'models/SoundRecording.model';
 import * as ReactDOMServer from 'react-dom/server';
 import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
 
-export default function Map() {
+export default function SoundRecordingMap() {
     const dispatch = useAppDispatch();
     const [loadedSoundClips, setLoadedSoundClips] = useState(false);
     const [loadedSoundRecordings, setLoadedSoundRecordings] = useState(false);

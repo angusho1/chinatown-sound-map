@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Map from '../../components/map/Map';
+import SoundRecordingMap from '../../components/sound-recording-map/SoundRecordingMap';
 
 export default function HomePage() {
   useEffect(() => {
@@ -7,6 +7,6 @@ export default function HomePage() {
   });
 
   return (
-    <Map />
+    <SoundRecordingMap />
   )
 }

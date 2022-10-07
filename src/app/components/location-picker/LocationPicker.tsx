@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Loader } from "@googlemaps/js-api-loader";
 import { Modal } from '@mantine/core';
 import { RecordingLocation } from 'models/RecordingLocation.model';
-import { GOOGLE_MAPS_STYLES } from '../map/mapStyles';
+import { GOOGLE_MAPS_STYLES } from '../sound-recording-map/mapStyles';
 
 interface LocationPickerProps {
     opened: boolean;
