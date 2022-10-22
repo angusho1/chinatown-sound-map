@@ -14,7 +14,7 @@ export default function ContactPage() {
       <Text>Have a suggestion or interested in getting in touch? Please fill out the following form!</Text>
       <Space h="xl" />
       <Grid>
-        <Grid.Col span={8}>
+        <Grid.Col span={12} md={8}>
           <ContactForm />
         </Grid.Col>
       </Grid>

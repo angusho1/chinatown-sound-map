@@ -11,20 +11,26 @@ export default function ContributePage() {
     <Container py="xl" className="page-body">
       <Title order={1}>Contribute</Title>
       <Space h="lg" />
-      <Grid>
-        <Grid.Col span={5}>
-          <Text size="md">
-            Contributions to the Chinatown Sound Map are welcomed and will be accepted on a rolling basis. To upload a field recording, please fill out the following form.
-          </Text>
-          <Space h="lg" />
-          <Text size="lg" color="red">Submission Guidelines</Text>
-          <Space h="sm" />
-          <List spacing="md">
-            <List.Item>Recordings can be of any kind, quality and duration so long as they were recorded in Chinatown. This website is open to submissions from Chinatowns around the world.</List.Item>
-            <List.Item>Take pictures or notes to identify when/where your submission was recorded. Pictures can be uploaded on SoundCloud along with your audio clip to help illustrate your recordings.</List.Item>
-          </List>
+      <Grid gutter={20}>
+        <Grid.Col span={12} md={5}>
+          <Container>
+            <Text size="md">
+              Contributions to the Chinatown Sound Map are welcomed and will be accepted on a rolling basis. To upload a field recording, please fill out the following form.
+            </Text>
+            <Space h="lg" />
+            <Text size="lg" color="red">Submission Guidelines</Text>
+            <Space h="sm" />
+            <List spacing="md">
+              <List.Item>
+                Recordings can be of any kind, quality and duration so long as they were recorded in Chinatown. This website is open to submissions from Chinatowns around the world.
+              </List.Item>
+              <List.Item>
+                Take pictures or notes to identify when/where your submission was recorded. A maximum of 3 images can be uploaded along with your audio clip to help illustrate your recordings.
+              </List.Item>
+            </List>
+          </Container>
         </Grid.Col>
-        <Grid.Col span={7}>
+        <Grid.Col span={12} md={7}>
           <SubmissionForm />
         </Grid.Col>
       </Grid>
