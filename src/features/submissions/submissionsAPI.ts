@@ -1,7 +1,9 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
+import SoundRecordingCategory from "models/SoundRecordingCategory.model";
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
+    const { existingCategoryIds, newCategories } = splitCategoryTypes(submission.categories);
 
     formData.append('title', submission.title);
     formData.append('recording', submission.recording);
@@ -9,6 +11,8 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     formData.append('email', submission.email);
     formData.append('description', submission.description ? submission.description : '');
     formData.append('date', submission.date ? submission.date.toUTCString() : '');
+    formData.append('existingCategories', JSON.stringify(existingCategoryIds));
+    formData.append('newCategories', JSON.stringify(newCategories));
 
     if (submission.images) {
         submission.images.forEach(image => formData.append('image', image));
@@ -24,4 +28,18 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     } else {
         throw new Error('Request failed');
     }
+}
+
+function splitCategoryTypes(categories: SoundRecordingCategory[]) {
+    const existingCategoryIds: string[] = [];
+    const newCategories: string[] = []; 
+
+    if (categories) {
+        categories.forEach(category => {
+            if (category.id === '') newCategories.push(category.name);
+            else existingCategoryIds.push(category.id);
+        });
+    }
+
+    return { existingCategoryIds, newCategories };
 }

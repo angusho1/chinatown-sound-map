@@ -5,8 +5,10 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { createSubmission, resetSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
+import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
 import { useState } from 'react';
 import { DEFAULT_SUBMISSION_LOCATION, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import CategoryInput from '../category-input/CategoryInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
@@ -27,7 +29,8 @@ export default function SubmissionForm() {
             description: '',
             date: undefined,
             location: defaultLocation,
-            images: []
+            images: [],
+            categories: [] as SoundRecordingCategory[],
         },
     
         validate: {
@@ -67,6 +70,18 @@ export default function SubmissionForm() {
         imgs.splice(index, 1);
         form.setFieldValue('images', imgs);
     };
+
+    const addCategory = (category: SoundRecordingCategory) => {
+        const categories: SoundRecordingCategory[] = form.values.categories.slice();
+        categories.push(category);
+        form.setFieldValue('categories', categories);
+    }
+
+    const removeCategory = (index: number) => {
+        const categories = form.values.categories.slice();
+        categories.splice(index, 1);
+        form.setFieldValue('categories', categories);
+    }
 
     const resetForm = () => {
         form.reset();
@@ -128,7 +143,6 @@ export default function SubmissionForm() {
                 maxRows={10}
                 {...form.getInputProps('description')}
             />
-
             <Space h="md" />
             <DatePicker
                 label="Date Recorded"
@@ -137,11 +151,16 @@ export default function SubmissionForm() {
                 maxDate={new Date()}
                 {...form.getInputProps('date')}
             />
-
             <Space h="md" />
             <ImageUploadInput
                 removeImage={removeImage}
                 inputProps={form.getInputProps('images')}
+            />
+            <Space h="md" />
+            <CategoryInput
+                inputProps={form.getInputProps('categories')}
+                addCategory={addCategory}
+                removeCategory={removeCategory}
             />
 
             <Group position="right" mt="md">
