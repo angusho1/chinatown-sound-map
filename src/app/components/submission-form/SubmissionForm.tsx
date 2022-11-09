@@ -7,7 +7,7 @@ import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
 import { useState } from 'react';
-import { DEFAULT_SUBMISSION_LOCATION, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import { categoryValidator, DEFAULT_SUBMISSION_LOCATION, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
 import CategoryInput from '../category-input/CategoryInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
@@ -31,6 +31,7 @@ export default function SubmissionForm() {
             location: defaultLocation,
             images: [],
             categories: [] as SoundRecordingCategory[],
+            autoComplete: '',
         },
     
         validate: {
@@ -39,8 +40,9 @@ export default function SubmissionForm() {
             email: submissionEmailValidator,
             location: submissionLocationValidator,
             images: submissionImagesValidator,
+            autoComplete: categoryValidator,
         },
-        validateInputOnChange: ['recording', 'images']
+        validateInputOnChange: ['recording', 'images', 'autoComplete']
     });
 
     const submitForm = (values: SubmissionFormValues) => {
@@ -159,6 +161,7 @@ export default function SubmissionForm() {
             <Space h="md" />
             <CategoryInput
                 inputProps={form.getInputProps('categories')}
+                autoCompleteProps={form.getInputProps('autoComplete')}
                 addCategory={addCategory}
                 removeCategory={removeCategory}
             />

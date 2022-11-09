@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Autocomplete, AutocompleteItem, Chip, Space } from '@mantine/core';
+import { ActionIcon, Autocomplete, AutocompleteItem, Chip, Space } from '@mantine/core';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
+import { IconPlus } from '@tabler/icons';
 
 interface CategoryInputProps {
     inputProps: any;
+    autoCompleteProps: any;
     addCategory(category: SoundRecordingCategory): void;
     removeCategory(index: number): void;
 }
 
-export default function CategoryInput({ inputProps, addCategory, removeCategory }: CategoryInputProps) {
+export default function CategoryInput({ inputProps, autoCompleteProps, addCategory, removeCategory }: CategoryInputProps) {
     const [textInput, setTextInput] = useState('');
 
     const categories: SoundRecordingCategory[] = inputProps.value;
@@ -25,7 +27,13 @@ export default function CategoryInput({ inputProps, addCategory, removeCategory 
         }
     });
 
-    const onItemSubmit = (item: AutocompleteItem) => {
+    const onAddCategory = () => {
+        if (autoCompleteProps.error || !/\S/.test(autoCompleteProps.value)) return;
+        setTextInput('');
+        addCategory({ id: '', name: autoCompleteProps.value });
+    }
+
+    const onDropdownItemSelect = (item: AutocompleteItem) => {
         setTextInput('');
         addCategory({ id: item.id, name: item.name });
     };
@@ -37,9 +45,15 @@ export default function CategoryInput({ inputProps, addCategory, removeCategory 
                 description="Use commas to separate categories"
                 placeholder="Add Categories"
                 data={autoCompleteItems}
-                onItemSubmit={onItemSubmit}
+                onItemSubmit={onDropdownItemSelect}
                 value={textInput}
                 onChange={setTextInput}
+                rightSection={(
+                    <ActionIcon variant="subtle" onClick={onAddCategory}>
+                        <IconPlus size={16} />
+                    </ActionIcon>
+                )}
+                {...autoCompleteProps}
             />
 
             <Space h="sm" />

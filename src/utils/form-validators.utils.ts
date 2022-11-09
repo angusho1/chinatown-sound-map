@@ -41,3 +41,8 @@ export const submissionImagesValidator = (value: File[]): string | null => {
         return null;
     }
 }
+
+export const categoryValidator = (value: string): string | null => {
+    if (/^[\p{L}\p{N} -']*$/u.test(value)) return null;
+    return 'Category name contains invalid characters';
+}
