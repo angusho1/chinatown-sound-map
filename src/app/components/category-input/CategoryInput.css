@@ -1,0 +1,13 @@
+.mantine-Chip-label {
+    padding-left: 0 !important;
+    padding-right: 10px;
+    cursor: default !important;
+}
+
+.mantine-Chip-checkIcon {
+    display: none;
+}
+
+.mantine-Chip-iconWrapper {
+    display: inline;
+}

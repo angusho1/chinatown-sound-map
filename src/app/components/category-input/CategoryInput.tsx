@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ActionIcon, Autocomplete, AutocompleteItem, Chip, Space } from '@mantine/core';
+import { ActionIcon, Autocomplete, AutocompleteItem, Chip, Space, Flex } from '@mantine/core';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus, IconX } from '@tabler/icons';
+import './CategoryInput.css';
 
 interface CategoryInputProps {
     inputProps: any;
@@ -65,9 +66,14 @@ export default function CategoryInput({ inputProps, autoCompleteProps, addCatego
                             <Chip
                                 key={index}
                                 value={category.name}
-                                onClick={() => removeCategory(index)}
+                                variant="filled"
                             >
-                                {category.name}
+                                <Flex>
+                                    <ActionIcon variant="transparent" onClick={() => removeCategory(index)}>
+                                        <IconX size={12} />
+                                    </ActionIcon>
+                                    {category.name}
+                                </Flex>
                             </Chip>
                         )
                     }
