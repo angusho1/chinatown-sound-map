@@ -94,8 +94,18 @@ export default function SubmissionForm() {
         dispatch(resetSubmission());
     };
 
+    const onFormKeyEvent = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    }
+
+    const setAutoCompleteField = (value: string) => {
+        form.setFieldValue('autoComplete', value);
+    }
+
     const renderForm = () => (
-        <form onSubmit={form.onSubmit(submitForm)}>
+        <form onSubmit={form.onSubmit(submitForm)} onKeyDown={onFormKeyEvent}>
             <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
             <FileInput 
                 label="Upload Recording" 
@@ -164,6 +174,7 @@ export default function SubmissionForm() {
                 autoCompleteProps={form.getInputProps('autoComplete')}
                 addCategory={addCategory}
                 removeCategory={removeCategory}
+                setAutoCompleteField={setAutoCompleteField}
             />
 
             <Group position="right" mt="md">

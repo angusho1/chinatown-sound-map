@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ActionIcon, Autocomplete, AutocompleteItem, Chip, Space, Flex } from '@mantine/core';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
 import { IconPlus, IconX } from '@tabler/icons';
@@ -9,11 +8,10 @@ interface CategoryInputProps {
     autoCompleteProps: any;
     addCategory(category: SoundRecordingCategory): void;
     removeCategory(index: number): void;
+    setAutoCompleteField(value: string): void;
 }
 
-export default function CategoryInput({ inputProps, autoCompleteProps, addCategory, removeCategory }: CategoryInputProps) {
-    const [textInput, setTextInput] = useState('');
-
+export default function CategoryInput({ inputProps, autoCompleteProps, addCategory, removeCategory, setAutoCompleteField }: CategoryInputProps) {
     const categories: SoundRecordingCategory[] = inputProps.value;
     const existingCategories: SoundRecordingCategory[] = [
         { id: '', name: 'Chinatown' },
@@ -30,14 +28,20 @@ export default function CategoryInput({ inputProps, autoCompleteProps, addCatego
 
     const onAddCategory = () => {
         if (autoCompleteProps.error || !/\S/.test(autoCompleteProps.value)) return;
-        setTextInput('');
+        setAutoCompleteField('');
         addCategory({ id: '', name: autoCompleteProps.value });
     }
 
     const onDropdownItemSelect = (item: AutocompleteItem) => {
-        setTextInput('');
+        setAutoCompleteField('');
         addCategory({ id: item.id, name: item.name });
     };
+
+    const onFormKeyEvent = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === 'Enter') {
+            onAddCategory();
+        }
+    }
 
     return (
         <>
@@ -47,8 +51,7 @@ export default function CategoryInput({ inputProps, autoCompleteProps, addCatego
                 placeholder="Add Categories"
                 data={autoCompleteItems}
                 onItemSubmit={onDropdownItemSelect}
-                value={textInput}
-                onChange={setTextInput}
+                onKeyDown={onFormKeyEvent}
                 rightSection={(
                     <ActionIcon variant="subtle" onClick={onAddCategory}>
                         <IconPlus size={16} />
