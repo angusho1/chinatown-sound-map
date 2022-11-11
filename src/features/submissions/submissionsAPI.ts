@@ -30,6 +30,10 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     }
 }
 
+export function getSoundRecordingCategories(): Promise<SoundRecordingCategory[]> {
+    return fetch('/categories').then(res => res.json());
+}
+
 function splitCategoryTypes(categories: SoundRecordingCategory[]) {
     const existingCategoryIds: string[] = [];
     const newCategories: string[] = []; 

@@ -2,6 +2,8 @@ import { ActionIcon, Autocomplete, AutocompleteItem, Chip, Space, Flex } from '@
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
 import { IconPlus, IconX } from '@tabler/icons';
 import './CategoryInput.css';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { fetchCategories, selectCategories, selectGetCategoriesStatus } from 'features/submissions/submissionsSlice';
 
 interface CategoryInputProps {
     inputProps: any;
@@ -12,12 +14,13 @@ interface CategoryInputProps {
 }
 
 export default function CategoryInput({ inputProps, autoCompleteProps, addCategory, removeCategory, setAutoCompleteField }: CategoryInputProps) {
-    const categories: SoundRecordingCategory[] = inputProps.value;
-    const existingCategories: SoundRecordingCategory[] = [
-        { id: '', name: 'Chinatown' },
-        { id: '', name: 'Test' },
-    ];
+    const dispatch = useAppDispatch();
+    const categoriesStatus = useAppSelector(selectGetCategoriesStatus);
+    const existingCategories = useAppSelector(selectCategories);
 
+    if (categoriesStatus === 'idle') dispatch(fetchCategories());
+
+    const categories: SoundRecordingCategory[] = inputProps.value;
     const autoCompleteItems: AutocompleteItem[] = existingCategories.map(category => {
         return {
             value: category.name,
