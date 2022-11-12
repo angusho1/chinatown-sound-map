@@ -14,3 +14,9 @@ export async function getSoundRecordingFile(id: string): Promise<Blob> {
     const buffer = await res.arrayBuffer();
     return new Blob([buffer]);
 }
+
+export async function getSoundRecordingImageFile(filename: string): Promise<Blob> {
+    const res = await fetch(`/sound-recording/image/${filename}/download`);
+    const buffer = await res.arrayBuffer();
+    return new Blob([buffer]);
+}

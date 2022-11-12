@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectCurrentSoundRecording, selectSoundRecordingFileById, setSelectedSoundRecording, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
-import { getSoundRecordingFile } from 'features/sound-clips/soundClipAPI';
+import { selectCurrentSoundRecording, selectSoundRecordingFileById, selectSoundRecordingImageById, setSelectedSoundRecording, setSoundRecordingFile, cacheSoundRecordingImageFile } from 'features/sound-clips/soundClipSlice';
+import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
 import SoundRecordingPopover from './SoundRecordingPopover';
 import * as ReactDOMServer from 'react-dom/server';
 
@@ -21,13 +21,16 @@ export type SoundRecordingPopoverLoaderProps = {
 
 export default function SoundRecordingPopoverLoader(props: SoundRecordingPopoverLoaderProps) {
     const { map, mapFeatureMap } = props;
+    const [requestedRecording, setRequestedRecording] = useState<boolean>(false);
+    const [requestedImages, setRequestedImages] = useState<boolean>(false);
     const dispatch = useAppDispatch();
     const selectedRecording = useAppSelector(selectCurrentSoundRecording);
     const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, selectedRecording?.id));
+    const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, selectedRecording?.id));
 
     useEffect(() => {
         if (selectedRecording && map) {
-            if (!recordingFile) {
+            if (!recordingFile && !requestedRecording) {
                 getSoundRecordingFile(selectedRecording.id)
                     .then(fileBlob => {
                         const recordingFileSrc = URL.createObjectURL(fileBlob);
@@ -36,11 +39,28 @@ export default function SoundRecordingPopoverLoader(props: SoundRecordingPopover
                             fileSrc: recordingFileSrc
                         }));
                     });
+                setRequestedRecording(true);
             }
+
+            if (!imageFiles && !requestedImages) {
+                selectedRecording.imageFiles?.forEach(filename => {
+                    getSoundRecordingImageFile(filename)
+                        .then(fileBlob => {
+                            const recordingFileSrc = URL.createObjectURL(fileBlob);
+                            dispatch(cacheSoundRecordingImageFile({
+                                recordingId: selectedRecording.id,
+                                fileSrc: recordingFileSrc
+                            }));
+                        });
+                    setRequestedImages(true);
+                });
+            }
+
             const content = ReactDOMServer.renderToString(
                 <SoundRecordingPopover
                     soundRecording={selectedRecording}
                     recordingFile={recordingFile}
+                    imageFiles={imageFiles}
                 />
             );
 
@@ -62,11 +82,13 @@ export default function SoundRecordingPopoverLoader(props: SoundRecordingPopover
 
                 infoWindow.addListener('closeclick', () => {
                     dispatch(setSelectedSoundRecording(null));
+                    setRequestedRecording(false);
+                    setRequestedImages(false);
                     google.maps.event.clearInstanceListeners(infoWindow);
                 });
             }
         }
-    });
+    }, [selectedRecording, map, recordingFile, requestedRecording, imageFiles, requestedImages, mapFeatureMap, dispatch]);
 
     return <></>;
 }
