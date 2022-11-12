@@ -21,7 +21,9 @@ export default function CategoryInput({ inputProps, autoCompleteProps, addCatego
     if (categoriesStatus === 'idle') dispatch(fetchCategories());
 
     const categories: SoundRecordingCategory[] = inputProps.value;
-    const autoCompleteItems: AutocompleteItem[] = existingCategories.map(category => {
+    const autoCompleteItems: AutocompleteItem[] = existingCategories
+        .filter(category => !categories.find(c => c.id === category.id))
+        .map(category => {
         return {
             value: category.name,
             id: category.id,
