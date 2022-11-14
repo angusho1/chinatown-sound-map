@@ -1,4 +1,6 @@
-import { FileInput, FileInputProps, Group,  Stack, Text, Avatar, CloseButton, HoverCard, Image } from '@mantine/core';
+import { FileInput, FileInputProps, Group,  Stack, Text, Avatar, CloseButton } from '@mantine/core';
+import { useState } from 'react';
+import ImageCarouselModal from '../image-carousel/ImageCarouselModal';
 import './ImageUploadInput.css';
 
 interface ImageUploadInputProps {
@@ -6,7 +8,16 @@ interface ImageUploadInputProps {
     removeImage(index: number): void;
 }
 
+interface ImageModalState {
+    opened: boolean;
+    selectedIndex: number;
+}
+
 export default function ImageUploadInput({ inputProps, removeImage }: ImageUploadInputProps) {
+    const [imageModalState, setImageModalState] = useState<ImageModalState>({
+        opened: false,
+        selectedIndex: 0,
+    });
     const images = inputProps.value;
 
     const ValueComponent: FileInputProps['valueComponent'] = ({ value }) => {
@@ -38,14 +49,18 @@ export default function ImageUploadInput({ inputProps, removeImage }: ImageUploa
                     <Stack spacing={'sm'}>
                         {images.map((file: File, index: number) => (
                             <Group position="left" key={index}>
-                                <HoverCard>
-                                    <HoverCard.Target>
-                                        <Avatar size={'sm'} radius={'xs'} src={imgSrc(file)}/>
-                                    </HoverCard.Target>
-                                    <HoverCard.Dropdown>
-                                        <Image src={imgSrc(file)}></Image>
-                                    </HoverCard.Dropdown>
-                                </HoverCard>
+                                <Avatar
+                                    sx={{ cursor: 'pointer' }}
+                                    size={'sm'}
+                                    radius={'xs'}
+                                    src={imgSrc(file)}
+                                    onClick={() => {
+                                        setImageModalState({
+                                            opened: true,
+                                            selectedIndex: index,
+                                        });
+                                    }}
+                                />
                                 <Text size="sm">{file.name}</Text>
                                 <CloseButton aria-label="Remove image" onClick={() => removeImage(index)} />
                             </Group>
@@ -54,6 +69,17 @@ export default function ImageUploadInput({ inputProps, removeImage }: ImageUploa
                 </div>
             )}
 
+            {
+                <ImageCarouselModal
+                    opened={imageModalState.opened}
+                    selectedIndex={imageModalState.selectedIndex}
+                    images={images}
+                    onClose={() => setImageModalState({
+                        ...imageModalState,
+                        opened: false,
+                    })}
+                />
+            }
         </>
     )
 }
