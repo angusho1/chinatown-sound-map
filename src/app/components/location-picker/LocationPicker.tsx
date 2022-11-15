@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Loader } from "@googlemaps/js-api-loader";
+import React, { useState } from 'react';
+import { GoogleMap, Marker, useGoogleMap, useJsApiLoader } from '@react-google-maps/api'
 import { Modal } from '@mantine/core';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import { GOOGLE_MAPS_STYLES } from '../sound-recording-map/mapStyles';
@@ -11,89 +11,74 @@ interface LocationPickerProps {
 }
 
 export default function LocationPicker({ location, opened, onClose }: LocationPickerProps) {
-    const markerRef = useRef<google.maps.Marker>();
-    const mapRef = useRef<google.maps.Map>();
-    const isMapLoaded = useRef<boolean>(false);
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY as string,
+        version: 'weekly',
+    });
+
     const [pinLocation, setPinLocation] = useState<RecordingLocation | null>(null);
-    const mapElementId = 'picker-map';
     
     const closeLocationModal = () => {
         onClose(!pinLocation ? location : pinLocation);
-        isMapLoaded.current = false;
     };
 
     const getCurrLocation = (): RecordingLocation => {
         return pinLocation !== null ? { lat: pinLocation.lat, lng: pinLocation.lng } : { lat: location.lat, lng: location.lng };
     }
-    
-    /**
-     * Load Google Map. Should only be called on the first render
-     */
-    const loadMap = async () => {
-        const loader = new Loader({
-            apiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY as string,
-            version: "weekly",
-        });
 
-        await loader.load();
+    const updateMarkerPosition = (e: any) => {
+        const lat: number = e.latLng.lat() as number;
+        const lng: number = e.latLng.lng() as number;
+        setPinLocation({ lat, lng });
+    };
 
+    const renderMap = () => {
         const loc: RecordingLocation = getCurrLocation();
 
-        mapRef.current = new google.maps.Map(document.getElementById(mapElementId) as HTMLElement, {
-          center: loc, 
-          zoom: 17,
-          gestureHandling: 'greedy',
-          styles: GOOGLE_MAPS_STYLES
-        });
-
-        isMapLoaded.current = true;
-    };
-
-    /**
-     * Add marker. Should only be called on the first render
-     */
-    const addMarker = () => {        
-        const loc: RecordingLocation = getCurrLocation();
-    
-        const marker = new google.maps.Marker({
-            position: loc,
-            draggable: true,
-            map: mapRef.current,
-        });
-    
-        marker.addListener('mouseup', () => {
-            const pos = marker.getPosition();
-            const lat: number = pos?.lat() as number;
-            const lng: number = pos?.lng() as number;
-            setPinLocation({ lat, lng });
-        });
-
-        markerRef.current = marker;
-    };
-    
-    const recenterMap = () => {
-        const map: google.maps.Map = mapRef.current as google.maps.Map;
-        const loc = getCurrLocation();
-        map.panTo(loc);
-    };
-
-    useEffect(() => {
-        if (opened) {
-            if (isMapLoaded.current) {
-                recenterMap();
-            } else {
-                loadMap().then(addMarker);
-            }
+        const options: google.maps.MapOptions = {
+            gestureHandling: 'greedy',
+            styles: GOOGLE_MAPS_STYLES
         }
-    });
+
+        return (
+            <GoogleMap
+                mapContainerStyle={{ height: '50vh' }}
+                center={loc}
+                zoom={17}
+                options={options}
+            >
+                <Marker
+                    position={loc}
+                    draggable={true}
+                    onMouseUp={updateMarkerPosition}
+                />
+                <PanningComponent location={getCurrLocation()} />
+            </GoogleMap>
+        );
+    };
 
     return (
         <Modal centered size="lg" opened={opened} 
             title="Pick Location"
             onClose={closeLocationModal}
             >
-            <div id={mapElementId} style={{ height: '50vh' }} data-testid="location-picker-map">
-            </div>
+            { isLoaded && renderMap() }
         </Modal>
     )
+}
+
+interface PanningComponentProps {
+    location: RecordingLocation;
+}
+
+function PanningComponent({ location }: PanningComponentProps) {
+    const map = useGoogleMap();
+  
+    React.useEffect(() => {
+      if (map) {
+        map.panTo(location);
+      }
+    }, [location, map]);
+  
+    return null;
 }
