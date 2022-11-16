@@ -1,8 +1,11 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
 import { Center, Container, Flex, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { useAppDispatch, useAppSelector } from 'app/hooks';
+import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
+import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
 
 dayjs.extend(localizedFormat);
 
@@ -13,10 +16,46 @@ export type SoundRecordingPopoverProps = {
 }
 
 export default function SoundRecordingPopover(props: SoundRecordingPopoverProps) {
-    const { soundRecording, recordingFile, imageFiles } = props;
+    const { soundRecording } = props;
+
+    const dispatch = useAppDispatch();
+    const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
+    const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
+
+    const [requestedRecording, setRequestedRecording] = useState<boolean>(false);
+    const [requestedImages, setRequestedImages] = useState<boolean>(false);
+
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
-    const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0)
+    const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
+
+    useEffect(() => {
+        if (!recordingFile && !requestedRecording) {
+            getSoundRecordingFile(soundRecording.id)
+                .then(fileBlob => {
+                    const recordingFileSrc = URL.createObjectURL(fileBlob);
+                    dispatch(setSoundRecordingFile({
+                        recordingId: soundRecording.id,
+                        fileSrc: recordingFileSrc
+                    }));
+                });
+            setRequestedRecording(true);
+        }
+
+        if (!imageFiles && !requestedImages) {
+            soundRecording.imageFiles?.forEach(filename => {
+                getSoundRecordingImageFile(filename)
+                    .then(fileBlob => {
+                        const recordingFileSrc = URL.createObjectURL(fileBlob);
+                        dispatch(cacheSoundRecordingImageFile({
+                            recordingId: soundRecording.id,
+                            fileSrc: recordingFileSrc
+                        }));
+                    });
+                setRequestedImages(true);
+            });
+        }
+    }, [recordingFile, requestedRecording, imageFiles, requestedImages, soundRecording.id, soundRecording.imageFiles, dispatch]);
 
     return (
         <Container size={300} px="xs">

@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Loader } from "@googlemaps/js-api-loader";
+import { useState } from 'react';
 import './SoundRecordingMap.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { fetchSoundClips, fetchSoundRecordings, selectSoundClips, selectSoundClipStatus, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
+import { fetchSoundClips, fetchSoundRecordings, selectCurrentSoundRecording, selectSoundClips, selectSoundClipStatus, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
-import { GridAlgorithm, MarkerClusterer } from '@googlemaps/markerclusterer';
+import { MarkerClusterer as GoogleMarkerClusterer } from '@googlemaps/markerclusterer';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
-import SoundRecordingPopoverLoader, { MapFeatures, SoundRecordingMapFeatureMap } from '../sound-recording-popover/SoundRecordingPopoverLoader';
+import { GoogleMap, InfoWindow, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
+import { DEFAULT_SUBMISSION_LOCATION } from 'utils/form-validators.utils';
+import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
 
 export default function SoundRecordingMap() {
     const dispatch = useAppDispatch();
-    const [map, setMap] = useState<google.maps.Map>();
+    const [selectedSoundClip, setSelectedSoundClip] = useState<SoundClip | null>(null);
     const soundClipStatus = useAppSelector(selectSoundClipStatus);
     const soundRecordingStatus = useAppSelector(selectSoundRecordingStatus);
     const soundClips = useAppSelector(selectSoundClips);
     const soundRecordings = useAppSelector(selectSoundRecordings);
+    const selectedRecording = useAppSelector(selectCurrentSoundRecording);
+
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY as string,
+        version: 'weekly',
+    });
 
     if (soundClipStatus === 'idle') {
         dispatch(fetchSoundClips());
@@ -25,105 +32,107 @@ export default function SoundRecordingMap() {
         dispatch(fetchSoundRecordings());
     }
 
-    const createSoundClipMarker = (soundClip: SoundClip): google.maps.Marker => {
-        const infoWindow = new google.maps.InfoWindow();
+    const renderSoundClips = (clusterer: GoogleMarkerClusterer) => {
+        const soundClipsToRender = soundClips.filter(soundFilter);
 
-        const marker = new google.maps.Marker({
-            position: { lat: soundClip.location.lat, lng: soundClip.location.lng },
-            map,
-        });
-    
-        marker.addListener('click', () => {
-            infoWindow.setContent(
-                `<h5>${soundClip.title}</h5>
-                <div>${soundClip.content}</div>
-                <div>Author: ${soundClip.author}</div>
-                <div>Date: ${soundClip.date ? soundClip.date : 'unknown'}</div>`
+        return soundClipsToRender.map((soundClip: SoundClip) => {
+            const loc = {
+                lat: soundClip.location.lat,
+                lng: soundClip.location.lng,
+            };
+
+            return (
+                <Marker
+                    key={soundClip.title}
+                    position={loc}
+                    onClick={() => setSelectedSoundClip(soundClip)}
+                    clusterer={clusterer}
+                >
+                    { selectedSoundClip && selectedSoundClip.title === soundClip.title && (
+                        <InfoWindow
+                            onCloseClick={() => setSelectedSoundClip(null)}
+                        >
+                            <div>
+                                <h5>{soundClip.title}</h5>
+                                <div dangerouslySetInnerHTML={{
+                                    __html: soundClip.content
+                                }}></div>
+                                <div>Author: {soundClip.author}</div>
+                                <div>Date: {soundClip.date ? soundClip.date : 'unknown'}</div>
+                            </div>
+                        </InfoWindow>
+                    )}
+                </Marker>
             );
-    
-            infoWindow.open({
-                anchor: marker,
-                map
-            });
         });
-    
-        return marker;
     };
 
-    const createSoundRecordingMarker = (soundRecording: SoundRecording): MapFeatures => {
-        const infoWindow = new google.maps.InfoWindow();
+    const renderSoundRecordings = (clusterer: GoogleMarkerClusterer) => {
+        const soundRecordingsToRender = soundRecordings.filter(soundFilter);
+        
+        return soundRecordingsToRender.map((soundRecording: SoundRecording) => {
+            const loc = {
+                lat: soundRecording.location.lat,
+                lng: soundRecording.location.lng,
+            };
 
-        const marker = new google.maps.Marker({
-            position: { lat: soundRecording.location.lat, lng: soundRecording.location.lng },
-            map,
-            opacity: 0.5
+            const onMarkerClick = () => dispatch(setSelectedSoundRecording(soundRecording));
+
+            const onInfoWindowClose = () => dispatch(setSelectedSoundRecording(null));
+
+            return (
+                <Marker
+                    key={soundRecording.id}
+                    position={loc}
+                    opacity={0.5}
+                    onClick={onMarkerClick}
+                    clusterer={clusterer}
+                >
+                    { selectedRecording && selectedRecording.id === soundRecording.id && (
+                        <InfoWindow
+                            onCloseClick={onInfoWindowClose}
+                        >
+                            <SoundRecordingPopover
+                                soundRecording={soundRecording}
+                                recordingFile={null}
+                                imageFiles={null}
+                            />
+                        </InfoWindow>
+                    )}
+                </Marker>
+            );
         });
-
-        marker.addListener('click', () => {
-            dispatch(setSelectedSoundRecording(soundRecording));
-        });
-
-        return { marker, infoWindow };
     };
 
     const soundFilter = (sound: SoundClip | SoundRecording) => sound.location.lat && sound.location.lng;
 
-    useEffect(() => {
-        if (map) return;
-
-        const loader = new Loader({
-            apiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY as string,
-            version: "weekly",
-        });
-
-        loader.load().then(() => {
-            const map: google.maps.Map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-                center: { lat: 49.279470, lng: -123.099721 }, 
-                zoom: 17,
-                gestureHandling: 'greedy',
-                styles: GOOGLE_MAPS_STYLES
-            });
-    
-            setMap(map);
-        });
-    }, [map?.getMapTypeId()]);
-    
-    const createMarkers = () => {
-        if (!map) return;
-        if (soundClipStatus !== 'succeeded' || soundRecordingStatus !== 'succeeded') return;
-    
-        const soundClipMarkers = soundClips.filter(soundFilter).map((soundClip: SoundClip) => createSoundClipMarker(soundClip));
-
-        const soundRecordingMapFeatures: SoundRecordingMapFeatureMap = soundRecordings
-            .filter(soundFilter)
-            .reduce((featureMap: SoundRecordingMapFeatureMap, recording: SoundRecording) => {
-                const mapFeatures = createSoundRecordingMarker(recording);
-                featureMap[recording.id] = mapFeatures;
-                return featureMap;
-            }, {} as SoundRecordingMapFeatureMap);
-
-        const markers = soundClipMarkers.concat(Object.values(soundRecordingMapFeatures).map(features => features.marker));
-
-        new MarkerClusterer({
-            algorithm: new GridAlgorithm({
-                gridSize: 40,
-                maxZoom: 17,
-            }),
-            map,
-            markers
-        });
-    
-        return soundRecordingMapFeatures;
+    const mapOptions: google.maps.MapOptions = {
+        gestureHandling: 'greedy',
+        styles: GOOGLE_MAPS_STYLES
     };
 
-    const recordingIdToFeatureMap = createMarkers();
-
     return (
-        <div id="map" data-testid="sound-map">
-            <SoundRecordingPopoverLoader
-                map={map}
-                mapFeatureMap={recordingIdToFeatureMap}
-            />
+        <div id="map">
+            { isLoaded && (
+                <GoogleMap
+                    mapContainerStyle={{ height: '100%' }}
+                    center={DEFAULT_SUBMISSION_LOCATION}
+                    zoom={17}
+                    options={mapOptions}
+                >
+                    <MarkerClusterer
+                        gridSize={40}
+                        maxZoom={18}
+                    >
+                        { (clusterer: any) => 
+                            <>
+                                { soundClipStatus === 'succeeded' && renderSoundClips(clusterer) }
+                                { soundRecordingStatus === 'succeeded' && renderSoundRecordings(clusterer) }
+                            </>
+                        }
+                    </MarkerClusterer>
+                </GoogleMap>
+            )}
         </div>
-    )
+    );
 }
