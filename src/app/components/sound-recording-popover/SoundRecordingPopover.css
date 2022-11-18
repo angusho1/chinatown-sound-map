@@ -1,0 +1,25 @@
+.mantine-Image-root.popover-img .mantine-Image-imageWrapper {
+    position: relative;
+}
+
+.mantine-Image-root.popover-img .mantine-Image-imageWrapper .mantine-Image-image {
+    width: 100%;
+    vertical-align: top;
+}
+
+.mantine-Image-root.popover-img .mantine-Image-imageWrapper:after {
+    content: '\A';
+    position: absolute;
+    width: 100%;
+    height:100%;
+    top:0; 
+    left:0;
+    background:rgba(0, 0, 0, 0.136);
+    opacity: 0;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+}
+
+.mantine-Image-root.popover-img .mantine-Image-imageWrapper:hover:after {
+    opacity: 1;
+}

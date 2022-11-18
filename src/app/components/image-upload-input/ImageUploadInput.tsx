@@ -1,16 +1,11 @@
 import { FileInput, FileInputProps, Group,  Stack, Text, Avatar, CloseButton } from '@mantine/core';
 import { useState } from 'react';
-import ImageCarouselModal from '../image-carousel/ImageCarouselModal';
+import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import './ImageUploadInput.css';
 
 interface ImageUploadInputProps {
     inputProps: any;
     removeImage(index: number): void;
-}
-
-interface ImageModalState {
-    opened: boolean;
-    selectedIndex: number;
 }
 
 export default function ImageUploadInput({ inputProps, removeImage }: ImageUploadInputProps) {
@@ -69,17 +64,15 @@ export default function ImageUploadInput({ inputProps, removeImage }: ImageUploa
                 </div>
             )}
 
-            {
-                <ImageCarouselModal
-                    opened={imageModalState.opened}
-                    selectedIndex={imageModalState.selectedIndex}
-                    images={images}
-                    onClose={() => setImageModalState({
-                        ...imageModalState,
-                        opened: false,
-                    })}
-                />
-            }
+            <ImageCarouselModal
+                opened={imageModalState.opened}
+                selectedIndex={imageModalState.selectedIndex}
+                images={images}
+                onClose={() => setImageModalState({
+                    ...imageModalState,
+                    opened: false,
+                })}
+            />
         </>
     )
 }

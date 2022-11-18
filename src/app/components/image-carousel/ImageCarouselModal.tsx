@@ -9,6 +9,11 @@ interface ImageCarouselProps {
     onClose: () => void;
 }
 
+export interface ImageModalState {
+    opened: boolean;
+    selectedIndex: number;
+}
+
 export default function ImageCarouselModal({ opened, selectedIndex, images, onClose }: ImageCarouselProps) {
     const TRANSITION_DURATION = 200;
     const [embla, setEmbla] = useState<Embla | null>(null);

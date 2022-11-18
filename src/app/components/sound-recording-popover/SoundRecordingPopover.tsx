@@ -6,6 +6,8 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
 import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
+import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
+import './SoundRecordingPopover.css';
 
 dayjs.extend(localizedFormat);
 
@@ -24,6 +26,10 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     const [requestedRecording, setRequestedRecording] = useState<boolean>(false);
     const [requestedImages, setRequestedImages] = useState<boolean>(false);
+    const [imageModalState, setImageModalState] = useState<ImageModalState>({
+        opened: false,
+        selectedIndex: 0,
+    });
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
@@ -68,12 +74,20 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 {imageFiles && (
                     <Flex gap={5}>
                         {
-                            imageFiles.map(imageSrc => (
+                            imageFiles.map((imageSrc, index) => (
                                 <Image
+                                    className="popover-img"
+                                    sx={{ cursor: 'pointer' }}
                                     key={imageSrc}
                                     width={100}
                                     height={80}
                                     src={imageSrc}
+                                    onClick={() => {
+                                        setImageModalState({
+                                            opened: true,
+                                            selectedIndex: index,
+                                        });
+                                    }}
                                 />
                             ))
                         }
@@ -93,6 +107,18 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     </p>
                 </Stack>
             </Stack>
+
+            { imageFiles && (
+                <ImageCarouselModal
+                    opened={imageModalState.opened}
+                    selectedIndex={imageModalState.selectedIndex}
+                    images={imageFiles}
+                    onClose={() => setImageModalState({
+                        ...imageModalState,
+                        opened: false,
+                    })}
+                />
+            )}
         </Container>
     )
 }
