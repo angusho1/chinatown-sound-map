@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { Badge, Center, Container, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { Badge, Center, Container, Divider, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -65,56 +65,70 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     return (
         <Container size={300} px="xs">
-            <Stack>
-                <Stack spacing={2}>
+            <Stack align="center" spacing={8}>
+                <Stack spacing={2} align="center">
                     <Title order={4}>{soundRecording.title}</Title>
-                    <Text size="sm">Recorded by {soundRecording.author}</Text>
-                    <Text size="sm">Date: {dateStr}</Text>
+                    <Text size="sm" fw={300}>Recorded by {soundRecording.author}</Text>
+                    <Text size="sm" fw={300}>Date: {dateStr}</Text>
+                    <Text component="p" fz="sm" fw={300}>
+                        {soundRecording.description}
+                    </Text>
                 </Stack>
-                {imageFiles && (
-                    <Flex gap={5}>
-                        {
-                            imageFiles.map((imageSrc, index) => (
-                                <Image
-                                    className="popover-img"
-                                    sx={{ cursor: 'pointer' }}
-                                    key={imageSrc}
-                                    width={100}
-                                    height={80}
-                                    src={imageSrc}
-                                    onClick={() => {
-                                        setImageModalState({
-                                            opened: true,
-                                            selectedIndex: index,
-                                        });
-                                    }}
-                                />
-                            ))
-                        }
-                    </Flex>
-                )}
-                {recordingFile && (
-                    <audio controls src={recordingFile}></audio>
-                )}
+                <Stack align="center">
+                    {imageFiles && (
+                        <Flex gap={5}>
+                            {
+                                imageFiles.map((imageSrc, index) => (
+                                    <Image
+                                        className="popover-img"
+                                        sx={{ cursor: 'pointer' }}
+                                        key={imageSrc}
+                                        width={100}
+                                        height={80}
+                                        src={imageSrc}
+                                        onClick={() => {
+                                            setImageModalState({
+                                                opened: true,
+                                                selectedIndex: index,
+                                            });
+                                        }}
+                                    />
+                                ))
+                            }
+                        </Flex>
+                    )}
+                    {recordingFile && (
+                        <audio controls src={recordingFile}></audio>
+                    )}
+                </Stack>
                 {isLoading() && (
                     <Center>
                         <Loader color={'pink'} />
                     </Center>
                 )}
-                <Stack spacing={2}>
-                    <p>
-                        {soundRecording.description}
-                    </p>
-                    <Container px={0}>
-                        <Text>Categories</Text>
-                        <Group spacing="xs">
-                            {soundRecording.categories && (
-                                soundRecording.categories.map(category => (
-                                    <Badge>{ category.name }</Badge>
-                                ))
-                            )}
-                        </Group>
-                    </Container>
+                <Stack spacing={2} align="stretch">
+                    { soundRecording.categories && soundRecording.categories.length > 0 && (
+                        <Container px={0}>
+                            <Divider
+                                size="xs"
+                                my="sm"
+                                variant="solid"
+                                label="Categories"
+                                color="pink"
+                                labelPosition="center"
+                                labelProps={{
+                                    fw: 500,
+                                }}
+                            />
+                            <Group spacing="xs" position="center">
+                                {soundRecording.categories && (
+                                    soundRecording.categories.map(category => (
+                                        <Badge>{ category.name }</Badge>
+                                    ))
+                                )}
+                            </Group>
+                        </Container>
+                    )}
                 </Stack>
             </Stack>
 
