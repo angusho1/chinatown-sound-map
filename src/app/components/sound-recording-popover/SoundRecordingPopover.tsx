@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { Center, Container, Flex, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { Badge, Center, Container, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -105,6 +105,16 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     <p>
                         {soundRecording.description}
                     </p>
+                    <Container px={0}>
+                        <Text>Categories</Text>
+                        <Group spacing="xs">
+                            {soundRecording.categories && (
+                                soundRecording.categories.map(category => (
+                                    <Badge>{ category.name }</Badge>
+                                ))
+                            )}
+                        </Group>
+                    </Container>
                 </Stack>
             </Stack>
 
