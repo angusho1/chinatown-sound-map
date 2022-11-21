@@ -5,7 +5,7 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.14.3",
     "@googlemaps/markerclusterer": "^2.0.11",
-    "@mantine/carousel": "^5.7.2",
+    "@mantine/carousel": "^5.8.2",
     "@mantine/core": "^5.7.2",
     "@mantine/dates": "^5.7.2",
     "@mantine/form": "^5.7.2",
