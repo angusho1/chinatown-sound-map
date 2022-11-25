@@ -11,12 +11,18 @@ export function getSoundRecordings(): Promise<SoundRecording[]> {
 
 export async function getSoundRecordingFile(id: string): Promise<Blob> {
     const res = await fetch(`sound-recording/${id}/download`);
-    const buffer = await res.arrayBuffer();
-    return new Blob([buffer]);
+    return await convertFileDownloadToBlob(res);
 }
 
 export async function getSoundRecordingImageFile(filename: string): Promise<Blob> {
     const res = await fetch(`/sound-recording/image/${filename}/download`);
-    const buffer = await res.arrayBuffer();
-    return new Blob([buffer]);
+    return await convertFileDownloadToBlob(res);
 }
+
+const convertFileDownloadToBlob = async (res: Response) => {
+    const buffer = await res.arrayBuffer();
+
+    return new Blob([buffer], {
+        type: res.headers.get('Content-Type') as string,
+    });
+};
