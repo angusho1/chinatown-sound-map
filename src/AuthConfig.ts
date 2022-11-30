@@ -1,4 +1,5 @@
 import { LogLevel } from "@azure/msal-browser";
+import { ADMIN_SIGN_IN_REDIRECT_URI, ADMIN_SIGN_OUT_REDIRECT_URI } from "constants/admin/admin.constants";
 
 /**
  * Enter here the user flows and custom policies for your B2C application
@@ -28,8 +29,8 @@ export const msalConfig = {
         clientId: process.env.REACT_APP_B2C_APP_CLIENT_ID as string,
         authority: b2cPolicies.authorities.adminSignIn.authority,
         knownAuthorities: [b2cPolicies.authorityDomain],
-        redirectUri: '/',
-        postLogoutRedirectUri: '/',
+        redirectUri: ADMIN_SIGN_IN_REDIRECT_URI,
+        postLogoutRedirectUri: ADMIN_SIGN_OUT_REDIRECT_URI,
         navigateToLoginRequestUrl: false,
     },
     cache: {

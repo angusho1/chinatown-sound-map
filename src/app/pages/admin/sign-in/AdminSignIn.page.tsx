@@ -1,7 +1,6 @@
-import { useMsal } from "@azure/msal-react";
+import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { Button, Container } from "@mantine/core";
 import { loginRequest } from "AuthConfig";
-
 
 export default function AdminSignInPage() {
     const { instance } = useMsal();
@@ -13,23 +12,29 @@ export default function AdminSignInPage() {
 
     const signIn = async () => {
         try {
-            await instance.handleRedirectPromise();
-
-            const accounts = instance.getAllAccounts();
-            if (accounts.length === 0) {
-                // No user signed in
-                instance.loginRedirect(loginRequest);
-            }
+            await instance.loginRedirect(loginRequest);
         } catch (e) {
             console.log(e);
         }
     };
 
+    const signOut = () => {
+        instance.logoutRedirect();
+    };
+
     return (
         <Container py="xl">
-            <Button onClick={signIn}>
-                Sign In
-            </Button>
+            <UnauthenticatedTemplate>
+                <Button onClick={signIn}>
+                    Sign In
+                </Button>
+            </UnauthenticatedTemplate>
+            <AuthenticatedTemplate>
+                <Button onClick={signOut}>
+                    Sign Out
+                </Button>
+            </AuthenticatedTemplate>
+
         </Container>
     );
 }

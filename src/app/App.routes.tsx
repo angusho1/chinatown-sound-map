@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import AboutPage from './pages/about/About.page';
+import AdminDashboardPage from "./pages/admin/dashboard/AdminDashboard.page";
 import AdminSignInPage from "./pages/admin/sign-in/AdminSignIn.page";
 import ContactPage from './pages/contact/Contact.page';
 import ContributePage from './pages/contribute/Contribute.page';
@@ -13,6 +14,7 @@ export default function AppRoutes() {
       <Route path="/contribute" element={<ContributePage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/admin/signin" element={<AdminSignInPage />} />
+      <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
     </Routes>
   )
 }
