@@ -34,6 +34,23 @@ export function getSoundRecordingCategories(): Promise<SoundRecordingCategory[]>
     return fetch('/categories').then(res => res.json());
 }
 
+export async function getSubmissions(token: string) {
+    const headers = new Headers();
+    const bearer = `Bearer ${token}`;
+    headers.append("Authorization", bearer);
+
+    try {
+        const res = await fetch('/submissions', {
+            method: 'GET',
+            headers
+        });
+        return res.json();
+    } catch (e) {
+        console.log(e);
+        return { error: e };
+    }
+}
+
 function splitCategoryTypes(categories: SoundRecordingCategory[]) {
     const existingCategoryIds: string[] = [];
     const newCategories: string[] = []; 
