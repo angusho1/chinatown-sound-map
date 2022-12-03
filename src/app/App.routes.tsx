@@ -4,11 +4,13 @@ import AdminDashboardPage from "./pages/admin/dashboard/AdminDashboard.page";
 import AdminSignInPage from "./pages/admin/sign-in/AdminSignIn.page";
 import ContactPage from './pages/contact/Contact.page';
 import ContributePage from './pages/contribute/Contribute.page';
+import NotFoundErrorPage from "./pages/error/NotFoundError.page";
 import HomePage from './pages/home/Home.page';
 
 export default function AppRoutes() {
   return (
     <Routes>
+      <Route path="*" element={<NotFoundErrorPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contribute" element={<ContributePage />} />
