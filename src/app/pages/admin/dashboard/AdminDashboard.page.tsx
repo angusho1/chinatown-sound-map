@@ -1,4 +1,4 @@
-import { useMsal } from "@azure/msal-react";
+import { AuthenticatedTemplate, useMsal } from "@azure/msal-react";
 import { Button, Container, Title } from "@mantine/core";
 import { tokenRequest } from "AuthConfig";
 import { getSubmissions } from "features/submissions/submissionsAPI";
@@ -17,14 +17,25 @@ export default function AdminDashboardPage() {
         }
     };
 
+    const signOut = () => {
+        instance.logoutRedirect();
+    };
+
     return (
         <Container py="xl">
-            <Title>
-                Dashboard
-            </Title>
-            <Button onClick={fetchSubmissions}>
-                Get Submissions
-            </Button>
+            <AuthenticatedTemplate>
+                <Title>
+                    Dashboard
+                </Title>
+                <Container>
+                    <Button onClick={fetchSubmissions}>
+                        Get Submissions
+                    </Button>
+                    <Button onClick={signOut}>
+                        Sign Out
+                    </Button>
+                </Container>
+            </AuthenticatedTemplate>
         </Container>
     );
 }

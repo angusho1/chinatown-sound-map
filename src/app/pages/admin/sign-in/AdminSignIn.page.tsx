@@ -1,14 +1,18 @@
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from "@azure/msal-react";
+import { UnauthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
 import { Button, Container } from "@mantine/core";
 import { loginRequest } from "AuthConfig";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminSignInPage() {
     const { instance } = useMsal();
-    let activeAccount;
-
-    if (instance) {
-        activeAccount = instance.getActiveAccount();
-    }
+    const navigate = useNavigate();
+    const isAuthenticated = useIsAuthenticated();
+    
+    useEffect(() => {
+        if (isAuthenticated) navigate('/admin/dashboard');
+        console.log('isAuthenticated', isAuthenticated);
+    }, [isAuthenticated]);
 
     const signIn = async () => {
         try {
@@ -18,10 +22,6 @@ export default function AdminSignInPage() {
         }
     };
 
-    const signOut = () => {
-        instance.logoutRedirect();
-    };
-
     return (
         <Container py="xl">
             <UnauthenticatedTemplate>
@@ -29,12 +29,6 @@ export default function AdminSignInPage() {
                     Sign In
                 </Button>
             </UnauthenticatedTemplate>
-            <AuthenticatedTemplate>
-                <Button onClick={signOut}>
-                    Sign Out
-                </Button>
-            </AuthenticatedTemplate>
-
         </Container>
     );
 }

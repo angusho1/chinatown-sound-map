@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { useIsAuthenticated } from "@azure/msal-react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import AboutPage from './pages/about/About.page';
 import AdminDashboardPage from "./pages/admin/dashboard/AdminDashboard.page";
 import AdminSignInPage from "./pages/admin/sign-in/AdminSignIn.page";
@@ -8,6 +9,10 @@ import NotFoundErrorPage from "./pages/error/NotFoundError.page";
 import HomePage from './pages/home/Home.page';
 
 export default function AppRoutes() {
+  const isAuthenticated = useIsAuthenticated();
+
+  const renderProtectedPage = (element: JSX.Element) => isAuthenticated ? element : <Navigate to="../signin"/>;
+
   return (
     <Routes>
       <Route path="*" element={<NotFoundErrorPage />} />
@@ -15,8 +20,10 @@ export default function AppRoutes() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contribute" element={<ContributePage />} />
       <Route path="/contact" element={<ContactPage />} />
-      <Route path="/admin/signin" element={<AdminSignInPage />} />
-      <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+      <Route path="/admin">
+        <Route path="signin" element={<AdminSignInPage />} />
+        <Route path="dashboard" element={renderProtectedPage(<AdminDashboardPage/>)} />
+      </Route>
     </Routes>
   )
 }

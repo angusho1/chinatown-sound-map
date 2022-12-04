@@ -1,4 +1,5 @@
 import { Button, Container, createStyles, Group, Text, Title } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 export default function NotFoundErrorPage() {
     const { classes } = useStyles();
@@ -11,9 +12,11 @@ export default function NotFoundErrorPage() {
                 You may have mistyped the address, or the page has been moved to another URL.
             </Text>
             <Group position="center">
-                <Button variant="subtle" size="md">
-                    Go back to the home page
-                </Button>
+                <Link to="/">
+                    <Button variant="subtle" size="md">
+                        Go back to the home page
+                    </Button>
+                </Link>
             </Group>
         </Container>
     );
