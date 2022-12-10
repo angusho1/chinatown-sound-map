@@ -2,12 +2,12 @@ import './App.css';
 import { Footer } from '@mantine/core';
 import { AppNavBar, AppNavBarProps } from 'app/components/nav-bar/AppNavBar';
 import AppRoutes from './App.routes';
-import { EventType, PublicClientApplication } from '@azure/msal-browser';
+import { EventType, IPublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import { useEffect } from 'react';
 
 interface AppProps {
-  instance: PublicClientApplication;
+  instance: IPublicClientApplication;
 }
 
 function App({ instance }: AppProps) {

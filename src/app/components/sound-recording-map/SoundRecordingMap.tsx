@@ -113,7 +113,7 @@ export default function SoundRecordingMap() {
     };
 
     return (
-        <div id="map">
+        <div id="map" data-testid="sound-map">
             { isLoaded && (
                 <GoogleMap
                     mapContainerStyle={{ height: '100%' }}
