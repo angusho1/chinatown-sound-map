@@ -3,7 +3,6 @@ import './SoundRecordingMap.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchSoundClips, fetchSoundRecordings, selectCurrentSoundRecording, selectSoundClips, selectSoundClipStatus, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
 import SoundClip from 'models/SoundClip.model';
-import { MarkerClusterer as GoogleMarkerClusterer } from '@googlemaps/markerclusterer';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
 import { GoogleMap, InfoWindow, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
@@ -32,7 +31,7 @@ export default function SoundRecordingMap() {
         dispatch(fetchSoundRecordings());
     }
 
-    const renderSoundClips = (clusterer: GoogleMarkerClusterer) => {
+    const renderSoundClips = (clusterer: any) => {
         const soundClipsToRender = soundClips.filter(soundFilter);
 
         return soundClipsToRender.map((soundClip: SoundClip) => {
@@ -58,7 +57,9 @@ export default function SoundRecordingMap() {
                                     __html: soundClip.content
                                 }}></div>
                                 <div>Author: {soundClip.author}</div>
-                                <div>Date: {soundClip.date ? soundClip.date : 'unknown'}</div>
+                                <div>
+                                    Date: <>{soundClip.date ? soundClip.date : 'unknown'}</>
+                                </div>
                             </div>
                         </InfoWindow>
                     )}
@@ -67,7 +68,7 @@ export default function SoundRecordingMap() {
         });
     };
 
-    const renderSoundRecordings = (clusterer: GoogleMarkerClusterer) => {
+    const renderSoundRecordings = (clusterer: any) => {
         const soundRecordingsToRender = soundRecordings.filter(soundFilter);
         
         return soundRecordingsToRender.map((soundRecording: SoundRecording) => {

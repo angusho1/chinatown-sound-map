@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import { setupStore } from './app/store';
 import { Provider } from 'react-redux';
@@ -33,7 +33,9 @@ msalInstance.addEventCallback((event: any) => {
   }
 });
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
   <React.StrictMode>
     <Provider store={setupStore()}>
       <MantineProvider withCSSVariables theme={{
@@ -45,8 +47,7 @@ ReactDOM.render(
         </BrowserRouter>
       </MantineProvider>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change
