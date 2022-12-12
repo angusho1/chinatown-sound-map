@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
 import SoundClip from 'models/SoundClip.model';
 import SoundRecording from 'models/SoundRecording.model';
-import { SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
+import { SetImageFilePayload, SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
 import { SoundRecordingFileMap, SoundRecordingImageMap } from 'types/state/sound-recording-state.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
 import { getSoundClips, getSoundRecordings } from './soundClipAPI';
@@ -48,13 +48,15 @@ export const soundClipSlice = createSlice({
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
             state.soundRecordingFiles[action.payload.recordingId] = action.payload.fileSrc;
         },
-        cacheSoundRecordingImageFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
+        cacheSoundRecordingImageFile(state, action: PayloadAction<SetImageFilePayload>) {
             const files = state.soundRecordingImageFiles[action.payload.recordingId];
-            const fileSrc = action.payload.fileSrc;
+            const { fileSrc, fileName } = action.payload;
             if (!files) {
-                state.soundRecordingImageFiles[action.payload.recordingId] = [fileSrc];
+                state.soundRecordingImageFiles[action.payload.recordingId] = {
+                    [fileName]: fileSrc,
+                };
             } else {
-                files.push(fileSrc);
+                files[fileName] = fileSrc;
             }
         },
         setSelectedSoundRecording(state, action: PayloadAction<SoundRecording | null>) {

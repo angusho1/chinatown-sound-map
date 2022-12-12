@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GoogleMap, Marker, useGoogleMap, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap, MarkerF, useGoogleMap, useJsApiLoader } from '@react-google-maps/api'
 import { Modal } from '@mantine/core';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import { GOOGLE_MAPS_STYLES } from '../sound-recording-map/mapStyles';
@@ -47,7 +47,7 @@ export default function LocationPicker({ location, opened, onClose }: LocationPi
                 zoom={17}
                 options={options}
             >
-                <Marker
+                <MarkerF
                     position={loc}
                     draggable={true}
                     onMouseUp={updateMarkerPosition}

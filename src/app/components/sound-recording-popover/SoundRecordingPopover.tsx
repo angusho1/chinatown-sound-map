@@ -23,9 +23,8 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const dispatch = useAppDispatch();
     const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
     const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
+    const imageSrcStrings = imageFiles ? Object.values(imageFiles) : [];
 
-    const [requestedRecording, setRequestedRecording] = useState<boolean>(false);
-    const [requestedImages, setRequestedImages] = useState<boolean>(false);
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
         selectedIndex: 0,
@@ -36,32 +35,40 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
 
     useEffect(() => {
-        if (!recordingFile && !requestedRecording) {
-            getSoundRecordingFile(soundRecording.id)
-                .then(fileBlob => {
-                    const recordingFileSrc = URL.createObjectURL(fileBlob);
-                    dispatch(setSoundRecordingFile({
-                        recordingId: soundRecording.id,
-                        fileSrc: recordingFileSrc
-                    }));
-                });
-            setRequestedRecording(true);
-        }
+        let isRecordingSet = false;
 
-        if (!imageFiles && !requestedImages) {
+        const fetchRecordingFile = async () => {
+            const fileBlob = await getSoundRecordingFile(soundRecording.id);
+            if (isRecordingSet) return;
+            const recordingFileSrc = URL.createObjectURL(fileBlob);
+            dispatch(setSoundRecordingFile({
+                recordingId: soundRecording.id,
+                fileSrc: recordingFileSrc
+            }));
+        };
+
+        const fetchImages = async () => {            
             soundRecording.imageFiles?.forEach(filename => {
                 getSoundRecordingImageFile(filename)
                     .then(fileBlob => {
+                        if (imageFiles && imageFiles[filename]) return;
                         const recordingFileSrc = URL.createObjectURL(fileBlob);
                         dispatch(cacheSoundRecordingImageFile({
                             recordingId: soundRecording.id,
+                            fileName: filename,
                             fileSrc: recordingFileSrc
                         }));
                     });
-                setRequestedImages(true);
             });
+        };
+
+        if (!recordingFile && !isRecordingSet) fetchRecordingFile();
+        if (!imageFiles) fetchImages();
+
+        return () => {
+            isRecordingSet = true;
         }
-    }, [recordingFile, requestedRecording, imageFiles, requestedImages, soundRecording.id, soundRecording.imageFiles, dispatch]);
+    }, [recordingFile, imageFiles, soundRecording.id, soundRecording.imageFiles, dispatch]);
 
     return (
         <Container size={300} px="xs">
@@ -78,7 +85,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     {imageFiles && (
                         <Flex gap={5}>
                             {
-                                imageFiles.map((imageSrc, index) => (
+                                imageSrcStrings.map((imageSrc, index) => (
                                     <Image
                                         className="popover-img"
                                         sx={{ cursor: 'pointer' }}
@@ -123,7 +130,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                             <Group spacing="xs" position="center">
                                 {soundRecording.categories && (
                                     soundRecording.categories.map(category => (
-                                        <Badge>{ category.name }</Badge>
+                                        <Badge key={category.name} >{ category.name }</Badge>
                                     ))
                                 )}
                             </Group>
@@ -136,7 +143,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 <ImageCarouselModal
                     opened={imageModalState.opened}
                     selectedIndex={imageModalState.selectedIndex}
-                    images={imageFiles}
+                    images={imageSrcStrings}
                     onClose={() => setImageModalState({
                         ...imageModalState,
                         opened: false,

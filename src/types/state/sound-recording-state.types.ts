@@ -3,5 +3,9 @@ export type SoundRecordingFileMap = {
 }
 
 export type SoundRecordingImageMap = {
-    [id: string]: string[];
+    [id: string]: SoundRecordingImages;
+}
+
+type SoundRecordingImages = {
+    [fileName: string]: string;
 }

@@ -5,7 +5,7 @@ import { fetchSoundClips, fetchSoundRecordings, selectCurrentSoundRecording, sel
 import SoundClip from 'models/SoundClip.model';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
-import { GoogleMap, InfoWindow, Marker, MarkerClusterer, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindowF, MarkerClusterer, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { DEFAULT_SUBMISSION_LOCATION } from 'utils/form-validators.utils';
 import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
 
@@ -41,14 +41,14 @@ export default function SoundRecordingMap() {
             };
 
             return (
-                <Marker
+                <MarkerF
                     key={soundClip.title}
                     position={loc}
                     onClick={() => setSelectedSoundClip(soundClip)}
                     clusterer={clusterer}
                 >
                     { selectedSoundClip && selectedSoundClip.title === soundClip.title && (
-                        <InfoWindow
+                        <InfoWindowF
                             onCloseClick={() => setSelectedSoundClip(null)}
                         >
                             <div>
@@ -61,9 +61,9 @@ export default function SoundRecordingMap() {
                                     Date: <>{soundClip.date ? soundClip.date : 'unknown'}</>
                                 </div>
                             </div>
-                        </InfoWindow>
+                        </InfoWindowF>
                     )}
-                </Marker>
+                </MarkerF>
             );
         });
     };
@@ -82,7 +82,7 @@ export default function SoundRecordingMap() {
             const onInfoWindowClose = () => dispatch(setSelectedSoundRecording(null));
 
             return (
-                <Marker
+                <MarkerF
                     key={soundRecording.id}
                     position={loc}
                     opacity={0.5}
@@ -90,7 +90,7 @@ export default function SoundRecordingMap() {
                     clusterer={clusterer}
                 >
                     { selectedRecording && selectedRecording.id === soundRecording.id && (
-                        <InfoWindow
+                        <InfoWindowF
                             onCloseClick={onInfoWindowClose}
                         >
                             <SoundRecordingPopover
@@ -98,9 +98,9 @@ export default function SoundRecordingMap() {
                                 recordingFile={null}
                                 imageFiles={null}
                             />
-                        </InfoWindow>
+                        </InfoWindowF>
                     )}
-                </Marker>
+                </MarkerF>
             );
         });
     };
