@@ -1,5 +1,6 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingCategory from "models/SoundRecordingCategory.model";
+import Submission from "models/Submission.model";
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
@@ -34,7 +35,7 @@ export function getSoundRecordingCategories(): Promise<SoundRecordingCategory[]>
     return fetch('/categories').then(res => res.json());
 }
 
-export async function getSubmissions(token: string) {
+export async function getSubmissions(token: string): Promise<Submission[]> {
     const headers = new Headers();
     const bearer = `Bearer ${token}`;
     headers.append("Authorization", bearer);
@@ -44,10 +45,16 @@ export async function getSubmissions(token: string) {
             method: 'GET',
             headers
         });
-        return res.json();
+        const jsonRes: any = await res.json();
+        return jsonRes.map((submission: any) => {
+            return {
+                ...submission,
+                dateCreated: new Date(submission.dateCreated),
+            }
+        });
     } catch (e) {
         console.log(e);
-        return { error: e };
+        throw e;
     }
 }
 

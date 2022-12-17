@@ -1,7 +1,7 @@
 import { useIsAuthenticated } from "@azure/msal-react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AboutPage from './pages/about/About.page';
-import AdminDashboardPage from "./pages/admin/dashboard/AdminDashboard.page";
+import AdminSubmissionsPage from "./pages/admin/dashboard/AdminSubmissions.page";
 import AdminSignInPage from "./pages/admin/sign-in/AdminSignIn.page";
 import ContactPage from './pages/contact/Contact.page';
 import ContributePage from './pages/contribute/Contribute.page';
@@ -22,7 +22,7 @@ export default function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/admin">
         <Route path="signin" element={<AdminSignInPage />} />
-        <Route path="dashboard" element={renderProtectedPage(<AdminDashboardPage/>)} />
+        <Route path="dashboard" element={renderProtectedPage(<AdminSubmissionsPage/>)} />
       </Route>
     </Routes>
   )
