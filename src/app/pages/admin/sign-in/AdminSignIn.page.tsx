@@ -10,7 +10,7 @@ export default function AdminSignInPage() {
     const isAuthenticated = useIsAuthenticated();
     
     useEffect(() => {
-        if (isAuthenticated) navigate('/admin/dashboard');
+        if (isAuthenticated) navigate('/admin/submissions');
         console.log('isAuthenticated', isAuthenticated);
     }, [isAuthenticated]);
 
