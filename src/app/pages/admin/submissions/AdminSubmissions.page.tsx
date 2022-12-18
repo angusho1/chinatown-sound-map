@@ -1,8 +1,8 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { Badge, Button, Container, Spoiler, Stack, Table, Tabs, Title } from "@mantine/core";
-import { IconDots, IconEye, IconTrash } from "@tabler/icons";
+import { ActionIcon, Badge, Button, Container, Flex, Spoiler, Stack, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
+import { IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
-import { getSubmissions } from "features/submissions/submissionsAPI";
+import { getSubmissions, publishSubmission } from "features/submissions/submissionsAPI";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,13 +26,13 @@ export default function AdminSubmissionsPage() {
         if (isAuthenticated) fetchSubmissions();
     }, [isAuthenticated]);
 
+    const getToken = () => instance.acquireTokenSilent(tokenRequest);
+
     const fetchSubmissions = async () => {
         try {
-            const tokenResult = await instance.acquireTokenSilent(tokenRequest);
-            console.log(tokenResult);
+            const tokenResult = await getToken();
             const res = await getSubmissions(tokenResult.accessToken);
             setSubmissions(res);
-            console.log(res);
         } catch (e) {
             console.log(e);
         }
@@ -43,6 +43,20 @@ export default function AdminSubmissionsPage() {
     };
 
     const getSubmissionFilter = (statusFilter: SubmissionStatus) => (submission: Submission) => submission.status === statusFilter;
+
+    const publish = async (submission: Submission) => {
+        try {
+            const tokenResult = await getToken();
+            await publishSubmission(submission.id, tokenResult.accessToken);
+            fetchSubmissions();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const removeSubmission = async (submission: Submission) => {
+        // TODO: Implement
+    };
 
     const renderSubmissionsTable = (statusFilter: SubmissionStatus) => {
         if (!submissions) return null;
@@ -63,8 +77,28 @@ export default function AdminSubmissionsPage() {
                             { submission.soundRecording.description }
                         </Spoiler>
                     </td>
-                    <td>{ submission.email }</td>
-                    <td>{ submission.soundRecording.author }</td>
+                    <td>
+                        <Text>{ submission.soundRecording.author }</Text>
+                        <Text>{ submission.email }</Text>
+                    </td>
+                    <td>
+                        <Flex justify={{ sm: 'center' }}>
+                            { statusFilter === 'Pending' && (
+                                <Tooltip label="Publish">
+                                    <ActionIcon onClick={() => publish(submission)} color="green">
+                                        <IconCheck size={20} />
+                                    </ActionIcon>
+                                </Tooltip>
+                            )}
+                            { (statusFilter === 'Approved' || statusFilter === 'Pending') && (
+                                <Tooltip label="Remove">
+                                    <ActionIcon onClick={() => removeSubmission(submission)} color="red">
+                                        <IconX size={20} />
+                                    </ActionIcon>
+                                </Tooltip>
+                            )}
+                        </Flex>
+                    </td>
                 </tr>
             );
         });
@@ -81,8 +115,8 @@ export default function AdminSubmissionsPage() {
                         <th>Date Submitted</th>
                         <th>Title</th>
                         <th>Description</th>
-                        <th>Email</th>
                         <th>Author</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,7 +157,7 @@ export default function AdminSubmissionsPage() {
                         <Tabs.Tab
                             value={PENDING_SUBMISSIONS_TAB_ID}
                             icon={<IconDots size={14} />}
-                            rightSection={
+                            rightSection={ getSubmissionCount('Pending') > 0 &&
                                 <Badge
                                     sx={{ width: 18, height: 18, pointerEvents: 'none' }}
                                     variant="filled"

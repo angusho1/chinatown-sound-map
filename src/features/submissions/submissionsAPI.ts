@@ -58,6 +58,23 @@ export async function getSubmissions(token: string): Promise<Submission[]> {
     }
 }
 
+export async function publishSubmission(submissionId: string, token: string): Promise<void> {
+    const headers = new Headers();
+    const bearer = `Bearer ${token}`;
+    headers.append("Authorization", bearer);
+
+    try {
+        const res = await fetch(`/publish/${submissionId}`, {
+            method: 'POST',
+            headers
+        });
+        await res.json();
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
 function splitCategoryTypes(categories: SoundRecordingCategory[]) {
     const existingCategoryIds: string[] = [];
     const newCategories: string[] = []; 
