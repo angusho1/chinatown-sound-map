@@ -1,6 +1,6 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingCategory from "models/SoundRecordingCategory.model";
-import Submission from "models/Submission.model";
+import Submission, { SubmissionStatus } from "models/Submission.model";
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
@@ -67,6 +67,28 @@ export async function publishSubmission(submissionId: string, token: string): Pr
         const res = await fetch(`/publish/${submissionId}`, {
             method: 'POST',
             headers
+        });
+        await res.json();
+    } catch (e) {
+        console.log(e);
+        throw e;
+    }
+}
+
+export async function editSubmissionStatus(submissionId: string, status: SubmissionStatus, token: string): Promise<void> {
+    const headers = new Headers();
+    const bearer = `Bearer ${token}`;
+    headers.append("Authorization", bearer);
+    headers.append('Content-Type', 'application/json')
+    const body = JSON.stringify({
+        status,
+    });
+
+    try {
+        const res = await fetch(`/submission/${submissionId}`, {
+            method: 'PATCH',
+            headers,
+            body,
         });
         await res.json();
     } catch (e) {

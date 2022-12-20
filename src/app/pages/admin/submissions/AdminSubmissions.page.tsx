@@ -1,8 +1,8 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
 import { ActionIcon, Badge, Button, Container, Flex, Spoiler, Stack, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
-import { IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
+import { IconArrowBackUp, IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
-import { getSubmissions, publishSubmission } from "features/submissions/submissionsAPI";
+import { getSubmissions, publishSubmission, editSubmissionStatus } from "features/submissions/submissionsAPI";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -54,9 +54,25 @@ export default function AdminSubmissionsPage() {
         }
     };
 
-    const removeSubmission = async (submission: Submission) => {
-        // TODO: Implement
+    const remove = async (submission: Submission) => {
+        try {
+            const tokenResult = await getToken();
+            await editSubmissionStatus(submission.id, 'Rejected', tokenResult.accessToken);
+            fetchSubmissions();
+        } catch (e) {
+            console.log(e);
+        }
     };
+
+    const restore = async (submission: Submission) => {
+        try {
+            const tokenResult = await getToken();
+            await editSubmissionStatus(submission.id, 'Pending', tokenResult.accessToken);
+            fetchSubmissions();
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const renderSubmissionsTable = (statusFilter: SubmissionStatus) => {
         if (!submissions) return null;
@@ -92,8 +108,15 @@ export default function AdminSubmissionsPage() {
                             )}
                             { (statusFilter === 'Approved' || statusFilter === 'Pending') && (
                                 <Tooltip label="Remove">
-                                    <ActionIcon onClick={() => removeSubmission(submission)} color="red">
+                                    <ActionIcon onClick={() => remove(submission)} color="red">
                                         <IconX size={20} />
+                                    </ActionIcon>
+                                </Tooltip>
+                            )}
+                            { statusFilter === 'Rejected' && (
+                                <Tooltip label="Restore">
+                                    <ActionIcon onClick={() => restore(submission)} color="gray">
+                                        <IconArrowBackUp size={20} />
                                     </ActionIcon>
                                 </Tooltip>
                             )}
