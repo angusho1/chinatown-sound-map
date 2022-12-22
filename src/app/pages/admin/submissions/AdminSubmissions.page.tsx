@@ -1,5 +1,5 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { ActionIcon, Badge, Button, Container, Flex, Spoiler, Stack, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Container, Flex, Spoiler, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
 import { IconArrowBackUp, IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
 import { getSubmissions, publishSubmission, editSubmissionStatus } from "features/submissions/submissionsAPI";
@@ -36,10 +36,6 @@ export default function AdminSubmissionsPage() {
         } catch (e) {
             console.log(e);
         }
-    };
-
-    const signOut = () => {
-        instance.logoutRedirect();
     };
 
     const getSubmissionFilter = (statusFilter: SubmissionStatus) => (submission: Submission) => submission.status === statusFilter;
@@ -162,14 +158,11 @@ export default function AdminSubmissionsPage() {
                 <Title>
                     Submissions
                 </Title>
-                <Stack align="start">
-                    <Container>
-                        <Button onClick={signOut}>
-                            Sign Out
-                        </Button>
-                    </Container>
-                </Stack>
-                <Tabs value={currentTab} onTabChange={(value) => navigate(`/admin/submissions/${value}`)}>
+                <Tabs
+                    mt={20}
+                    value={currentTab}
+                    onTabChange={(value) => navigate(`/admin/submissions/${value}`)}
+                >
                     <Tabs.List>
                         <Tabs.Tab
                             value={PUBLISHED_SUBMISSIONS_TAB_ID}

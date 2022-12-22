@@ -1,7 +1,9 @@
-import { Header, Container, Group, Burger, Paper, Transition, Text } from '@mantine/core';
+import { Header, Container, Group, Burger, Paper, Transition, Text, Menu, Avatar } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import './AppNavBar.css'
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { IconPackage } from '@tabler/icons';
 
 const HEADER_HEIGHT = 60;
 
@@ -13,6 +15,17 @@ export interface AppNavBarProps {
 
 export function AppNavBar({ routes }: AppNavBarProps) {
   const [opened, { toggle, close }] = useDisclosure(false);
+  const navigate = useNavigate();
+  const { instance } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
+
+  const signOut = () => {
+    instance.logoutRedirect();
+  };
+
+  const navigateToAdminPage = (route: string) => {
+    if (isAuthenticated) navigate(route);
+  };
 
   const items = routes.map((route) => (
     <NavLink
@@ -36,6 +49,25 @@ export function AppNavBar({ routes }: AppNavBarProps) {
         </Text>
         <Group spacing={5} className="links">
           {items}
+          <AuthenticatedTemplate>
+            <Menu width={200} position="bottom-end">
+              <Menu.Target>
+                <Avatar ml={15} sx={{ cursor: 'pointer' }} color="blue" radius="xl">AD</Avatar>
+              </Menu.Target>
+
+              <Menu.Dropdown>
+                <Menu.Label>Admin Pages</Menu.Label>
+                <Menu.Item
+                  icon={<IconPackage size={14} />}
+                  onClick={() => navigateToAdminPage('/admin/submissions')}
+                >
+                  Submissions
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item color="red" onClick={signOut}>Sign Out</Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </AuthenticatedTemplate>
         </Group>
 
         <Burger color="white" opened={opened} onClick={toggle} className="burger" size="sm" />
@@ -47,6 +79,8 @@ export function AppNavBar({ routes }: AppNavBarProps) {
             </Paper>
           )}
         </Transition>
+
+
       </Container>
     </Header>
   );
