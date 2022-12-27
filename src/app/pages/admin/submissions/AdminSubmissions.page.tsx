@@ -6,6 +6,7 @@ import { getSubmissions, publishSubmission, editSubmissionStatus } from "feature
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import SubmissionModal, { SubmissionModalState } from "./SubmissionModal";
 
 const PUBLISHED_SUBMISSIONS_TAB_NAME = 'Published';
 const PENDING_SUBMISSIONS_TAB_NAME = 'Pending';
@@ -21,6 +22,10 @@ export default function AdminSubmissionsPage() {
     const navigate = useNavigate();
     const isAuthenticated = useIsAuthenticated();
     const [submissions, setSubmissions] = useState<Submission[]>();
+    const [submissionModalState, setSubmissionModalState] = useState<SubmissionModalState>({
+        opened: false,
+        selectedSubmission: undefined,
+    });
 
     useEffect(() => {
         if (isAuthenticated) fetchSubmissions();
@@ -70,6 +75,13 @@ export default function AdminSubmissionsPage() {
         }
     }
 
+    const viewSubmission = (submission: Submission) => {
+        setSubmissionModalState({
+            opened: true,
+            selectedSubmission: submission,
+        });
+    };
+
     const renderSubmissionsTable = (statusFilter: SubmissionStatus) => {
         if (!submissions) return null;
 
@@ -95,6 +107,11 @@ export default function AdminSubmissionsPage() {
                     </td>
                     <td>
                         <Flex justify={{ sm: 'center' }}>
+                            <Tooltip label="View Submission">
+                                <ActionIcon onClick={() => viewSubmission(submission)} color="gray">
+                                    <IconEye size={20} />
+                                </ActionIcon>
+                            </Tooltip>
                             { statusFilter === 'Pending' && (
                                 <Tooltip label="Publish">
                                     <ActionIcon onClick={() => publish(submission)} color="green">
@@ -219,6 +236,18 @@ export default function AdminSubmissionsPage() {
                         </Container>
                     </Tabs.Panel>
                 </Tabs>
+
+                { submissionModalState.selectedSubmission && (
+                    <SubmissionModal
+                        submission={submissionModalState.selectedSubmission}
+                        opened={submissionModalState.opened}
+                        onClose={() => setSubmissionModalState({
+                            opened: false,
+                            selectedSubmission: submissionModalState.selectedSubmission,
+                        })}
+                        getToken={getToken}
+                    />
+                )}
             </AuthenticatedTemplate>
         </Container>
     );
@@ -228,4 +257,4 @@ const tableContainerStyles = {
     width: '100%',
     marginTop: '1rem',
     marginBottom: '2rem',
-}
+};

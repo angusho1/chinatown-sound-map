@@ -9,13 +9,29 @@ export function getSoundRecordings(): Promise<SoundRecording[]> {
     return fetch('/sound-recordings').then(res => res.json());
 }
 
-export async function getSoundRecordingFile(id: string): Promise<Blob> {
-    const res = await fetch(`sound-recording/${id}/download`);
+export async function getSoundRecordingFile(id: string, token?: string): Promise<Blob> {
+    const headers = new Headers();
+    if (token) {
+        headers.append("Authorization", `Bearer ${token}`);
+    }
+
+    const res = await fetch(`/sound-recording/${id}/download`, {
+        method: 'GET',
+        headers,
+    });
     return await convertFileDownloadToBlob(res);
 }
 
-export async function getSoundRecordingImageFile(filename: string): Promise<Blob> {
-    const res = await fetch(`/sound-recording/image/${filename}/download`);
+export async function getSoundRecordingImageFile(filename: string, token?: string): Promise<Blob> {
+    const headers = new Headers();
+    if (token) {
+        headers.append("Authorization", `Bearer ${token}`);
+    }
+
+    const res = await fetch(`/sound-recording/image/${filename}/download`, {
+        method: 'GET',
+        headers,
+    });
     return await convertFileDownloadToBlob(res);
 }
 
