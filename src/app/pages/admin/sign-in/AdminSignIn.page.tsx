@@ -11,8 +11,6 @@ export default function AdminSignInPage() {
     const isAuthenticated = useIsAuthenticated();
     const { classes } = useStyles();
     const { height } = useViewportSize();
-
-    console.log(height);
     
     useEffect(() => {
         if (isAuthenticated) navigate('/admin/submissions');
@@ -27,7 +25,7 @@ export default function AdminSignInPage() {
     };
 
     return (
-        <Container sx={{ height: height-120 }}>
+        <Container sx={{ minHeight: height-120 }}>
             <Container className={classes.inner}>
                 <Title className={classes.title}>Admin Sign-in</Title>
                 <Group position="center">

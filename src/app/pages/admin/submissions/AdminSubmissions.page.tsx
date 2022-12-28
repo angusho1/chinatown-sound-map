@@ -1,5 +1,5 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { ActionIcon, Badge, Container, Flex, Spoiler, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
+import { ActionIcon, Badge, Center, Container, Flex, Loader, Spoiler, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
 import { IconArrowBackUp, IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
 import { getSubmissions, publishSubmission, editSubmissionStatus } from "features/submissions/submissionsAPI";
@@ -83,7 +83,11 @@ export default function AdminSubmissionsPage() {
     };
 
     const renderSubmissionsTable = (statusFilter: SubmissionStatus) => {
-        if (!submissions) return null;
+        if (!submissions) return (
+            <Center h={200}>
+                <Loader color={'pink'} />
+            </Center>
+        );
 
         const rows = submissions
             .filter(getSubmissionFilter(statusFilter))
