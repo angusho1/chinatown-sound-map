@@ -3,7 +3,7 @@ import { RootState } from 'app/store';
 import SoundClip from 'models/SoundClip.model';
 import SoundRecording from 'models/SoundRecording.model';
 import { SetImageFilePayload, SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
-import { SoundRecordingFileMap, SoundRecordingImageMap } from 'types/state/sound-recording-state.types';
+import { SoundRecordingFileData, SoundRecordingFileMap, SoundRecordingImageMap } from 'types/state/sound-recording-state.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
 import { getSoundClips, getSoundRecordings } from './soundClipAPI';
 
@@ -46,17 +46,22 @@ export const soundClipSlice = createSlice({
     initialState,
     reducers: {
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
-            state.soundRecordingFiles[action.payload.recordingId] = action.payload.fileSrc;
+            const { recordingId, fileName, objectUrl } = action.payload;
+            state.soundRecordingFiles[recordingId] = {
+                fileName,
+                objectUrl
+            };
         },
         cacheSoundRecordingImageFile(state, action: PayloadAction<SetImageFilePayload>) {
-            const files = state.soundRecordingImageFiles[action.payload.recordingId];
-            const { fileSrc, fileName } = action.payload;
+            const { fileName, recordingId, uniqueFileName, objectUrl } = action.payload;
+            const files = state.soundRecordingImageFiles[recordingId];
+            const fileDataObject: SoundRecordingFileData = { fileName, objectUrl };
             if (!files) {
-                state.soundRecordingImageFiles[action.payload.recordingId] = {
-                    [fileName]: fileSrc,
+                state.soundRecordingImageFiles[recordingId] = {
+                    [uniqueFileName]: fileDataObject,
                 };
             } else {
-                files[fileName] = fileSrc;
+                files[uniqueFileName] = fileDataObject;
             }
         },
         setSelectedSoundRecording(state, action: PayloadAction<SoundRecording | null>) {

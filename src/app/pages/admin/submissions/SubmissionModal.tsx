@@ -9,7 +9,6 @@ import ImageCarouselModal, { ImageModalState } from '../../../components/image-c
 import Submission from 'models/Submission.model';
 import { AuthenticationResult } from '@azure/msal-browser';
 import './SubmissionModal.css';
-import { getImageFileObjects } from 'utils/file-objects.utils';
 
 dayjs.extend(localizedFormat);
 
@@ -30,16 +29,16 @@ export default function SubmissionModal(props: SubmissionModalProps) {
     const soundRecording = submission.soundRecording;
 
     const dispatch = useAppDispatch();
-    const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
+    const recordingFileData = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
     const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
-    const images = imageFiles ? getImageFileObjects(imageFiles) : [];
+    const imageFileObjects = imageFiles ? Object.values(imageFiles) : [];
 
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
         selectedIndex: 0,
     });
 
-    const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
+    const isLoading = () => !recordingFileData || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
 
     const getFormattedDateText = (date?: Date) => date ? dayjs(new Date(date)).format('LL') : 'Unknown';
 
@@ -48,12 +47,14 @@ export default function SubmissionModal(props: SubmissionModalProps) {
 
         const fetchRecordingFile = async () => {
             const tokenResult = await getToken();
-            const fileBlob = await getSoundRecordingFile(soundRecording.id, tokenResult.accessToken);
+            const getFileResult = await getSoundRecordingFile(soundRecording.id, tokenResult.accessToken);
+            const fileBlob = getFileResult.data;
             if (isRecordingSet) return;
-            const recordingFileSrc = URL.createObjectURL(fileBlob);
+            const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
             dispatch(setSoundRecordingFile({
                 recordingId: soundRecording.id,
-                fileSrc: recordingFileSrc
+                fileName: getFileResult.fileName,
+                objectUrl: recordingFileObjectUrl
             }));
         };
 
@@ -61,25 +62,27 @@ export default function SubmissionModal(props: SubmissionModalProps) {
             soundRecording.imageFiles?.forEach(filename => {
                 getToken()
                     .then(tokenResult => getSoundRecordingImageFile(filename, tokenResult.accessToken))
-                    .then(fileBlob => {
+                    .then(getFileResult => {
+                        const fileBlob = getFileResult.data;
                         if (imageFiles && imageFiles[filename]) return;
-                        const recordingFileSrc = URL.createObjectURL(fileBlob);
+                        const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
                         dispatch(cacheSoundRecordingImageFile({
+                            uniqueFileName: filename,
                             recordingId: soundRecording.id,
-                            fileName: filename,
-                            fileSrc: recordingFileSrc
+                            fileName: getFileResult.fileName,
+                            objectUrl: recordingFileObjectUrl
                         }));
                     });
             });
         };
 
-        if (!recordingFile && !isRecordingSet) fetchRecordingFile();
+        if (!recordingFileData && !isRecordingSet) fetchRecordingFile();
         if (!imageFiles) fetchImages();
 
         return () => {
             isRecordingSet = true;
         }
-    }, [recordingFile, imageFiles, soundRecording.id, soundRecording.imageFiles, dispatch]);
+    }, [recordingFileData, imageFiles, soundRecording.id, soundRecording.imageFiles, dispatch]);
 
     return (
         <Modal
@@ -137,21 +140,20 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                             <tbody>
                                 <tr>
                                     <td>
-                                        {/* TODO: Include file name */}
-                                        <Text>Recording File</Text>
+                                        <Text>{recordingFileData?.fileName}</Text>
                                     </td>
                                     <td>
-                                        {recordingFile && (
+                                        {recordingFileData && (
                                             <audio
                                                 style={{ float: 'right', maxWidth: '250px', height: '40px' }}
                                                 controls
-                                                src={recordingFile}>
+                                                src={recordingFileData.objectUrl}>
                                             </audio>
                                         )}
                                     </td>
                                 </tr>
-                                {imageFiles && images.map((image, index) => (
-                                    <tr>
+                                {imageFiles && imageFileObjects.map((image, index) => (
+                                    <tr key={image.objectUrl}>
                                         <td>
                                             <Text>
                                                 { image.fileName }
@@ -161,7 +163,6 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                                             <Image
                                                 className="popover-img"
                                                 sx={{ cursor: 'pointer', float: 'right' }}
-                                                key={image.objectUrl}
                                                 width={40}
                                                 height={40}
                                                 src={image.objectUrl}
@@ -185,11 +186,12 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                 <ImageCarouselModal
                     opened={imageModalState.opened}
                     selectedIndex={imageModalState.selectedIndex}
-                    images={images.map(image => image.objectUrl)}
+                    images={imageFileObjects}
                     onClose={() => setImageModalState({
                         ...imageModalState,
                         opened: false,
                     })}
+                    showFileNames
                 />
             )}
         </Modal>

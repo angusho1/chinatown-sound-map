@@ -1,5 +1,5 @@
 export type SoundRecordingFileMap = {
-    [id: string]: string;
+    [id: string]: SoundRecordingFileData;
 }
 
 export type SoundRecordingImageMap = {
@@ -7,5 +7,10 @@ export type SoundRecordingImageMap = {
 }
 
 export type SoundRecordingImages = {
-    [fileName: string]: string;
+    [uniqueFileName: string]: SoundRecordingFileData;
+}
+
+export type SoundRecordingFileData = {
+    fileName: string;
+    objectUrl: string;
 }

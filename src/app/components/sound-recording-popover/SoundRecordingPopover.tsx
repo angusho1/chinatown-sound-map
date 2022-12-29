@@ -23,7 +23,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const dispatch = useAppDispatch();
     const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
     const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
-    const imageSrcStrings = imageFiles ? Object.values(imageFiles) : [];
+    const imageFileObjects = imageFiles ? Object.values(imageFiles) : [];
 
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
@@ -38,25 +38,29 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
         let isRecordingSet = false;
 
         const fetchRecordingFile = async () => {
-            const fileBlob = await getSoundRecordingFile(soundRecording.id);
+            const getFileResult = await getSoundRecordingFile(soundRecording.id);
+            const fileBlob = getFileResult.data;
             if (isRecordingSet) return;
-            const recordingFileSrc = URL.createObjectURL(fileBlob);
+            const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
             dispatch(setSoundRecordingFile({
                 recordingId: soundRecording.id,
-                fileSrc: recordingFileSrc
+                fileName: getFileResult.fileName,
+                objectUrl: recordingFileObjectUrl
             }));
         };
 
         const fetchImages = async () => {            
             soundRecording.imageFiles?.forEach(filename => {
                 getSoundRecordingImageFile(filename)
-                    .then(fileBlob => {
+                    .then(getFileResult => {
+                        const fileBlob = getFileResult.data;
                         if (imageFiles && imageFiles[filename]) return;
-                        const recordingFileSrc = URL.createObjectURL(fileBlob);
+                        const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
                         dispatch(cacheSoundRecordingImageFile({
+                            uniqueFileName: filename,
                             recordingId: soundRecording.id,
-                            fileName: filename,
-                            fileSrc: recordingFileSrc
+                            fileName: getFileResult.fileName,
+                            objectUrl: recordingFileObjectUrl
                         }));
                     });
             });
@@ -85,14 +89,14 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     {imageFiles && (
                         <Flex gap={5}>
                             {
-                                imageSrcStrings.map((imageSrc, index) => (
+                                imageFileObjects.map((image, index) => (
                                     <Image
                                         className="popover-img"
                                         sx={{ cursor: 'pointer' }}
-                                        key={imageSrc}
+                                        key={image.objectUrl}
                                         width={100}
                                         height={80}
-                                        src={imageSrc}
+                                        src={image.objectUrl}
                                         onClick={() => {
                                             setImageModalState({
                                                 opened: true,
@@ -105,7 +109,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                         </Flex>
                     )}
                     {recordingFile && (
-                        <audio controls src={recordingFile}></audio>
+                        <audio controls src={recordingFile.objectUrl}></audio>
                     )}
                 </Stack>
                 {isLoading() && (
@@ -143,7 +147,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 <ImageCarouselModal
                     opened={imageModalState.opened}
                     selectedIndex={imageModalState.selectedIndex}
-                    images={imageSrcStrings}
+                    images={imageFileObjects}
                     onClose={() => setImageModalState({
                         ...imageModalState,
                         opened: false,

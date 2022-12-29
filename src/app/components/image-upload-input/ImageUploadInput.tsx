@@ -72,6 +72,7 @@ export default function ImageUploadInput({ inputProps, removeImage }: ImageUploa
                     ...imageModalState,
                     opened: false,
                 })}
+                showFileNames
             />
         </>
     )
