@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Container, Divider, Grid, Image, Modal, Table, Text } from '@mantine/core';
+import { Center, Container, Divider, Grid, Image, Loader, Modal, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -179,6 +179,11 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                                 }
                             </tbody>
                         </Table>
+                        {isLoading() && (
+                            <Center>
+                                <Loader color={'pink'} />
+                            </Center>
+                        )}
                     </Grid.Col>
                 </Grid>
             </Container>

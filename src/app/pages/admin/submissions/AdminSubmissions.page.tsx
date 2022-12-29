@@ -182,7 +182,9 @@ export default function AdminSubmissionsPage() {
                 <Tabs
                     mt={20}
                     value={currentTab}
-                    onTabChange={(value) => navigate(`/admin/submissions/${value}`)}
+                    onTabChange={(value) => {
+                        navigate(`/admin/submissions/${value}`);
+                    }}
                 >
                     <Tabs.List>
                         <Tabs.Tab
