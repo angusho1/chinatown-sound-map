@@ -6,6 +6,6 @@ export type SoundRecordingImageMap = {
     [id: string]: SoundRecordingImages;
 }
 
-type SoundRecordingImages = {
+export type SoundRecordingImages = {
     [fileName: string]: string;
 }

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Badge, Center, Container, Divider, Flex, Group, Image, Loader, Modal, Stack, Text, Title } from '@mantine/core';
+import { Fragment, useEffect, useState } from 'react';
+import { Container, Divider, Grid, Image, Modal, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -8,6 +8,8 @@ import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/soun
 import ImageCarouselModal, { ImageModalState } from '../../../components/image-carousel/ImageCarouselModal';
 import Submission from 'models/Submission.model';
 import { AuthenticationResult } from '@azure/msal-browser';
+import './SubmissionModal.css';
+import { getImageFileObjects } from 'utils/file-objects.utils';
 
 dayjs.extend(localizedFormat);
 
@@ -30,16 +32,16 @@ export default function SubmissionModal(props: SubmissionModalProps) {
     const dispatch = useAppDispatch();
     const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
     const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
-    const imageSrcStrings = imageFiles ? Object.values(imageFiles) : [];
+    const images = imageFiles ? getImageFileObjects(imageFiles) : [];
 
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
         selectedIndex: 0,
     });
 
-    const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
-
     const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
+
+    const getFormattedDateText = (date?: Date) => date ? dayjs(new Date(date)).format('LL') : 'Unknown';
 
     useEffect(() => {
         let isRecordingSet = false;
@@ -82,91 +84,135 @@ export default function SubmissionModal(props: SubmissionModalProps) {
     return (
         <Modal
             centered
-            size="xl"
+            size="70vw"
             opened={opened}
             onClose={onClose}
             transitionDuration={200}
+            title={soundRecording.title}
+            className="submission-modal"
         >
-            <Container size={300} px="xs">
-                <Stack align="center" spacing={8}>
-                    <Stack spacing={2} align="center">
-                        <Title order={4}>{soundRecording.title}</Title>
-                        <Text size="sm" fw={300}>Recorded by {soundRecording.author}</Text>
-                        <Text size="sm" fw={300}>Date: {dateStr}</Text>
-                        <Text component="p" fz="sm" fw={300}>
-                            {soundRecording.description}
-                        </Text>
-                    </Stack>
-                    <Stack align="center">
-                        {imageFiles && (
-                            <Flex gap={5}>
-                                {
-                                    imageSrcStrings.map((imageSrc, index) => (
-                                        <Image
-                                            className="popover-img"
-                                            sx={{ cursor: 'pointer' }}
-                                            key={imageSrc}
-                                            width={100}
-                                            height={80}
-                                            src={imageSrc}
-                                            onClick={() => {
-                                                setImageModalState({
-                                                    opened: true,
-                                                    selectedIndex: index,
-                                                });
-                                            }}
-                                        />
-                                    ))
-                                }
-                            </Flex>
-                        )}
-                        {recordingFile && (
-                            <audio controls src={recordingFile}></audio>
-                        )}
-                    </Stack>
-                    {isLoading() && (
-                        <Center>
-                            <Loader color={'pink'} />
-                        </Center>
-                    )}
-                    <Stack spacing={2} align="stretch">
-                        { soundRecording.categories && soundRecording.categories.length > 0 && (
-                            <Container px={0}>
-                                <Divider
-                                    size="xs"
-                                    my="sm"
-                                    variant="solid"
-                                    label="Categories"
-                                    color="pink"
-                                    labelPosition="center"
-                                    labelProps={{
-                                        fw: 500,
-                                    }}
-                                />
-                                <Group spacing="xs" position="center">
-                                    {soundRecording.categories && (
-                                        soundRecording.categories.map(category => (
-                                            <Badge key={category.name} >{ category.name }</Badge>
-                                        ))
-                                    )}
-                                </Group>
-                            </Container>
-                        )}
-                    </Stack>
-                </Stack>
+            <Container sx={{ minHeight: '60vh', padding: 0 }}>
+                <Grid grow>
+                    <Grid.Col span={5}>
+                        <Container p={0} mb={30}>
+                            <SectionHeader text="Submission Info" />
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Date Submitted: </Text>
+                                {getFormattedDateText(submission.dateCreated)}
+                            </Text>
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Email Address: </Text>
+                                {submission.email}
+                            </Text>
+                        </Container>
 
-                { imageFiles && (
-                    <ImageCarouselModal
-                        opened={imageModalState.opened}
-                        selectedIndex={imageModalState.selectedIndex}
-                        images={imageSrcStrings}
-                        onClose={() => setImageModalState({
-                            ...imageModalState,
-                            opened: false,
-                        })}
-                    />
-                )}
+                        <Container p={0}>
+                            <SectionHeader text="Recording Info" />
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Title: </Text>
+                                {soundRecording.title}
+                            </Text>
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Date Recorded: </Text>
+                                {getFormattedDateText(soundRecording.dateRecorded)}
+                            </Text>
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Author: </Text>
+                                {soundRecording.author}
+                            </Text>
+                            <Text size="sm">
+                                <Text span {...boldTextProps}>Description: </Text>
+                                {soundRecording.description}
+                            </Text>
+                        </Container>
+                    </Grid.Col>
+                    <Grid.Col span={7}>
+                        <SectionHeader text="Files" />
+
+                        <Table
+                            fontSize="sm"
+                            highlightOnHover
+                        >
+                            <thead></thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        {/* TODO: Include file name */}
+                                        <Text>Recording File</Text>
+                                    </td>
+                                    <td>
+                                        {recordingFile && (
+                                            <audio
+                                                style={{ float: 'right', maxWidth: '250px', height: '40px' }}
+                                                controls
+                                                src={recordingFile}>
+                                            </audio>
+                                        )}
+                                    </td>
+                                </tr>
+                                {imageFiles && images.map((image, index) => (
+                                    <tr>
+                                        <td>
+                                            <Text>
+                                                { image.fileName }
+                                            </Text>
+                                        </td>
+                                        <td>
+                                            <Image
+                                                className="popover-img"
+                                                sx={{ cursor: 'pointer', float: 'right' }}
+                                                key={image.objectUrl}
+                                                width={40}
+                                                height={40}
+                                                src={image.objectUrl}
+                                                onClick={() => {
+                                                    setImageModalState({
+                                                        opened: true,
+                                                        selectedIndex: index,
+                                                    });
+                                                }}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))
+                                }
+                            </tbody>
+                        </Table>
+                    </Grid.Col>
+                </Grid>
             </Container>
+            { imageFiles && (
+                <ImageCarouselModal
+                    opened={imageModalState.opened}
+                    selectedIndex={imageModalState.selectedIndex}
+                    images={images.map(image => image.objectUrl)}
+                    onClose={() => setImageModalState({
+                        ...imageModalState,
+                        opened: false,
+                    })}
+                />
+            )}
         </Modal>
     )
 }
+
+interface SectionHeaderProps {
+    text: string;
+}
+
+const SectionHeader = ({ text }: SectionHeaderProps) => (
+    <Fragment>
+        <Text
+            size="sm"
+            sx={{ marginBottom: '5px', lineHeight: '1rem' }}
+            color="gray"
+        >
+            { text }
+        </Text>
+        <Divider sx={{ marginTop: '5px', marginBottom: '10px' }} />
+    </Fragment>
+);
+
+const boldTextProps = {
+    fw: 700,
+};
