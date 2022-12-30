@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Center, Container, Divider, Grid, Image, Loader, Modal, Table, Text } from '@mantine/core';
+import { Center, Container, Divider, Grid, Image, Loader, MantineNumberSize, Modal, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -99,11 +99,11 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                     <Grid.Col span={5}>
                         <Container p={0} mb={30}>
                             <SectionHeader text="Submission Info" />
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Date Submitted: </Text>
                                 {getFormattedDateText(submission.dateCreated)}
                             </Text>
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Email Address: </Text>
                                 {submission.email}
                             </Text>
@@ -111,21 +111,25 @@ export default function SubmissionModal(props: SubmissionModalProps) {
 
                         <Container p={0}>
                             <SectionHeader text="Recording Info" />
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Title: </Text>
                                 {soundRecording.title}
                             </Text>
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Date Recorded: </Text>
                                 {getFormattedDateText(soundRecording.dateRecorded)}
                             </Text>
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Author: </Text>
                                 {soundRecording.author}
                             </Text>
-                            <Text size="sm">
+                            <Text {...textProps}>
                                 <Text span {...boldTextProps}>Description: </Text>
                                 {soundRecording.description}
+                            </Text>
+                            <Text {...textProps}>
+                                <Text span {...boldTextProps}>Categories: </Text>
+                                {soundRecording.categories?.map(category => category.name).join(', ')}
                             </Text>
                         </Container>
                     </Grid.Col>
@@ -219,6 +223,13 @@ const SectionHeader = ({ text }: SectionHeaderProps) => (
         <Divider sx={{ marginTop: '5px', marginBottom: '10px' }} />
     </Fragment>
 );
+
+const textProps = {
+    size: 'sm' as MantineNumberSize,
+    sx: {
+        marginBottom: '0.2rem'
+    }
+};
 
 const boldTextProps = {
     fw: 700,
