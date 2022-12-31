@@ -1,6 +1,8 @@
 import { RecordingLocation } from "models/RecordingLocation.model";
 
 export const MAX_TITLE_LEN = 100;
+export const MAX_AUTHOR_NAME_LEN = 100;
+export const MAX_DESCRIPTION_LEN = 1000;
 export const MAX_RECORDING_UPLOAD_SIZE = 5 * (10 ** 6);
 export const MAX_IMAGE_UPLOAD_SIZE = 3 * (10 ** 6);
 export const DEFAULT_SUBMISSION_LOCATION = { lat: 49.279470, lng: -123.099721 };
@@ -9,7 +11,17 @@ export const MAX_CATEGORY_LABEL_LENGTH = 40;
 
 export const submissionTitleValidator = (value: string): string | null => {
     if (!value) return 'Please give your recording a title';
-    if (value.length > MAX_TITLE_LEN) return `Title must ${MAX_TITLE_LEN} characters or less`;
+    if (value.length > MAX_TITLE_LEN) return `Title cannot exceed ${MAX_TITLE_LEN} characters`;
+    return null;
+}
+
+export const submissionAuthorNameValidator = (value: string): string | null => {
+    if (value.length > MAX_AUTHOR_NAME_LEN) return `Name cannot exceed ${MAX_AUTHOR_NAME_LEN} characters`;
+    return null;
+}
+
+export const submissionDescriptionValidator = (value: string): string | null => {
+    if (value.length > MAX_DESCRIPTION_LEN) return `Description cannot exceed ${MAX_DESCRIPTION_LEN} characters`;
     return null;
 }
 

@@ -7,7 +7,7 @@ import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
 import { useState } from 'react';
-import { categoryValidator, DEFAULT_SUBMISSION_LOCATION, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import { categoryValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
 import CategoryInput from '../category-input/CategoryInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
@@ -26,6 +26,7 @@ export default function SubmissionForm() {
             title: '',
             recording: undefined,
             email: '',
+            author: '',
             description: '',
             date: undefined,
             location: defaultLocation,
@@ -38,6 +39,8 @@ export default function SubmissionForm() {
             title: submissionTitleValidator,
             recording: submissionRecordingValidator,
             email: submissionEmailValidator,
+            author: submissionAuthorNameValidator,
+            description: submissionDescriptionValidator,
             location: submissionLocationValidator,
             images: submissionImagesValidator,
             autoComplete: categoryValidator,
@@ -145,6 +148,12 @@ export default function SubmissionForm() {
                 label="Email"
                 placeholder="your@email.com"
                 {...form.getInputProps('email')}
+            />
+            <Space h="md" />
+            <TextInput
+                label="Your Name"
+                placeholder="My Name"
+                {...form.getInputProps('author')}
             />
             <Space h="md" />
             <Textarea

@@ -10,7 +10,8 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     formData.append('recording', submission.recording);
     formData.append('location', JSON.stringify(submission.location));
     formData.append('email', submission.email);
-    formData.append('description', submission.description ? submission.description : '');
+    formData.append('author', submission.author || '');
+    formData.append('description', submission.description || '');
     formData.append('date', submission.date ? submission.date.toUTCString() : '');
     formData.append('existingCategories', JSON.stringify(existingCategoryIds));
     formData.append('newCategories', JSON.stringify(newCategories));

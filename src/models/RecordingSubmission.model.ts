@@ -7,6 +7,7 @@ export default interface SoundClipSubmission {
     location: RecordingLocation;
     email: string;
     description?: string;
+    author?: string;
     date?: Date;
     images?: File[];
     categories: SoundRecordingCategory[];
