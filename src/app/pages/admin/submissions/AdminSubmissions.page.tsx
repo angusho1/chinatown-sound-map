@@ -1,5 +1,8 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
 import { ActionIcon, Badge, Center, Container, Flex, Loader, Spoiler, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { IconArrowBackUp, IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
 import { getSubmissions, publishSubmission, editSubmissionStatus } from "features/submissions/submissionsAPI";
@@ -16,6 +19,8 @@ const PUBLISHED_SUBMISSIONS_TAB_ID = PUBLISHED_SUBMISSIONS_TAB_NAME.toLowerCase(
 const PENDING_SUBMISSIONS_TAB_ID = PENDING_SUBMISSIONS_TAB_NAME.toLowerCase();
 const REJECTED_SUBMISSIONS_TAB_ID = REJECTED_SUBMISSIONS_TAB_NAME.toLowerCase();
 
+dayjs.extend(localizedFormat);
+
 export default function AdminSubmissionsPage() {
     const { instance } = useMsal();
     const { tab } = useParams();
@@ -26,6 +31,7 @@ export default function AdminSubmissionsPage() {
         opened: false,
         selectedSubmission: undefined,
     });
+    const { height } = useViewportSize();
 
     useEffect(() => {
         if (isAuthenticated) fetchSubmissions();
@@ -94,7 +100,7 @@ export default function AdminSubmissionsPage() {
             .map(submission => {
             return (
                 <tr key={submission.id}>
-                    <td>{ submission.dateCreated.toUTCString() }</td>
+                    <td>{ dayjs(submission.dateCreated).format('LLL') }</td>
                     <td>{ submission.soundRecording.title }</td>
                     <td>
                         <Spoiler
@@ -174,7 +180,7 @@ export default function AdminSubmissionsPage() {
     const currentTab = tab ? tab : PENDING_SUBMISSIONS_TAB_ID;
 
     return (
-        <Container py="xl" sx={{ height: '100%' }}>
+        <Container py="xl" sx={{ minHeight: height-120 }}>
             <AuthenticatedTemplate>
                 <Title>
                     Submissions
