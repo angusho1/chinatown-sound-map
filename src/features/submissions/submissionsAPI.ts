@@ -1,6 +1,7 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingCategory from "models/SoundRecordingCategory.model";
 import Submission, { SubmissionStatus } from "models/Submission.model";
+import { GetSubmissionsOptions, SortColumn } from "types/api/submissions-api.types";
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
@@ -36,13 +37,23 @@ export function getSoundRecordingCategories(): Promise<SoundRecordingCategory[]>
     return fetch('/categories').then(res => res.json());
 }
 
-export async function getSubmissions(token: string): Promise<Submission[]> {
+export async function getSubmissions(token: string, options: GetSubmissionsOptions): Promise<Submission[]> {
     const headers = new Headers();
     const bearer = `Bearer ${token}`;
     headers.append("Authorization", bearer);
 
+    const getQueryParams = (sort: SortColumn[]) => {
+        if (sort.length === 0) return '';
+        
+        const params = sort.map(option => `sort=${option.field}&desc=${option.reversed.toString()}`);
+
+        return params.join('&');
+    };
+
+    const queryParams = options.sort ? getQueryParams(options.sort) : '';
+
     try {
-        const res = await fetch('/submissions', {
+        const res = await fetch(`/submissions${queryParams ? '?' + queryParams : ''}`, {
             method: 'GET',
             headers
         });

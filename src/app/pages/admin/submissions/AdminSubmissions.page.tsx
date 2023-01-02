@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SubmissionModal, { SubmissionModalState } from "../../../components/submission-modal/SubmissionModal";
 import SubmissionsTable from "app/components/submissions-table/SubmissionsTable";
+import { SortColumn } from "types/api/submissions-api.types";
 
 const PUBLISHED_SUBMISSIONS_TAB_NAME = 'Published';
 const PENDING_SUBMISSIONS_TAB_NAME = 'Pending';
@@ -24,27 +25,40 @@ dayjs.extend(localizedFormat);
 
 export default function AdminSubmissionsPage() {
     const { instance } = useMsal();
+    const isAuthenticated = useIsAuthenticated();
+
     const { tab } = useParams();
     const navigate = useNavigate();
-    const isAuthenticated = useIsAuthenticated();
+
     const [submissions, setSubmissions] = useState<Submission[]>();
+    const defaultSort: SortColumn[] = [{ field: 'dateCreated', reversed: true }];
+    const [sort, setSort] = useState<SortColumn[]>(defaultSort);
+    const [loading, setLoading] = useState<boolean>(true);
+
     const [submissionModalState, setSubmissionModalState] = useState<SubmissionModalState>({
         opened: false,
         selectedSubmission: undefined,
     });
+
     const { height } = useViewportSize();
 
     useEffect(() => {
         if (isAuthenticated) fetchSubmissions();
     }, [isAuthenticated]);
 
+    useEffect(() => {
+        if (!loading) fetchSubmissions();
+    }, [sort]);
+
     const getToken = () => instance.acquireTokenSilent(tokenRequest);
 
     const fetchSubmissions = async () => {
+        setLoading(true);
         try {
             const tokenResult = await getToken();
-            const res = await getSubmissions(tokenResult.accessToken);
+            const res = await getSubmissions(tokenResult.accessToken, { sort });
             setSubmissions(res);
+            setLoading(false);
         } catch (e) {
             console.log(e);
         }
@@ -110,8 +124,11 @@ export default function AdminSubmissionsPage() {
                             </Title>
                             <SubmissionsTable
                                 submissions={submissions}
+                                loading={loading}
                                 statusFilter={'Approved'}
                                 refreshSubmissions={fetchSubmissions}
+                                sort={sort}
+                                onSortChange={setSort}
                             />
                         </Container>
                     </Tabs.Panel>
@@ -122,8 +139,11 @@ export default function AdminSubmissionsPage() {
                             </Title>
                             <SubmissionsTable
                                 submissions={submissions}
+                                loading={loading}
                                 statusFilter={'Pending'}
                                 refreshSubmissions={fetchSubmissions}
+                                sort={sort}
+                                onSortChange={setSort}
                             />
                         </Container>
                     </Tabs.Panel>
@@ -134,8 +154,11 @@ export default function AdminSubmissionsPage() {
                             </Title>
                             <SubmissionsTable
                                 submissions={submissions}
+                                loading={loading}
                                 statusFilter={'Rejected'}
                                 refreshSubmissions={fetchSubmissions}
+                                sort={sort}
+                                onSortChange={setSort}
                             />
                         </Container>
                     </Tabs.Panel>

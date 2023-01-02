@@ -6,27 +6,39 @@ import dayjs from "dayjs";
 import { editSubmissionStatus, publishSubmission } from "features/submissions/submissionsAPI";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { Fragment, useState } from "react";
+import { SortColumn, SubmissionSortField } from "types/api/submissions-api.types";
 import SubmissionModal, { SubmissionModalState } from "../submission-modal/SubmissionModal";
+import SortButtonTh from "./SortButtonTh";
 
 interface SubmissionsTableProps {
     submissions?: Submission[];
     statusFilter: SubmissionStatus;
+    loading: boolean;
     refreshSubmissions: () => void;
+    sort: SortColumn[];
+    onSortChange: (sort: SortColumn[]) => void;
 }
 
-export default function SubmissionsTable({ submissions, statusFilter, refreshSubmissions }: SubmissionsTableProps) {
+type ColumnSortState = {
+    sorted: boolean;
+    reversed: boolean;
+    isPrimarySort: boolean;
+}
+
+export default function SubmissionsTable({ submissions, statusFilter, loading, refreshSubmissions, sort, onSortChange }: SubmissionsTableProps) {
     const { instance } = useMsal();
     const [submissionModalState, setSubmissionModalState] = useState<SubmissionModalState>({
         opened: false,
         selectedSubmission: undefined,
     });
 
+
     const getToken = async () => {
         const tokenResult = await instance.acquireTokenSilent(tokenRequest);
         return tokenResult.accessToken;
     };
 
-    if (!submissions) return (
+    if (!submissions || loading) return (
         <Center h={200}>
             <Loader color={'pink'} />
         </Center>
@@ -125,6 +137,33 @@ export default function SubmissionsTable({ submissions, statusFilter, refreshSub
         );
     });
 
+    const getSortState = (field: SubmissionSortField): ColumnSortState => {
+        const fieldIndex = sort.findIndex(col => col.field === field);
+
+        if (fieldIndex === -1) return { sorted: false, reversed: false, isPrimarySort: false };
+        else return { sorted: true, reversed: sort[fieldIndex].reversed, isPrimarySort: fieldIndex === 0 };
+    };
+
+    const updateSort = (field: SubmissionSortField) => {
+        const i = sort.findIndex(col => col.field === field);
+        let newSort: SortColumn[];
+        if (i === -1) {
+            newSort = ([{ field, reversed: false }] as SortColumn[]).concat(sort);
+        } else if (sort[i].reversed) {
+            newSort = sort.slice();
+            newSort.splice(i, 1);
+        } else {
+            newSort = sort.slice();
+            const fieldSort = newSort[i];
+            fieldSort.reversed = true;
+            if (i > 0) {
+                newSort.splice(i, 1);
+                newSort.unshift(fieldSort);
+            }
+        }
+        onSortChange(newSort);
+    };
+
     return (
         <Fragment>
             <Table
@@ -132,14 +171,33 @@ export default function SubmissionsTable({ submissions, statusFilter, refreshSub
                 horizontalSpacing="xl"
                 striped
                 highlightOnHover
+                sx={{ tableLayout: 'fixed' }}
             >
                 <thead>
                     <tr>
-                        <th>Date Submitted</th>
-                        <th>Title</th>
+                        <SortButtonTh
+                            {...getSortState('dateCreated')}
+                            onSort={() => updateSort('dateCreated')}
+                            width={200}
+                        >
+                            Date Submitted
+                        </SortButtonTh>
+                        <SortButtonTh
+                            {...getSortState('title')}
+                            onSort={() => updateSort('title')}
+                            width={150}
+                        >
+                            Title
+                        </SortButtonTh>
                         <th>Description</th>
-                        <th>Author</th>
-                        <th>Actions</th>
+                        <SortButtonTh
+                            {...getSortState('author')}
+                            onSort={() => updateSort('author')}
+                            width={200}
+                        >
+                            Author
+                        </SortButtonTh>
+                        <th style={{ width: '80px' }}>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
