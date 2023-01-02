@@ -1,15 +1,16 @@
 import { AuthenticatedTemplate, useIsAuthenticated, useMsal } from "@azure/msal-react";
-import { ActionIcon, Badge, Center, Container, Flex, Loader, Spoiler, Table, Tabs, Text, Title, Tooltip } from "@mantine/core";
+import { Badge, Container, Tabs, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { IconArrowBackUp, IconCheck, IconDots, IconEye, IconTrash, IconX } from "@tabler/icons";
+import { IconDots, IconEye, IconTrash } from "@tabler/icons";
 import { tokenRequest } from "AuthConfig";
-import { getSubmissions, publishSubmission, editSubmissionStatus } from "features/submissions/submissionsAPI";
+import { getSubmissions } from "features/submissions/submissionsAPI";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import SubmissionModal, { SubmissionModalState } from "./SubmissionModal";
+import SubmissionModal, { SubmissionModalState } from "../../../components/submission-modal/SubmissionModal";
+import SubmissionsTable from "app/components/submissions-table/SubmissionsTable";
 
 const PUBLISHED_SUBMISSIONS_TAB_NAME = 'Published';
 const PENDING_SUBMISSIONS_TAB_NAME = 'Pending';
@@ -50,127 +51,6 @@ export default function AdminSubmissionsPage() {
     };
 
     const getSubmissionFilter = (statusFilter: SubmissionStatus) => (submission: Submission) => submission.status === statusFilter;
-
-    const publish = async (submission: Submission) => {
-        try {
-            const tokenResult = await getToken();
-            await publishSubmission(submission.id, tokenResult.accessToken);
-            fetchSubmissions();
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const remove = async (submission: Submission) => {
-        try {
-            const tokenResult = await getToken();
-            await editSubmissionStatus(submission.id, 'Rejected', tokenResult.accessToken);
-            fetchSubmissions();
-        } catch (e) {
-            console.log(e);
-        }
-    };
-
-    const restore = async (submission: Submission) => {
-        try {
-            const tokenResult = await getToken();
-            await editSubmissionStatus(submission.id, 'Pending', tokenResult.accessToken);
-            fetchSubmissions();
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    const viewSubmission = (submission: Submission) => {
-        setSubmissionModalState({
-            opened: true,
-            selectedSubmission: submission,
-        });
-    };
-
-    const renderSubmissionsTable = (statusFilter: SubmissionStatus) => {
-        if (!submissions) return (
-            <Center h={200}>
-                <Loader color={'pink'} />
-            </Center>
-        );
-
-        const rows = submissions
-            .filter(getSubmissionFilter(statusFilter))
-            .map(submission => {
-            return (
-                <tr key={submission.id}>
-                    <td>{ dayjs(submission.dateCreated).format('LLL') }</td>
-                    <td>{ submission.soundRecording.title }</td>
-                    <td>
-                        <Spoiler
-                            maxHeight={70}
-                            showLabel="Show more"
-                            hideLabel="Hide"
-                        >
-                            { submission.soundRecording.description }
-                        </Spoiler>
-                    </td>
-                    <td>
-                        <Text>{ submission.soundRecording.author }</Text>
-                        <Text>{ submission.email }</Text>
-                    </td>
-                    <td>
-                        <Flex justify={{ sm: 'center' }}>
-                            <Tooltip label="View Submission">
-                                <ActionIcon onClick={() => viewSubmission(submission)} color="gray">
-                                    <IconEye size={20} />
-                                </ActionIcon>
-                            </Tooltip>
-                            { statusFilter === 'Pending' && (
-                                <Tooltip label="Publish">
-                                    <ActionIcon onClick={() => publish(submission)} color="green">
-                                        <IconCheck size={20} />
-                                    </ActionIcon>
-                                </Tooltip>
-                            )}
-                            { (statusFilter === 'Approved' || statusFilter === 'Pending') && (
-                                <Tooltip label="Remove">
-                                    <ActionIcon onClick={() => remove(submission)} color="red">
-                                        <IconX size={20} />
-                                    </ActionIcon>
-                                </Tooltip>
-                            )}
-                            { statusFilter === 'Rejected' && (
-                                <Tooltip label="Restore">
-                                    <ActionIcon onClick={() => restore(submission)} color="gray">
-                                        <IconArrowBackUp size={20} />
-                                    </ActionIcon>
-                                </Tooltip>
-                            )}
-                        </Flex>
-                    </td>
-                </tr>
-            );
-        });
-
-        return (            
-            <Table
-                fontSize="sm"
-                horizontalSpacing="xl"
-                striped
-                highlightOnHover
-            >
-                <thead>
-                    <tr>
-                        <th>Date Submitted</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Author</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { rows }
-                </tbody>
-            </Table>
-        )
-    };
 
     const getSubmissionCount = (statusFilter: SubmissionStatus): number => {
         if (!submissions) return 0;
@@ -228,7 +108,11 @@ export default function AdminSubmissionsPage() {
                             <Title mb="lg" order={3}>
                                 {PUBLISHED_SUBMISSIONS_TAB_NAME} { submissions ? `(${getSubmissionCount('Approved')})` : '' }
                             </Title>
-                            { renderSubmissionsTable('Approved') }
+                            <SubmissionsTable
+                                submissions={submissions}
+                                statusFilter={'Approved'}
+                                refreshSubmissions={fetchSubmissions}
+                            />
                         </Container>
                     </Tabs.Panel>
                     <Tabs.Panel value={PENDING_SUBMISSIONS_TAB_ID} pt="xs">
@@ -236,7 +120,11 @@ export default function AdminSubmissionsPage() {
                             <Title mb="lg" order={3}>
                                 {PENDING_SUBMISSIONS_TAB_NAME} { submissions ? `(${getSubmissionCount('Pending')})` : '' }
                             </Title>
-                            { renderSubmissionsTable('Pending') }
+                            <SubmissionsTable
+                                submissions={submissions}
+                                statusFilter={'Pending'}
+                                refreshSubmissions={fetchSubmissions}
+                            />
                         </Container>
                     </Tabs.Panel>
                     <Tabs.Panel value={REJECTED_SUBMISSIONS_TAB_ID} pt="xs">
@@ -244,7 +132,11 @@ export default function AdminSubmissionsPage() {
                             <Title mb="lg" order={3}>
                                 {REJECTED_SUBMISSIONS_TAB_NAME} { submissions ? `(${getSubmissionCount('Rejected')})` : '' }
                             </Title>
-                            { renderSubmissionsTable('Rejected') }
+                            <SubmissionsTable
+                                submissions={submissions}
+                                statusFilter={'Rejected'}
+                                refreshSubmissions={fetchSubmissions}
+                            />
                         </Container>
                     </Tabs.Panel>
                 </Tabs>
@@ -257,7 +149,6 @@ export default function AdminSubmissionsPage() {
                             opened: false,
                             selectedSubmission: submissionModalState.selectedSubmission,
                         })}
-                        getToken={getToken}
                     />
                 )}
             </AuthenticatedTemplate>

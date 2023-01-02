@@ -5,10 +5,11 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
 import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
-import ImageCarouselModal, { ImageModalState } from '../../../components/image-carousel/ImageCarouselModal';
+import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import Submission from 'models/Submission.model';
-import { AuthenticationResult } from '@azure/msal-browser';
 import './SubmissionModal.css';
+import { tokenRequest } from 'AuthConfig';
+import { useMsal } from '@azure/msal-react';
 
 dayjs.extend(localizedFormat);
 
@@ -16,7 +17,6 @@ export type SubmissionModalProps = {
     opened: boolean;
     submission: Submission;
     onClose: () => void;
-    getToken: () => Promise<AuthenticationResult>;
 }
 
 export interface SubmissionModalState {
@@ -25,7 +25,8 @@ export interface SubmissionModalState {
 }
 
 export default function SubmissionModal(props: SubmissionModalProps) {
-    const { submission, opened, onClose, getToken } = props;
+    const { submission, opened, onClose } = props;
+    const { instance } = useMsal();
     const soundRecording = submission.soundRecording;
 
     const dispatch = useAppDispatch();
@@ -38,6 +39,11 @@ export default function SubmissionModal(props: SubmissionModalProps) {
         selectedIndex: 0,
     });
 
+    const getToken = async () => {
+        const tokenResult = await instance.acquireTokenSilent(tokenRequest);
+        return tokenResult.accessToken;
+    };
+
     const isLoading = () => !recordingFileData || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
 
     const getFormattedDateText = (date?: Date) => date ? dayjs(new Date(date)).format('LL') : 'Unknown';
@@ -46,8 +52,8 @@ export default function SubmissionModal(props: SubmissionModalProps) {
         let isRecordingSet = false;
 
         const fetchRecordingFile = async () => {
-            const tokenResult = await getToken();
-            const getFileResult = await getSoundRecordingFile(soundRecording.id, tokenResult.accessToken);
+            const token = await getToken();
+            const getFileResult = await getSoundRecordingFile(soundRecording.id, token);
             const fileBlob = getFileResult.data;
             if (isRecordingSet) return;
             const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
@@ -61,7 +67,7 @@ export default function SubmissionModal(props: SubmissionModalProps) {
         const fetchImages = async () => {            
             soundRecording.imageFiles?.forEach(filename => {
                 getToken()
-                    .then(tokenResult => getSoundRecordingImageFile(filename, tokenResult.accessToken))
+                    .then(token => getSoundRecordingImageFile(filename, token))
                     .then(getFileResult => {
                         const fileBlob = getFileResult.data;
                         if (imageFiles && imageFiles[filename]) return;
