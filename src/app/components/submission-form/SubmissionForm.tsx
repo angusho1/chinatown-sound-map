@@ -1,12 +1,13 @@
-import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Stack, Text, Textarea, TextInput, Title } from '@mantine/core';
+import { Button, Container, FileInput, Group, Input, LoadingOverlay, Paper, Space, Stack, Stepper, StepProps, Text, Textarea, TextInput, Title } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { IconCircleX, IconFileUpload, IconListDetails, IconUserCircle } from '@tabler/icons';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { createSubmission, resetSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { categoryValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
 import CategoryInput from '../category-input/CategoryInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
@@ -15,9 +16,17 @@ import './SubmissionForm.css';
 
 type SubmissionFormValues = Partial<SoundClipSubmission>;
 
+enum SubmissionFormStep {
+    UPLOAD,
+    RECORDING_DETAILS,
+    CONTRIBUTOR_INFO,
+    SUBMISSION_RESULT
+}
+
 export default function SubmissionForm() {
     const dispatch = useAppDispatch();
     const [locationModalOpened, setLocationModalOpened] = useState(false);
+    const [currStep, setStep] = useState<SubmissionFormStep>(SubmissionFormStep.UPLOAD);
     const submissionStatus = useAppSelector(selectSubmissionStatus);
     const defaultLocation = DEFAULT_SUBMISSION_LOCATION;
 
@@ -48,9 +57,14 @@ export default function SubmissionForm() {
         validateInputOnChange: ['recording', 'images', 'autoComplete']
     });
 
+    const fileInputs = ['recording', 'images'];
+    const recordingDetailsInputs = ['title', 'location', 'description', 'date', 'autoComplete', 'categories'];
+    const contributorInfoInputs = ['email', 'author'];
+
     const submitForm = (values: SubmissionFormValues) => {
         const submission = values as SoundClipSubmission;
         dispatch(createSubmission(submission));
+        setStep(SubmissionFormStep.SUBMISSION_RESULT);
     }
 
     const closeLocationModal = (location: RecordingLocation) => {
@@ -91,6 +105,7 @@ export default function SubmissionForm() {
     const resetForm = () => {
         form.reset();
         dispatch(resetSubmission());
+        setStep(SubmissionFormStep.UPLOAD);
     };
 
     const returnToForm = () => {
@@ -107,127 +122,319 @@ export default function SubmissionForm() {
         form.setFieldValue('autoComplete', value);
     }
 
-    const renderForm = () => (
-        <form onSubmit={form.onSubmit(submitForm)} onKeyDown={onFormKeyEvent}>
-            <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
-            <FileInput 
-                label="Upload Recording" 
-                placeholder="Click to Upload" 
-                accept="audio/mp4,audio/mpeg,audio/x-wav" 
-                withAsterisk
-                {...form.getInputProps('recording')}
-            />
-            <Space h="md" />
-            <TextInput
-                label="Title"
-                placeholder="My Chinatown Recording"
-                withAsterisk
-                {...form.getInputProps('title')}
-            />
-            <Space h="md" />
-            <Input.Wrapper
-                label="Location"
-                withAsterisk
-                description="Tell us where you recorded this clip."
-                error={form.getInputProps('location').error}
-            >
-                <Input 
-                    id="location-input" 
-                    type="button"
-                    pointer
-                    {...form.getInputProps('location')}
-                    invalid={!!form.getInputProps('location').error}
-                    onClick={() => setLocationModalOpened(true)}
-                    className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
-                    value={getLocationText(form.values.location)}
-                >
-                </Input>
-            </Input.Wrapper>
-            <Space h="md" />
-            <TextInput
-                label="Email"
-                placeholder="your@email.com"
-                {...form.getInputProps('email')}
-            />
-            <Space h="md" />
-            <TextInput
-                label="Your Name"
-                placeholder="My Name"
-                {...form.getInputProps('author')}
-            />
-            <Space h="md" />
-            <Textarea
-                placeholder="Please tell us more about your recording"
-                label="Description"
-                autosize
-                minRows={2}
-                maxRows={10}
-                {...form.getInputProps('description')}
-            />
-            <Space h="md" />
-            <DatePicker
-                label="Date Recorded"
-                placeholder="Pick date"
-                firstDayOfWeek="sunday"
-                maxDate={new Date()}
-                {...form.getInputProps('date')}
-            />
-            <Space h="md" />
-            <ImageUploadInput
-                removeImage={removeImage}
-                inputProps={form.getInputProps('images')}
-            />
-            <Space h="md" />
-            <CategoryInput
-                inputProps={form.getInputProps('categories')}
-                autoCompleteProps={form.getInputProps('autoComplete')}
-                addCategory={addCategory}
-                removeCategory={removeCategory}
-                setAutoCompleteField={setAutoCompleteField}
-            />
+    const validateFiles = () => {
+        fileInputs.forEach(input => form.validateField(input));
+    };
 
-            <Group position="right" mt="md">
-                <Button type="submit">Submit</Button>
-            </Group>
-        </form>
+    const validateRecordingDetails = () => {
+        recordingDetailsInputs.forEach(input => form.validateField(input));
+    };
+
+    const validateContributorInfo = () => {
+        contributorInfoInputs.forEach(input => form.validateField(input));
+    };
+
+    const nextStep = () => {
+        const incrementStep = () => setStep(currStep+1);
+
+        switch (currStep) {
+            case SubmissionFormStep.UPLOAD:
+                validateFiles();
+                incrementStep();
+                break;
+            case SubmissionFormStep.RECORDING_DETAILS:
+                validateRecordingDetails();
+                incrementStep();
+                break;
+            case SubmissionFormStep.CONTRIBUTOR_INFO:
+                break;
+            default:
+                break;
+        }
+    };
+    
+    const prevStep = () => {
+        const decrementStep = () => setStep(currStep-1);
+
+        switch (currStep) {
+            case SubmissionFormStep.RECORDING_DETAILS:
+                validateRecordingDetails();
+                decrementStep();
+                break;
+            case SubmissionFormStep.CONTRIBUTOR_INFO:
+                validateContributorInfo();
+                decrementStep();
+                break;
+            case SubmissionFormStep.SUBMISSION_RESULT:
+                decrementStep();
+                break;
+            default:
+                break;
+        }
+    };
+
+    const validateStep = (step: SubmissionFormStep) => {
+        switch (step) {
+            case SubmissionFormStep.UPLOAD:
+                validateFiles();
+                break;
+            case SubmissionFormStep.RECORDING_DETAILS:
+                validateRecordingDetails();
+                break;
+            case SubmissionFormStep.CONTRIBUTOR_INFO:
+                validateContributorInfo();
+                break;
+            default:
+                break;
+        }
+    };
+
+    const onStepClick = (nextStep: SubmissionFormStep) => {
+        for (let i = 0; i < nextStep; i++) {
+            validateStep(i);
+        }
+        setStep(nextStep);
+    };
+
+    const hasErrors = (step: SubmissionFormStep) => {
+        let fields: string[];
+        switch (step) {
+            case SubmissionFormStep.UPLOAD:
+                fields = fileInputs;
+                break;
+            case SubmissionFormStep.RECORDING_DETAILS:
+                fields = recordingDetailsInputs;
+                break;
+            case SubmissionFormStep.CONTRIBUTOR_INFO:
+                fields = contributorInfoInputs;
+                break;
+            default:
+                return false;
+        }
+        for (const field of fields) {
+            if (form.errors[field]) return true;
+        }
+        return false;
+    }
+
+    const getStepProps = (step: SubmissionFormStep): StepProps => {
+        const propMap = {
+            [SubmissionFormStep.UPLOAD]: {
+                label: 'Step 1',
+                description: 'Upload Files',
+                icon: (<IconFileUpload {...stepperIconProps} />),
+            },
+            [SubmissionFormStep.RECORDING_DETAILS]: {
+                label: 'Step 2',
+                description: 'Recording Details',
+                icon: (<IconListDetails {...stepperIconProps} />),
+            },
+            [SubmissionFormStep.CONTRIBUTOR_INFO]: {
+                label: 'Step 3',
+                description: 'Contributor Info',
+                icon: (<IconUserCircle {...stepperIconProps} />),
+            },
+            [SubmissionFormStep.SUBMISSION_RESULT]: {},
+        };
+
+        return {
+            ...propMap[step],
+            ...hasErrors(step) ? {
+                color: step < currStep ? 'light' : undefined,
+                completedIcon: (<IconCircleX color="red" />),
+            } : {},
+            allowStepSelect: submissionStatus !== 'succeeded'
+        };
+    };
+
+    const nextButtonProps = {
+        type: currStep === SubmissionFormStep.CONTRIBUTOR_INFO ? 'submit' as 'submit' : 'button' as 'button',
+        children: currStep === SubmissionFormStep.CONTRIBUTOR_INFO ? 'Submit' : 'Next',
+        disabled: currStep === SubmissionFormStep.SUBMISSION_RESULT,
+    };
+
+    const prevButtonProps = {
+        children: currStep === SubmissionFormStep.SUBMISSION_RESULT ? 'Go Back' : 'Back',
+        disabled: currStep === SubmissionFormStep.UPLOAD,
+    };
+
+    const recordingFileInput = (
+        <FileInput 
+            label="Upload Recording" 
+            placeholder="Click to Upload" 
+            accept="audio/mp4,audio/mpeg,audio/x-wav" 
+            withAsterisk
+            {...form.getInputProps('recording')}
+        />
     );
 
-    const renderSubmissionResult = () => (
-        <>
-            {submissionStatus === 'succeeded' && (
-                <Stack>
-                    <Title align="center" order={3}>Submission was successful</Title>
-                    <Text size="md">Thanks for your submission! We will get in touch with you if it is approved.</Text>
-                    <Button onClick={resetForm} className="submission-result-btn" variant="outline">
-                        Submit Another Recording
-                    </Button>
-                </Stack>
+    const imageFilesInput = (
+        <ImageUploadInput
+            removeImage={removeImage}
+            inputProps={form.getInputProps('images')}
+        />
+    );
+
+    const titleInput = (
+        <TextInput
+            label="Title"
+            placeholder="My Chinatown Recording"
+            withAsterisk
+            {...form.getInputProps('title')}
+        />
+    );
+
+    const locationInput = (
+        <Input.Wrapper
+            label="Location"
+            withAsterisk
+            description="Tell us where you recorded this clip."
+            error={form.getInputProps('location').error}
+        >
+            <Input 
+                id="location-input" 
+                type="button"
+                pointer
+                {...form.getInputProps('location')}
+                invalid={!!form.getInputProps('location').error}
+                onClick={() => setLocationModalOpened(true)}
+                className={!isLocationSet(form.values.location) ? 'grey-input' : ''}
+                value={getLocationText(form.values.location)}
+            >
+            </Input>
+        </Input.Wrapper>
+    );
+
+    const descriptionInput = (
+        <Textarea
+            placeholder="Please tell us more about your recording"
+            label="Description"
+            autosize
+            minRows={2}
+            maxRows={10}
+            {...form.getInputProps('description')}
+        />
+    );
+
+    const dateRecordedInput = (
+        <DatePicker
+            label="Date Recorded"
+            placeholder="Pick date"
+            firstDayOfWeek="sunday"
+            maxDate={new Date()}
+            {...form.getInputProps('date')}
+        />
+    );
+
+    const categoryInput = (
+        <CategoryInput
+            inputProps={form.getInputProps('categories')}
+            autoCompleteProps={form.getInputProps('autoComplete')}
+            addCategory={addCategory}
+            removeCategory={removeCategory}
+            setAutoCompleteField={setAutoCompleteField}
+        />
+    );
+
+    const emailInput = (
+        <TextInput
+            label="Email"
+            placeholder="your@email.com"
+            withAsterisk
+            {...form.getInputProps('email')}
+        />
+    );
+
+    const authorInput = (        
+        <TextInput
+            label="Your Name"
+            placeholder="My Name"
+            {...form.getInputProps('author')}
+        />
+    );
+
+    const renderForm = () => (
+        <form onSubmit={form.onSubmit(submitForm)} onKeyDown={onFormKeyEvent}>
+            <Stepper active={currStep} onStepClick={onStepClick} breakpoint="sm">
+                <Stepper.Step {...getStepProps(SubmissionFormStep.UPLOAD)}>
+                    { recordingFileInput }
+                    <Space h="md" />
+                    { imageFilesInput }
+                </Stepper.Step>
+                <Stepper.Step {...getStepProps(SubmissionFormStep.RECORDING_DETAILS)}>
+                    { titleInput }
+                    <Space h="md" />
+                    { locationInput }
+                    <Space h="md" />
+                    { descriptionInput }
+                    <Space h="md" />
+                    { dateRecordedInput }
+                    <Space h="md" />
+                    { categoryInput }
+                </Stepper.Step>
+                <Stepper.Step {...getStepProps(SubmissionFormStep.CONTRIBUTOR_INFO)}>
+                    { emailInput }
+                    <Space h="md" />
+                    { authorInput }
+                </Stepper.Step>
+                <Stepper.Completed>
+                {submissionStatus === 'pending' && (
+                    <Container sx={{ minHeight: 200 }}>
+                        <LoadingOverlay visible={submissionStatus === 'pending'} overlayBlur={2} zIndex={1} />
+                    </Container>
+                )}
+                {submissionStatus === 'succeeded' && (
+                    <Stack>
+                        <Title align="center" order={3}>Submission was successful</Title>
+                        <Text size="md">Thanks for your submission! We will get in touch with you if it is approved.</Text>
+                        <Button onClick={resetForm} className="submission-result-btn" variant="outline">
+                            Submit Another Recording
+                        </Button>
+                    </Stack>
+                )}
+                {submissionStatus === 'failed' && (
+                    <Stack>
+                        <Title align="center" order={3}>There was an error with your submission.</Title>
+                        <Text size="md">There was an error with your submission. Please try again.</Text>
+                        <Button onClick={returnToForm} className="submission-result-btn" variant="outline">
+                            Go back
+                        </Button>
+                    </Stack>
+                )}
+                </Stepper.Completed>
+            </Stepper>
+
+            { (submissionStatus === 'idle' || submissionStatus === 'pending') && (
+                <Fragment>
+                    <Space h="md" />
+                    <Group position="center" mt="md">
+                        <Button
+                            variant="default"
+                            onClick={prevStep}
+                            {...prevButtonProps}
+                        />
+                        <Button
+                            onClick={nextStep}
+                            {...nextButtonProps}
+                        />
+                    </Group>
+                </Fragment>
             )}
-            {submissionStatus === 'failed' && (
-                <Stack>
-                    <Title align="center" order={3}>There was an error with your submission.</Title>
-                    <Text size="md">There was an error with your submission. Please try again.</Text>
-                    <Button onClick={returnToForm} className="submission-result-btn" variant="outline">
-                        Go back
-                    </Button>
-                </Stack>
-            )}
-        </>
+        </form>
     );
 
     return (
         <Container size="sm" style={{ marginLeft: 0, position: 'relative' }}>
             <Paper radius="lg" p="lg" withBorder>
-                {
-                    ((submissionStatus === 'idle' || submissionStatus === 'pending')
-                    && renderForm()) ||
-                    ((submissionStatus === 'succeeded' || submissionStatus === 'failed')
-                    && renderSubmissionResult())
-                }
+                { renderForm() }
             </Paper>
 
             <LocationPicker location={defaultLocation} opened={locationModalOpened} onClose={closeLocationModal} />
         </Container>
 
     );
+}
+
+const stepperIconProps = {
+    size: 24,
 }
