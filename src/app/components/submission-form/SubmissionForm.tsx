@@ -112,8 +112,10 @@ export default function SubmissionForm() {
         dispatch(resetSubmission());
     };
 
+    const targetIsTextarea = (target: any) => target.nodeName === 'TEXTAREA' || target.localName === 'textarea';
+
     const onFormKeyEvent = (e: React.KeyboardEvent<HTMLFormElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !targetIsTextarea(e.target)) {
             e.preventDefault();
         }
     }
@@ -309,9 +311,9 @@ export default function SubmissionForm() {
         <Textarea
             placeholder="Please tell us more about your recording"
             label="Description"
-            autosize
-            minRows={2}
-            maxRows={10}
+            // autosize
+            // minRows={2}
+            // maxRows={10}
             {...form.getInputProps('description')}
         />
     );
