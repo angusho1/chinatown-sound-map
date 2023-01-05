@@ -33,6 +33,7 @@ export default function AppRoutes() {
           <Route path=":tab" element={renderProtectedPage(<AdminSubmissionsPage/>)} />
           <Route path="" element={renderProtectedPage(<AdminSubmissionsPage/>)} />
         </Route>
+        <Route path="" element={<NotFoundErrorPage />} />
       </Route>
     </Routes>
   )
