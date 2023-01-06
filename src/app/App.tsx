@@ -1,5 +1,4 @@
 import './App.css';
-import { Footer } from '@mantine/core';
 import { AppNavBar, AppNavBarProps } from 'app/components/nav-bar/AppNavBar';
 import AppRoutes from './App.routes';
 import { EventType, IPublicClientApplication } from '@azure/msal-browser';
@@ -57,8 +56,6 @@ function App({ instance }: AppProps) {
       <div className="App">
         <AppNavBar routes={links} />
         <AppRoutes />
-        <Footer height={60} p="md" className="footer">
-        </Footer>
       </div>
     </MsalProvider>
   );
