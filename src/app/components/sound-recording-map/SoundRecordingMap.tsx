@@ -95,8 +95,6 @@ export default function SoundRecordingMap() {
                         >
                             <SoundRecordingPopover
                                 soundRecording={soundRecording}
-                                recordingFile={null}
-                                imageFiles={null}
                             />
                         </InfoWindowF>
                     )}
@@ -107,33 +105,44 @@ export default function SoundRecordingMap() {
 
     const soundFilter = (sound: SoundClip | SoundRecording) => sound.location.lat && sound.location.lng;
 
-    const mapOptions: google.maps.MapOptions = {
-        gestureHandling: 'greedy',
-        styles: GOOGLE_MAPS_STYLES
+    
+    const renderMap = () => {
+        const mapOptions: google.maps.MapOptions = {
+            gestureHandling: 'greedy',
+            styles: GOOGLE_MAPS_STYLES,
+            mapTypeControlOptions: {
+                position: google.maps.ControlPosition.RIGHT_TOP,
+            },
+            fullscreenControlOptions: {
+                position: google.maps.ControlPosition.BOTTOM_RIGHT,
+            }
+        };
+
+        return (
+            <GoogleMap
+                mapContainerStyle={{ height: '100%' }}
+                center={DEFAULT_SUBMISSION_LOCATION}
+                zoom={17}
+                options={mapOptions}
+            >
+                <MarkerClusterer
+                    gridSize={40}
+                    maxZoom={18}
+                >
+                    { (clusterer: any) => 
+                        <>
+                            { soundClipStatus === 'succeeded' && renderSoundClips(clusterer) }
+                            { soundRecordingStatus === 'succeeded' && renderSoundRecordings(clusterer) }
+                        </>
+                    }
+                </MarkerClusterer>
+            </GoogleMap>
+        );
     };
 
     return (
         <div id="map" data-testid="sound-map">
-            { isLoaded && (
-                <GoogleMap
-                    mapContainerStyle={{ height: '100%' }}
-                    center={DEFAULT_SUBMISSION_LOCATION}
-                    zoom={17}
-                    options={mapOptions}
-                >
-                    <MarkerClusterer
-                        gridSize={40}
-                        maxZoom={18}
-                    >
-                        { (clusterer: any) => 
-                            <>
-                                { soundClipStatus === 'succeeded' && renderSoundClips(clusterer) }
-                                { soundRecordingStatus === 'succeeded' && renderSoundRecordings(clusterer) }
-                            </>
-                        }
-                    </MarkerClusterer>
-                </GoogleMap>
-            )}
+            { isLoaded ? renderMap() : null }
         </div>
     );
 }

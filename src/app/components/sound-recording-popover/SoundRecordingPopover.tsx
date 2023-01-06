@@ -1,26 +1,26 @@
 import { useEffect, useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { Badge, Center, Container, Divider, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Badge, Center, Container, Divider, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
+import { cacheSoundRecordingImageFile, selectIsDetailedViewOpen, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
 import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
 import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import './SoundRecordingPopover.css';
+import { IconArrowUpRightCircle } from '@tabler/icons';
 
 dayjs.extend(localizedFormat);
 
 export type SoundRecordingPopoverProps = {
     soundRecording: SoundRecording;
-    recordingFile: string | null;
-    imageFiles: string[] | null;
 }
 
 export default function SoundRecordingPopover(props: SoundRecordingPopoverProps) {
     const { soundRecording } = props;
 
     const dispatch = useAppDispatch();
+    const isDetailedViewOpen = useAppSelector(selectIsDetailedViewOpen);
     const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
     const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
     const imageFileObjects = imageFiles ? Object.values(imageFiles) : [];
@@ -76,6 +76,9 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     return (
         <Container size={300} px="xs">
+            <ActionIcon onClick={() => dispatch(toggleDetailedView(!isDetailedViewOpen))}>
+                <IconArrowUpRightCircle size={18} />
+            </ActionIcon>
             <Stack align="center" spacing={8}>
                 <Stack spacing={2} align="center">
                     <Title order={4}>{soundRecording.title}</Title>
