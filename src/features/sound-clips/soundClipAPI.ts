@@ -1,10 +1,6 @@
 import SoundClip from "models/SoundClip.model";
 import SoundRecording from "models/SoundRecording.model";
-
-interface GetFileResult {
-    data: Blob;
-    fileName: string;
-}
+import { SoundRecordingFileData } from "types/state/sound-recording-state.types";
 
 export function getSoundClips(): Promise<SoundClip[]> {
     return fetch('/sound-clips').then(res => res.json());
@@ -14,41 +10,31 @@ export function getSoundRecordings(): Promise<SoundRecording[]> {
     return fetch('/sound-recordings').then(res => res.json());
 }
 
-export async function getSoundRecordingFile(id: string, token?: string): Promise<GetFileResult> {
-    const headers = new Headers();
-    if (token) {
-        headers.append("Authorization", `Bearer ${token}`);
-    }
-
-    const res = await fetch(`/sound-recording/${id}/download`, {
-        method: 'GET',
-        headers,
-    });
-
-    const fileName = getFileName(res);
-
-    return {
-        fileName: fileName ? fileName : '',
-        data: await convertFileDownloadToBlob(res),
-    };
+export async function getSoundRecordingFile(id: string, token?: string): Promise<SoundRecordingFileData> {
+    return await getFile(`/sound-recording/${id}/download`, token);
 }
 
-export async function getSoundRecordingImageFile(filename: string, token?: string): Promise<GetFileResult> {
+export async function getSoundRecordingImageFile(filename: string, token?: string): Promise<SoundRecordingFileData> {
+    return await getFile(`/sound-recording/image/${filename}/download`, token);
+}
+
+async function getFile(requestUri: string, token?: string): Promise<SoundRecordingFileData> {
     const headers = new Headers();
     if (token) {
         headers.append("Authorization", `Bearer ${token}`);
     }
 
-    const res = await fetch(`/sound-recording/image/${filename}/download`, {
+    const res = await fetch(requestUri, {
         method: 'GET',
         headers,
     });
 
     const fileName = getFileName(res);
+    const fileBlob = await convertFileDownloadToBlob(res);
 
     return {
         fileName: fileName ? fileName : '',
-        data: await convertFileDownloadToBlob(res),
+        objectUrl: URL.createObjectURL(fileBlob),
     };
 }
 

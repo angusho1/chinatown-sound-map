@@ -39,13 +39,10 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
         const fetchRecordingFile = async () => {
             const getFileResult = await getSoundRecordingFile(soundRecording.id);
-            const fileBlob = getFileResult.data;
             if (isRecordingSet) return;
-            const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
             dispatch(setSoundRecordingFile({
                 recordingId: soundRecording.id,
-                fileName: getFileResult.fileName,
-                objectUrl: recordingFileObjectUrl
+                ...getFileResult,
             }));
         };
 
@@ -53,14 +50,11 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
             soundRecording.imageFiles?.forEach(filename => {
                 getSoundRecordingImageFile(filename)
                     .then(getFileResult => {
-                        const fileBlob = getFileResult.data;
                         if (imageFiles && imageFiles[filename]) return;
-                        const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
                         dispatch(cacheSoundRecordingImageFile({
                             uniqueFileName: filename,
                             recordingId: soundRecording.id,
-                            fileName: getFileResult.fileName,
-                            objectUrl: recordingFileObjectUrl
+                            ...getFileResult,
                         }));
                     });
             });

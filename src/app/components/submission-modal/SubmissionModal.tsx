@@ -54,13 +54,10 @@ export default function SubmissionModal(props: SubmissionModalProps) {
         const fetchRecordingFile = async () => {
             const token = await getToken();
             const getFileResult = await getSoundRecordingFile(soundRecording.id, token);
-            const fileBlob = getFileResult.data;
             if (isRecordingSet) return;
-            const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
             dispatch(setSoundRecordingFile({
                 recordingId: soundRecording.id,
-                fileName: getFileResult.fileName,
-                objectUrl: recordingFileObjectUrl
+                ...getFileResult,
             }));
         };
 
@@ -69,14 +66,11 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                 getToken()
                     .then(token => getSoundRecordingImageFile(filename, token))
                     .then(getFileResult => {
-                        const fileBlob = getFileResult.data;
                         if (imageFiles && imageFiles[filename]) return;
-                        const recordingFileObjectUrl = URL.createObjectURL(fileBlob);
                         dispatch(cacheSoundRecordingImageFile({
                             uniqueFileName: filename,
                             recordingId: soundRecording.id,
-                            fileName: getFileResult.fileName,
-                            objectUrl: recordingFileObjectUrl
+                            ...getFileResult,
                         }));
                     });
             });
