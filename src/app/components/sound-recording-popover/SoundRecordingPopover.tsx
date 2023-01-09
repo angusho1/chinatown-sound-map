@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
 import { ActionIcon, Badge, Center, Container, Divider, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { cacheSoundRecordingImageFile, selectIsDetailedViewOpen, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
-import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
+import { selectIsDetailedViewOpen, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
 import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import './SoundRecordingPopover.css';
 import { IconArrowUpRightCircle } from '@tabler/icons';
+import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
 
 dayjs.extend(localizedFormat);
 
@@ -21,9 +21,8 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     const dispatch = useAppDispatch();
     const isDetailedViewOpen = useAppSelector(selectIsDetailedViewOpen);
-    const recordingFile = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
-    const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
-    const imageFileObjects = imageFiles ? Object.values(imageFiles) : [];
+    const recordingFile = useSoundRecordingFile(soundRecording.id);
+    const imageFiles = useSoundRecordingImageFiles(soundRecording);
 
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
@@ -32,41 +31,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
-    const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
-
-    useEffect(() => {
-        let isRecordingSet = false;
-
-        const fetchRecordingFile = async () => {
-            const getFileResult = await getSoundRecordingFile(soundRecording.id);
-            if (isRecordingSet) return;
-            dispatch(setSoundRecordingFile({
-                recordingId: soundRecording.id,
-                ...getFileResult,
-            }));
-        };
-
-        const fetchImages = async () => {            
-            soundRecording.imageFiles?.forEach(filename => {
-                getSoundRecordingImageFile(filename)
-                    .then(getFileResult => {
-                        if (imageFiles && imageFiles[filename]) return;
-                        dispatch(cacheSoundRecordingImageFile({
-                            uniqueFileName: filename,
-                            recordingId: soundRecording.id,
-                            ...getFileResult,
-                        }));
-                    });
-            });
-        };
-
-        if (!recordingFile && !isRecordingSet) fetchRecordingFile();
-        if (!imageFiles) fetchImages();
-
-        return () => {
-            isRecordingSet = true;
-        }
-    }, [recordingFile, imageFiles, soundRecording.id, soundRecording.imageFiles, dispatch]);
+    const isLoading = () => !recordingFile || (imageFiles.length !== soundRecording.imageFiles?.length);
 
     return (
         <Container size={300} px="xs">
@@ -86,7 +51,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     {imageFiles && (
                         <Flex gap={5}>
                             {
-                                imageFileObjects.map((image, index) => (
+                                imageFiles.map((image, index) => (
                                     <Image
                                         className="popover-img"
                                         sx={{ cursor: 'pointer' }}
@@ -140,17 +105,15 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 </Stack>
             </Stack>
 
-            { imageFiles && (
-                <ImageCarouselModal
-                    opened={imageModalState.opened}
-                    selectedIndex={imageModalState.selectedIndex}
-                    images={imageFileObjects}
-                    onClose={() => setImageModalState({
-                        ...imageModalState,
-                        opened: false,
-                    })}
-                />
-            )}
+            <ImageCarouselModal
+                opened={imageModalState.opened}
+                selectedIndex={imageModalState.selectedIndex}
+                images={imageFiles}
+                onClose={() => setImageModalState({
+                    ...imageModalState,
+                    opened: false,
+                })}
+            />
         </Container>
     )
 }

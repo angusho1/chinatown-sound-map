@@ -1,15 +1,11 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Center, Container, Divider, Grid, Image, Loader, MantineNumberSize, Modal, Table, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from 'features/sound-clips/soundClipSlice';
-import { getSoundRecordingFile, getSoundRecordingImageFile } from 'features/sound-clips/soundClipAPI';
 import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import Submission from 'models/Submission.model';
 import './SubmissionModal.css';
-import { tokenRequest } from 'AuthConfig';
-import { useMsal } from '@azure/msal-react';
+import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
 
 dayjs.extend(localizedFormat);
 
@@ -26,63 +22,19 @@ export interface SubmissionModalState {
 
 export default function SubmissionModal(props: SubmissionModalProps) {
     const { submission, opened, onClose } = props;
-    const { instance } = useMsal();
     const soundRecording = submission.soundRecording;
 
-    const dispatch = useAppDispatch();
-    const recordingFileData = useAppSelector(state => selectSoundRecordingFileById(state, soundRecording.id));
-    const imageFiles = useAppSelector(state => selectSoundRecordingImageById(state, soundRecording.id));
-    const imageFileObjects = imageFiles ? Object.values(imageFiles) : [];
+    const recordingFile = useSoundRecordingFile(soundRecording.id, { useToken: true });
+    const imageFiles = useSoundRecordingImageFiles(soundRecording, { useToken: true });
 
     const [imageModalState, setImageModalState] = useState<ImageModalState>({
         opened: false,
         selectedIndex: 0,
     });
 
-    const getToken = async () => {
-        const tokenResult = await instance.acquireTokenSilent(tokenRequest);
-        return tokenResult.accessToken;
-    };
-
-    const isLoading = () => !recordingFileData || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
+    const isLoading = () => !recordingFile || (!imageFiles && soundRecording.imageFiles && soundRecording.imageFiles?.length > 0);
 
     const getFormattedDateText = (date?: Date) => date ? dayjs(new Date(date)).format('LL') : 'Unknown';
-
-    useEffect(() => {
-        let isRecordingSet = false;
-
-        const fetchRecordingFile = async () => {
-            const token = await getToken();
-            const getFileResult = await getSoundRecordingFile(soundRecording.id, token);
-            if (isRecordingSet) return;
-            dispatch(setSoundRecordingFile({
-                recordingId: soundRecording.id,
-                ...getFileResult,
-            }));
-        };
-
-        const fetchImages = async () => {            
-            soundRecording.imageFiles?.forEach(filename => {
-                getToken()
-                    .then(token => getSoundRecordingImageFile(filename, token))
-                    .then(getFileResult => {
-                        if (imageFiles && imageFiles[filename]) return;
-                        dispatch(cacheSoundRecordingImageFile({
-                            uniqueFileName: filename,
-                            recordingId: soundRecording.id,
-                            ...getFileResult,
-                        }));
-                    });
-            });
-        };
-
-        if (!recordingFileData && !isRecordingSet) fetchRecordingFile();
-        if (!imageFiles) fetchImages();
-
-        return () => {
-            isRecordingSet = true;
-        }
-    }, [recordingFileData, imageFiles, soundRecording.id, soundRecording.imageFiles, dispatch]);
 
     return (
         <Modal
@@ -144,19 +96,19 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                             <tbody>
                                 <tr>
                                     <td>
-                                        <Text>{recordingFileData?.fileName}</Text>
+                                        <Text>{recordingFile?.fileName}</Text>
                                     </td>
                                     <td>
-                                        {recordingFileData && (
+                                        {recordingFile && (
                                             <audio
                                                 style={{ float: 'right', maxWidth: '250px', height: '40px' }}
                                                 controls
-                                                src={recordingFileData.objectUrl}>
+                                                src={recordingFile.objectUrl}>
                                             </audio>
                                         )}
                                     </td>
                                 </tr>
-                                {imageFiles && imageFileObjects.map((image, index) => (
+                                {imageFiles.map((image, index) => (
                                     <tr key={image.objectUrl}>
                                         <td>
                                             <Text>
@@ -195,7 +147,7 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                 <ImageCarouselModal
                     opened={imageModalState.opened}
                     selectedIndex={imageModalState.selectedIndex}
-                    images={imageFileObjects}
+                    images={imageFiles}
                     onClose={() => setImageModalState({
                         ...imageModalState,
                         opened: false,
