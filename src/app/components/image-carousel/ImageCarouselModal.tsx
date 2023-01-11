@@ -1,9 +1,9 @@
-import { Carousel, Embla, useAnimationOffsetEffect } from '@mantine/carousel';
-import { Center, Image, Modal } from '@mantine/core';
+import { Modal } from '@mantine/core';
 import { useState } from 'react';
 import { SoundRecordingFileData } from 'types/state/sound-recording-state.types';
+import ImageCarousel from './ImageCarousel';
 
-interface ImageCarouselProps {
+interface ImageCarouselModalProps {
     opened: boolean;
     selectedIndex: number;
     images: (SoundRecordingFileData | File)[];
@@ -16,17 +16,12 @@ export interface ImageModalState {
     selectedIndex: number;
 }
 
-export default function ImageCarouselModal({ opened, selectedIndex, images, onClose, showFileNames }: ImageCarouselProps) {
+export default function ImageCarouselModal({ opened, selectedIndex, images, onClose, showFileNames }: ImageCarouselModalProps) {
     const TRANSITION_DURATION = 200;
-    const [embla, setEmbla] = useState<Embla | null>(null);
-    useAnimationOffsetEffect(embla, TRANSITION_DURATION);
     const [currentIndex, setCurrentIndex] = useState<number>(selectedIndex);
 
     const isFile = (img: SoundRecordingFileData | File) => img instanceof File;
-    const getImgUrl = (img: SoundRecordingFileData | File): string => {
-        if (isFile(img)) return URL.createObjectURL(img as File);
-        return (img as SoundRecordingFileData).objectUrl;
-    };
+
     const getFileName = () => {
         const index = Math.min(images.length-1, currentIndex);
         const selectedFile = images[index];
@@ -43,31 +38,11 @@ export default function ImageCarouselModal({ opened, selectedIndex, images, onCl
             transitionDuration={TRANSITION_DURATION}
             title={showFileNames && images.length > 0 ? getFileName() : undefined}
         >
-            <Carousel
-                align="start"
-                controlSize={25}
-                initialSlide={selectedIndex}
-                inViewThreshold={1}
-                getEmblaApi={setEmbla}
-                onSlideChange={(i) => setCurrentIndex(i)}
-            >
-                {
-                    images.map((img, index) => {
-
-                        return (
-                            <Carousel.Slide key={index}>
-                                <Center>
-                                    <Image
-                                        height={450}
-                                        fit="contain"
-                                        src={getImgUrl(img)}
-                                    />
-                                </Center>
-                            </Carousel.Slide>
-                        );
-                    })
-                }
-            </Carousel>
+            <ImageCarousel
+                selectedIndex={selectedIndex}
+                images={images}
+                onSlideChange={setCurrentIndex}
+            />
         </Modal>
     )
 };

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { ActionIcon, Badge, Center, Container, Divider, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Center, Container, Flex, Image, Loader, Stack, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
@@ -9,6 +9,7 @@ import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCaro
 import './SoundRecordingPopover.css';
 import { IconArrowUpRightCircle } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
+import CategoryList from '../category-list/CategoryList';
 
 dayjs.extend(localizedFormat);
 
@@ -79,28 +80,9 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                         <Loader color={'pink'} />
                     </Center>
                 )}
-                <Stack spacing={2} align="stretch">
+                <Stack spacing={2} align="stretch" w="100%">
                     { soundRecording.categories && soundRecording.categories.length > 0 && (
-                        <Container px={0}>
-                            <Divider
-                                size="xs"
-                                my="sm"
-                                variant="solid"
-                                label="Categories"
-                                color="pink"
-                                labelPosition="center"
-                                labelProps={{
-                                    fw: 500,
-                                }}
-                            />
-                            <Group spacing="xs" position="center">
-                                {soundRecording.categories && (
-                                    soundRecording.categories.map(category => (
-                                        <Badge key={category.name} >{ category.name }</Badge>
-                                    ))
-                                )}
-                            </Group>
-                        </Container>
+                        <CategoryList categories={soundRecording.categories} />
                     )}
                 </Stack>
             </Stack>
