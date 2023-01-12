@@ -1,20 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
-import SoundRecordingCategory from "models/SoundRecordingCategory.model";
+import SoundRecordingTag from "models/SoundRecordingTag.model";
 import { NetworkRequestStatus } from "types/state/state.types";
-import { getSoundRecordingCategories, submitRecording } from "./submissionsAPI";
+import { getSoundRecordingTags, submitRecording } from "./submissionsAPI";
 
 export interface SubmissionState {
     status: NetworkRequestStatus;
-    categories: SoundRecordingCategory[];
-    categoriesStatus: NetworkRequestStatus;
+    tags: SoundRecordingTag[];
+    tagsStatus: NetworkRequestStatus;
 }
 
 const initialState: SubmissionState = {
     status: 'idle',
-    categories: [],
-    categoriesStatus: 'idle',
+    tags: [],
+    tagsStatus: 'idle',
 }
 
 export const createSubmission = createAsyncThunk('submissions/createSubmission', 
@@ -24,9 +24,9 @@ export const createSubmission = createAsyncThunk('submissions/createSubmission',
     }
 );
 
-export const fetchCategories = createAsyncThunk('soundClips/getCategories',
+export const fetchTags = createAsyncThunk('soundClips/getTags',
     async () => {
-        const res: SoundRecordingCategory[] = await getSoundRecordingCategories();
+        const res: SoundRecordingTag[] = await getSoundRecordingTags();
         return res;
     }
 );
@@ -50,22 +50,22 @@ export const submissionSlice = createSlice({
             .addCase(createSubmission.rejected, (state) => {
                 state.status = 'failed';
             })
-            .addCase(fetchCategories.pending, (state) => {
-                state.categoriesStatus = 'pending';
+            .addCase(fetchTags.pending, (state) => {
+                state.tagsStatus = 'pending';
             })
-            .addCase(fetchCategories.fulfilled, (state, action) => {
-                state.categoriesStatus = 'succeeded'
-                state.categories = action.payload;
+            .addCase(fetchTags.fulfilled, (state, action) => {
+                state.tagsStatus = 'succeeded'
+                state.tags = action.payload;
             })
-            .addCase(fetchCategories.rejected, (state) => {
-                state.categoriesStatus = 'failed';
+            .addCase(fetchTags.rejected, (state) => {
+                state.tagsStatus = 'failed';
             })
     }
 });
 
 export const selectSubmissionStatus = (state: RootState) => state.submissions.status;
-export const selectCategories = (state: RootState) => state.submissions.categories;
-export const selectGetCategoriesStatus = (state: RootState) => state.submissions.categoriesStatus;
+export const selectTags = (state: RootState) => state.submissions.tags;
+export const selectGetTagsStatus = (state: RootState) => state.submissions.tagsStatus;
 
 export const { resetSubmission } = submissionSlice.actions;
 

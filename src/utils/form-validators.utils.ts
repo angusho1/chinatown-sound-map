@@ -7,7 +7,7 @@ export const MAX_RECORDING_UPLOAD_SIZE = 5 * (10 ** 6);
 export const MAX_IMAGE_UPLOAD_SIZE = 3 * (10 ** 6);
 export const DEFAULT_SUBMISSION_LOCATION = { lat: 49.279470, lng: -123.099721 };
 export const MAX_IMAGE_UPLOAD_COUNT = 3;
-export const MAX_CATEGORY_LABEL_LENGTH = 40;
+export const MAX_TAG_LABEL_LENGTH = 40;
 
 export const submissionTitleValidator = (value: string): string | null => {
     if (!value) return 'Please give your recording a title';
@@ -55,8 +55,8 @@ export const submissionImagesValidator = (value: File[]): string | null => {
     }
 }
 
-export const categoryValidator = (value: string): string | null => {
-    if (value.length > MAX_CATEGORY_LABEL_LENGTH) return `Category name cannot exceed ${MAX_CATEGORY_LABEL_LENGTH} characters`;
+export const tagValidator = (value: string): string | null => {
+    if (value.length > MAX_TAG_LABEL_LENGTH) return `Tag name cannot exceed ${MAX_TAG_LABEL_LENGTH} characters`;
     if (/^[\p{L}\p{N} -']*$/u.test(value)) return null;
-    return 'Category name contains invalid characters';
+    return 'Tag name contains invalid characters';
 }

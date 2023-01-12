@@ -9,7 +9,7 @@ import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCaro
 import './SoundRecordingPopover.css';
 import { IconArrowUpRightCircle } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
-import CategoryList from '../category-list/CategoryList';
+import TagList from '../tag-list/TagList';
 
 dayjs.extend(localizedFormat);
 
@@ -81,8 +81,8 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     </Center>
                 )}
                 <Stack spacing={2} align="stretch" w="100%">
-                    { soundRecording.categories && soundRecording.categories.length > 0 && (
-                        <CategoryList categories={soundRecording.categories} />
+                    { soundRecording.tags && soundRecording.tags.length > 0 && (
+                        <TagList tags={soundRecording.tags} />
                     )}
                 </Stack>
             </Stack>

@@ -1,11 +1,11 @@
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
-import SoundRecordingCategory from "models/SoundRecordingCategory.model";
+import SoundRecordingTag from "models/SoundRecordingTag.model";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { GetSubmissionsOptions, SortColumn } from "types/api/submissions-api.types";
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
-    const { existingCategoryIds, newCategories } = splitCategoryTypes(submission.categories);
+    const { existingTagIds, newTags } = splitTagTypes(submission.tags);
 
     formData.append('title', submission.title);
     formData.append('recording', submission.recording);
@@ -14,8 +14,8 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     formData.append('author', submission.author || '');
     formData.append('description', submission.description || '');
     formData.append('date', submission.date ? submission.date.toUTCString() : '');
-    formData.append('existingCategories', JSON.stringify(existingCategoryIds));
-    formData.append('newCategories', JSON.stringify(newCategories));
+    formData.append('existingTags', JSON.stringify(existingTagIds));
+    formData.append('newTags', JSON.stringify(newTags));
 
     if (submission.images) {
         submission.images.forEach(image => formData.append('image', image));
@@ -33,8 +33,8 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     }
 }
 
-export function getSoundRecordingCategories(): Promise<SoundRecordingCategory[]> {
-    return fetch('/categories').then(res => res.json());
+export function getSoundRecordingTags(): Promise<SoundRecordingTag[]> {
+    return fetch('/tags').then(res => res.json());
 }
 
 export async function getSubmissions(token: string, options: GetSubmissionsOptions): Promise<Submission[]> {
@@ -109,16 +109,16 @@ export async function editSubmissionStatus(submissionId: string, status: Submiss
     }
 }
 
-function splitCategoryTypes(categories: SoundRecordingCategory[]) {
-    const existingCategoryIds: string[] = [];
-    const newCategories: string[] = []; 
+function splitTagTypes(tags: SoundRecordingTag[]) {
+    const existingTagIds: string[] = [];
+    const newTags: string[] = []; 
 
-    if (categories) {
-        categories.forEach(category => {
-            if (category.id === '') newCategories.push(category.name);
-            else existingCategoryIds.push(category.id);
+    if (tags) {
+        tags.forEach(tag => {
+            if (tag.id === '') newTags.push(tag.name);
+            else existingTagIds.push(tag.id);
         });
     }
 
-    return { existingCategoryIds, newCategories };
+    return { existingTagIds, newTags };
 }

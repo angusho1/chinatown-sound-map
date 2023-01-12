@@ -1,5 +1,5 @@
 import { RecordingLocation } from "./RecordingLocation.model";
-import SoundRecordingCategory from "./SoundRecordingCategory.model";
+import SoundRecordingTag from "./SoundRecordingTag.model";
 
 export default interface SoundClipSubmission {
     title: string;
@@ -10,7 +10,7 @@ export default interface SoundClipSubmission {
     author?: string;
     date?: Date;
     images?: File[];
-    categories: SoundRecordingCategory[];
+    tags: SoundRecordingTag[];
 }
 
 export interface SubmissionResponse {

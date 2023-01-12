@@ -1,11 +1,11 @@
 import { Badge, Center, Container, Divider, Group } from "@mantine/core";
-import SoundRecordingCategory from "models/SoundRecordingCategory.model";
+import SoundRecordingTag from "models/SoundRecordingTag.model";
 
-interface CategoryListProps {
-    categories: SoundRecordingCategory[];
+interface TagListProps {
+    tags: SoundRecordingTag[];
 }
 
-export default function CategoryList({ categories }: CategoryListProps) {
+export default function TagList({ tags }: TagListProps) {
     return (
         <Container px={0} w="100%">
             <Center>
@@ -14,7 +14,7 @@ export default function CategoryList({ categories }: CategoryListProps) {
                     size="xs"
                     my="sm"
                     variant="solid"
-                    label="Categories"
+                    label="Tags"
                     color="pink"
                     labelPosition="center"
                     labelProps={{
@@ -24,8 +24,8 @@ export default function CategoryList({ categories }: CategoryListProps) {
                 />
             </Center>
             <Group spacing="xs" position="center">
-                {categories.map(category => (
-                        <Badge key={category.name} >{ category.name }</Badge>
+                {tags.map(tag => (
+                        <Badge key={tag.name} >{ tag.name }</Badge>
                     )
                 )}
             </Group>

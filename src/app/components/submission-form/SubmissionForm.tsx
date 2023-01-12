@@ -6,10 +6,10 @@ import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { createSubmission, resetSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
-import SoundRecordingCategory from 'models/SoundRecordingCategory.model';
+import SoundRecordingTag from 'models/SoundRecordingTag.model';
 import { Fragment, useState } from 'react';
-import { categoryValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
-import CategoryInput from '../category-input/CategoryInput';
+import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import TagInput from '../tag-input/TagInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
 import './SubmissionForm.css';
@@ -40,7 +40,7 @@ export default function SubmissionForm() {
             date: undefined,
             location: defaultLocation,
             images: [],
-            categories: [] as SoundRecordingCategory[],
+            tags: [] as SoundRecordingTag[],
             autoComplete: '',
         },
     
@@ -52,13 +52,13 @@ export default function SubmissionForm() {
             description: submissionDescriptionValidator,
             location: submissionLocationValidator,
             images: submissionImagesValidator,
-            autoComplete: categoryValidator,
+            autoComplete: tagValidator,
         },
         validateInputOnChange: ['recording', 'images', 'autoComplete']
     });
 
     const fileInputs = ['recording', 'images'];
-    const recordingDetailsInputs = ['title', 'location', 'description', 'date', 'autoComplete', 'categories'];
+    const recordingDetailsInputs = ['title', 'location', 'description', 'date', 'autoComplete', 'tags'];
     const contributorInfoInputs = ['email', 'author'];
 
     const submitForm = (values: SubmissionFormValues) => {
@@ -90,16 +90,16 @@ export default function SubmissionForm() {
         form.setFieldValue('images', imgs);
     };
 
-    const addCategory = (category: SoundRecordingCategory) => {
-        const categories: SoundRecordingCategory[] = form.values.categories.slice();
-        categories.push(category);
-        form.setFieldValue('categories', categories);
+    const addTag = (tag: SoundRecordingTag) => {
+        const tags: SoundRecordingTag[] = form.values.tags.slice();
+        tags.push(tag);
+        form.setFieldValue('tags', tags);
     }
 
-    const removeCategory = (index: number) => {
-        const categories = form.values.categories.slice();
-        categories.splice(index, 1);
-        form.setFieldValue('categories', categories);
+    const removeTag = (index: number) => {
+        const tags = form.values.tags.slice();
+        tags.splice(index, 1);
+        form.setFieldValue('tags', tags);
     }
 
     const resetForm = () => {
@@ -328,12 +328,12 @@ export default function SubmissionForm() {
         />
     );
 
-    const categoryInput = (
-        <CategoryInput
-            inputProps={form.getInputProps('categories')}
+    const tagInput = (
+        <TagInput
+            inputProps={form.getInputProps('tags')}
             autoCompleteProps={form.getInputProps('autoComplete')}
-            addCategory={addCategory}
-            removeCategory={removeCategory}
+            addTag={addTag}
+            removeTag={removeTag}
             setAutoCompleteField={setAutoCompleteField}
         />
     );
@@ -372,7 +372,7 @@ export default function SubmissionForm() {
                     <Space h="md" />
                     { dateRecordedInput }
                     <Space h="md" />
-                    { categoryInput }
+                    { tagInput }
                 </Stepper.Step>
                 <Stepper.Step {...getStepProps(SubmissionFormStep.CONTRIBUTOR_INFO)}>
                     { emailInput }

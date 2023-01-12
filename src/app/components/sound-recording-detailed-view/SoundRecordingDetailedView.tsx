@@ -3,7 +3,7 @@ import SoundRecording from "models/SoundRecording.model";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from "app/hooks/sound-recording.hooks";
-import CategoryList from "../category-list/CategoryList";
+import TagList from "../tag-list/TagList";
 import ImageCarousel from "../image-carousel/ImageCarousel";
 dayjs.extend(localizedFormat);
 
@@ -57,8 +57,8 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                 </Text>
             </Stack>
             <Stack spacing={2}>
-                { soundRecording.categories && soundRecording.categories.length > 0 && (
-                    <CategoryList categories={soundRecording.categories} />
+                { soundRecording.tags && soundRecording.tags.length > 0 && (
+                    <TagList tags={soundRecording.tags} />
                 )}
             </Stack>
             <Space h="xl" />

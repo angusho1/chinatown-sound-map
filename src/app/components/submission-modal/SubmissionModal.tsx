@@ -80,8 +80,8 @@ export default function SubmissionModal(props: SubmissionModalProps) {
                                 {soundRecording.description}
                             </Text>
                             <Text {...textProps}>
-                                <Text span {...boldTextProps}>Categories: </Text>
-                                {soundRecording.categories?.map(category => category.name).join(', ')}
+                                <Text span {...boldTextProps}>Tags: </Text>
+                                {soundRecording.tags?.map(tag => tag.name).join(', ')}
                             </Text>
                         </Container>
                     </Grid.Col>

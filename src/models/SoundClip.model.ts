@@ -8,7 +8,7 @@ export default interface SoundClip {
     location: RecordingLocation;
     date: Date;
     content: string;
-    categories: string[];
+    tags: string[];
     meta: Meta;
 }
 
