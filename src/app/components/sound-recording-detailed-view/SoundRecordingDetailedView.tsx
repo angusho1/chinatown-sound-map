@@ -1,4 +1,4 @@
-import { Center, Container, Loader, ScrollArea, Stack, Text, TextProps, Title } from "@mantine/core";
+import { Center, Container, Loader, ScrollArea, Space, Stack, Text, TextProps, Title } from "@mantine/core";
 import SoundRecording from "models/SoundRecording.model";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -21,7 +21,7 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
     const isLoading = !recordingFile || (imageFiles.length !== soundRecording.imageFiles?.length);
 
     return(
-        <ScrollArea sx={{ height: 'calc(100vh - 150px)' }}>
+        <ScrollArea sx={{ height: 'calc(100vh - 110px)' }}>
         <Container>
             <Stack align="left" spacing={8} mb={10}>
                 <Title order={2}>{soundRecording.title}</Title>
@@ -41,11 +41,15 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                 {recordingFile && (
                     <audio controls src={recordingFile.objectUrl}></audio>
                 )}
-                <ImageCarousel
-                    selectedIndex={0}
-                    images={imageFiles}
-                    onSlideChange={() => {}}
-                />
+                <Container px="sm">
+                    <ImageCarousel
+                        selectedIndex={0}
+                        images={imageFiles}
+                        onSlideChange={() => {}}
+                        autoPlay={true}
+                        imageHeight={300}
+                    />
+                </Container>
             </Stack>
             <Stack align="left" spacing={8}>
                 <Text component="p" fz="md" fs="italic" fw={400}>
@@ -57,6 +61,7 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                     <CategoryList categories={soundRecording.categories} />
                 )}
             </Stack>
+            <Space h="xl" />
         </Container>
         </ScrollArea>
     );
