@@ -1,4 +1,5 @@
 import { RecordingLocation } from "models/RecordingLocation.model";
+import SoundRecordingTag from "models/SoundRecordingTag.model";
 
 export const MAX_TITLE_LEN = 100;
 export const MAX_AUTHOR_NAME_LEN = 100;
@@ -8,6 +9,7 @@ export const MAX_IMAGE_UPLOAD_SIZE = 3 * (10 ** 6);
 export const DEFAULT_SUBMISSION_LOCATION = { lat: 49.279470, lng: -123.099721 };
 export const MAX_IMAGE_UPLOAD_COUNT = 3;
 export const MAX_TAG_LABEL_LENGTH = 40;
+export const MAX_NUMBER_TAGS_PER_RECORDING = 5;
 
 export const submissionTitleValidator = (value: string): string | null => {
     if (!value) return 'Please give your recording a title';
@@ -59,4 +61,9 @@ export const tagValidator = (value: string): string | null => {
     if (value.length > MAX_TAG_LABEL_LENGTH) return `Tag name cannot exceed ${MAX_TAG_LABEL_LENGTH} characters`;
     if (/^[\p{L}\p{N} -']*$/u.test(value)) return null;
     return 'Tag name contains invalid characters';
+}
+
+export const tagsValidator = (value: SoundRecordingTag[]): string | null => {
+    if (value.length > MAX_NUMBER_TAGS_PER_RECORDING) return `You cannot add more than ${MAX_NUMBER_TAGS_PER_RECORDING} tags`;
+    return null;
 }

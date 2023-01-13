@@ -4,6 +4,7 @@ import { IconPlus, IconX } from '@tabler/icons';
 import './TagInput.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { fetchTags, selectTags, selectGetTagsStatus } from 'features/submissions/submissionsSlice';
+import { MAX_NUMBER_TAGS_PER_RECORDING } from 'utils/form-validators.utils';
 
 interface TagInputProps {
     inputProps: any;
@@ -48,11 +49,13 @@ export default function TagInput({ inputProps, autoCompleteProps, addTag, remove
         }
     }
 
+    autoCompleteProps.error = autoCompleteProps.error || inputProps.error;
+
     return (
         <>
             <Autocomplete
                 label="Tags"
-                description="Use commas to separate tags"
+                description={`Add up to ${MAX_NUMBER_TAGS_PER_RECORDING} tags to describe your recording.`}
                 placeholder="Add Tags"
                 data={autoCompleteItems}
                 onItemSubmit={onDropdownItemSelect}

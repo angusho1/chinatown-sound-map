@@ -8,7 +8,7 @@ import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingTag from 'models/SoundRecordingTag.model';
 import { Fragment, useState } from 'react';
-import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator } from 'utils/form-validators.utils';
+import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator, tagsValidator } from 'utils/form-validators.utils';
 import TagInput from '../tag-input/TagInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
@@ -53,8 +53,9 @@ export default function SubmissionForm() {
             location: submissionLocationValidator,
             images: submissionImagesValidator,
             autoComplete: tagValidator,
+            tags: tagsValidator,
         },
-        validateInputOnChange: ['recording', 'images', 'autoComplete']
+        validateInputOnChange: ['recording', 'images', 'autoComplete', 'tags']
     });
 
     const fileInputs = ['recording', 'images'];
@@ -311,9 +312,9 @@ export default function SubmissionForm() {
         <Textarea
             placeholder="Please tell us more about your recording"
             label="Description"
-            // autosize
-            // minRows={2}
-            // maxRows={10}
+            autosize
+            minRows={2}
+            maxRows={10}
             {...form.getInputProps('description')}
         />
     );
