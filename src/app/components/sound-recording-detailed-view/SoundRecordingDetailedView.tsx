@@ -5,6 +5,7 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from "app/hooks/sound-recording.hooks";
 import TagList from "../tag-list/TagList";
 import ImageCarousel from "../image-carousel/ImageCarousel";
+import AudioPlayer from "../audio-player/AudioPlayer";
 dayjs.extend(localizedFormat);
 
 interface SoundRecordingDetailedViewProps {
@@ -39,7 +40,7 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                     </Center>
                 )}
                 {recordingFile && (
-                    <audio controls src={recordingFile.objectUrl}></audio>
+                    <AudioPlayer objectUrl={recordingFile.objectUrl} />
                 )}
                 <Container px="sm">
                     <ImageCarousel

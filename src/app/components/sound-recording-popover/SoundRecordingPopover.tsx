@@ -1,15 +1,15 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
-import { ActionIcon, Center, Container, Flex, Group, Image, Loader, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Anchor, Card, Center, Container, Flex, Group, Image, Loader, LoadingOverlay, Stack, Text, Title, Tooltip } from '@mantine/core';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
 import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import './SoundRecordingPopover.css';
-import { IconArrowUpRightCircle, IconX } from '@tabler/icons';
+import { IconArrowDownLeftCircle, IconArrowUpRightCircle, IconX } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
-import TagList from '../tag-list/TagList';
+import AudioPlayer from '../audio-player/AudioPlayer';
 
 dayjs.extend(localizedFormat);
 
@@ -32,29 +32,52 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
-    const isLoading = () => !recordingFile || (imageFiles.length !== soundRecording.imageFiles?.length);
+    const areImagesLoading = imageFiles.length !== soundRecording.imageFiles?.length;
+    const isAudioLoading = !recordingFile;
+
+    const defaultImg = 'https://i0.wp.com/nationaltrustcanada.ca/wp-content/uploads/2021/01/National-Trust_Top-10_2016_Chinatown_Vancouver_BC_Credit-Caitriana-Nicholson.jpg?w=2560&ssl=1';
 
     return (
-        <Fragment>
+        <Container p={0} sx={{ maxWidth: 350 }}>
+            <Card.Section>
+                <LoadingOverlay visible={areImagesLoading} overlayBlur={2} />
+                <Image
+                    src={imageFiles.length > 0 ? imageFiles[0].objectUrl : defaultImg}
+                    height={200}
+                />
+            </Card.Section>
             <Group position="right" spacing={2}>
-                <ActionIcon onClick={() => dispatch(toggleDetailedView(!isDetailedViewOpen))}>
-                    <IconArrowUpRightCircle size={18} />
-                </ActionIcon>
-                <ActionIcon onClick={() => dispatch(setSelectedSoundRecording(null))}>
-                    <IconX size={18} />
-                </ActionIcon>
+                <Tooltip label={isDetailedViewOpen ? 'Hide Detail' : 'Show Detail'}>
+                    <ActionIcon onClick={() => dispatch(toggleDetailedView(!isDetailedViewOpen))}>
+                        { isDetailedViewOpen ? <IconArrowDownLeftCircle size={18} /> : <IconArrowUpRightCircle size={18} />
+                        }
+                    </ActionIcon>
+                </Tooltip>
+                <Tooltip label="Close">
+                    <ActionIcon onClick={() => dispatch(setSelectedSoundRecording(null))}>
+                        <IconX size={18} />
+                    </ActionIcon>
+                </Tooltip>
             </Group>
-            <Container size={300} px="xs" sx={{ border: '3px' }}>
+            <Card sx={{ backgroundColor: '#e1d8e8f5' }} pt={0}>
                 <Stack align="center" spacing={8}>
-                    <Stack spacing={2} align="center">
+                    <Stack spacing={2}>
                         <Title order={4}>{soundRecording.title}</Title>
-                        <Text size="sm" fw={300}>Recorded by {soundRecording.author}</Text>
-                        <Text size="sm" fw={300}>Date: {dateStr}</Text>
-                        <Text component="p" fz="sm" fw={300}>
+                        <Flex justify="space-between">
+                            <Text size="sm" fw={400} color="gray">by {soundRecording.author}</Text>
+                            <Text size="sm" fw={400} color="gray">{dateStr}</Text>
+                        </Flex>
+                        <Text component="p" fz="sm" fw={350} lineClamp={4} mb={0}>
                             {soundRecording.description}
                         </Text>
+                        <Anchor onClick={() => dispatch(toggleDetailedView(!isDetailedViewOpen))}>
+                            { isDetailedViewOpen ? 'Show Less' : 'Show More' }
+                        </Anchor>
                     </Stack>
-                    <Stack align="center">
+                    {recordingFile && (
+                        <AudioPlayer objectUrl={recordingFile.objectUrl} />
+                    )}
+                    {/* <Stack align="center">
                         {imageFiles && (
                             <Flex gap={5}>
                                 {
@@ -77,21 +100,14 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                                 }
                             </Flex>
                         )}
-                        {recordingFile && (
-                            <audio controls src={recordingFile.objectUrl}></audio>
-                        )}
-                    </Stack>
-                    {isLoading() && (
+                    </Stack> */}
+                    {isAudioLoading && (
                         <Center>
                             <Loader color={'pink'} />
                         </Center>
                     )}
-                    <Stack spacing={2} align="stretch" w="100%">
-                        { soundRecording.tags && soundRecording.tags.length > 0 && (
-                            <TagList tags={soundRecording.tags} />
-                        )}
-                    </Stack>
                 </Stack>
+
 
                 <ImageCarouselModal
                     opened={imageModalState.opened}
@@ -102,7 +118,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                         opened: false,
                     })}
                 />
-            </Container>
-        </Fragment>
+            </Card>
+        </Container>
     )
 }

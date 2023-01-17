@@ -14,7 +14,6 @@ export default function AppRoutes() {
   const { inProgress } = useMsal();
 
   const renderProtectedPage = (element: JSX.Element) => {
-    console.log('renderProtectedPage')
     if (inProgress !== InteractionStatus.None) return null;
     if (isAuthenticated) return element;
     return <Navigate to="/admin/signin"/>;

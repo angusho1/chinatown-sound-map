@@ -9,7 +9,7 @@ export const useAccessToken = () => {
     useEffect(() => {
         instance.acquireTokenSilent(tokenRequest)
             .then(tokenResult => setToken(tokenResult.accessToken))
-            .catch();
+            .catch(() => {});
     });
 
     return token;

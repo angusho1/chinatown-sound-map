@@ -27,7 +27,8 @@
 /* TODO: Find a way around hard-coding classes that may change in the google maps API */
 .gm-style .gm-style-iw-c {
     background-color: #e1d8e8f5;
-    padding: 12px !important;
+    padding: 0 !important;
+    border-radius: 15px;
 }
 
 .gm-style-iw-tc::after {
