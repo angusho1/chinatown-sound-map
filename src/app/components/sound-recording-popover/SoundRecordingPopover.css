@@ -29,6 +29,8 @@
     background-color: #e1d8e8f5;
     padding: 0 !important;
     border-radius: 15px;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
 }
 
 .gm-style-iw-tc::after {
@@ -41,4 +43,5 @@
 
 .gm-style-iw-d {
     overflow: visible !important;
+    max-height: 80vh !important;
 }

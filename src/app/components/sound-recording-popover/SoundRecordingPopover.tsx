@@ -10,6 +10,7 @@ import './SoundRecordingPopover.css';
 import { IconArrowDownLeftCircle, IconArrowUpRightCircle, IconX } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
 import AudioPlayer from '../audio-player/AudioPlayer';
+import { DEFAULT_IMAGE_URL } from 'constants/sound-recordings/sound-recording.constants';
 
 dayjs.extend(localizedFormat);
 
@@ -35,14 +36,12 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const areImagesLoading = imageFiles.length !== soundRecording.imageFiles?.length;
     const isAudioLoading = !recordingFile;
 
-    const defaultImg = 'https://i0.wp.com/nationaltrustcanada.ca/wp-content/uploads/2021/01/National-Trust_Top-10_2016_Chinatown_Vancouver_BC_Credit-Caitriana-Nicholson.jpg?w=2560&ssl=1';
-
     return (
         <Container p={0} sx={{ maxWidth: 350 }}>
             <Card.Section>
                 <LoadingOverlay visible={areImagesLoading} overlayBlur={2} />
                 <Image
-                    src={imageFiles.length > 0 ? imageFiles[0].objectUrl : defaultImg}
+                    src={imageFiles.length > 0 ? imageFiles[0].objectUrl : DEFAULT_IMAGE_URL}
                     height={200}
                 />
             </Card.Section>

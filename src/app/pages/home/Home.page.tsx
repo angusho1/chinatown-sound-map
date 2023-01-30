@@ -23,7 +23,13 @@ export default function HomePage() {
   return (
     <Fragment>
       <Drawer
-        styles={{ drawer: { height: 'calc(100vh - 60px)', top: '60px' } }}
+        styles={{
+          drawer: {
+            height: 'calc(100vh - 60px)',
+            top: '60px',
+            backgroundColor: '#e1d8e8f5',
+          },
+        }}
         withOverlay={false}
         size={400}
         opened={isDetailedViewOpen && !!selectedSoundRecording}
