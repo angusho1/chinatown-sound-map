@@ -35,6 +35,7 @@ export default function HomePage() {
         opened={isDetailedViewOpen && !!selectedSoundRecording}
         onClose={() => dispatch(toggleDetailedView(false))}
         withinPortal={false}
+        withCloseButton={false}
       >
         { selectedSoundRecording && (
           <SoundRecordingDetailedView soundRecording={selectedSoundRecording} />

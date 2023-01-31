@@ -1,4 +1,4 @@
-import { Card, Center, Container, Flex, Image, Loader, LoadingOverlay, ScrollArea, Space, Stack, Text, TextProps, Title } from "@mantine/core";
+import { ActionIcon, Center, Container, Flex, Group, Image, Loader, LoadingOverlay, ScrollArea, Space, Stack, Text, TextProps, Title } from "@mantine/core";
 import SoundRecording from "models/SoundRecording.model";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -7,6 +7,9 @@ import TagList from "../tag-list/TagList";
 import ImageCarousel from "../image-carousel/ImageCarousel";
 import AudioPlayer from "../audio-player/AudioPlayer";
 import { DEFAULT_IMAGE_URL } from "constants/sound-recordings/sound-recording.constants";
+import { useAppDispatch } from "app/hooks";
+import { toggleDetailedView } from "features/sound-clips/soundClipSlice";
+import { IconX } from "@tabler/icons";
 dayjs.extend(localizedFormat);
 
 interface SoundRecordingDetailedViewProps {
@@ -16,6 +19,7 @@ interface SoundRecordingDetailedViewProps {
 export default function SoundRecordingDetailedView({ soundRecording }: SoundRecordingDetailedViewProps) {
     const recordingFile = useSoundRecordingFile(soundRecording.id);
     const imageFiles = useSoundRecordingImageFiles(soundRecording);
+    const dispatch = useAppDispatch();
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
@@ -23,15 +27,28 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
     const isAudioLoading = !recordingFile;
 
     return(
-        <ScrollArea sx={{ height: 'calc(100vh - 110px)' }}>
+        <ScrollArea sx={{ height: 'calc(100vh - 60px)' }}>
         <Container>
-            <Card.Section>
+            <Group
+                position="right"
+                sx={{
+                    position: 'sticky',
+                    top: 0,
+                    background: '-webkit-linear-gradient(top, #e1d8e8f5, rgba(255,255,255,0))',
+                    zIndex: 500,
+                }}
+            >
+                <ActionIcon onClick={() => dispatch(toggleDetailedView(false))}>
+                    <IconX size={18} />
+                </ActionIcon>
+            </Group>
+            <Container px={0} mt={10}>
                 <LoadingOverlay visible={areImagesLoading} overlayBlur={2} />
                 <Image
                     src={imageFiles.length > 0 ? imageFiles[0].objectUrl : DEFAULT_IMAGE_URL}
                     height={200}
                 />
-            </Card.Section>
+            </Container>
             <Stack spacing={2} my={10}>
                 <Title order={2}>{soundRecording.title}</Title>
                 <Flex justify="space-between">
