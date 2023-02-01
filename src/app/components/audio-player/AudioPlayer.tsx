@@ -1,10 +1,9 @@
 import { ActionIcon, Group, HoverCard, MantineNumberSize, Slider, Text } from "@mantine/core";
 import { IconPlayerPause, IconPlayerPlay, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons";
-import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 import dayjs from 'dayjs';
 import dur from 'dayjs/plugin/duration';
 import { getTimeStampInSeconds } from "utils/transformers.utils";
-import { useCallback } from "react";
+import { useAudioPlayback } from "app/hooks/audio.hooks";
 
 dayjs.extend(dur);
 
@@ -13,16 +12,7 @@ interface AudioPlayerProps {
 }
 
 export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
-    const { togglePlayPause, playing, volume } = useAudioPlayer({
-        src: objectUrl,
-        format: "mp3",
-        autoplay: false,
-    });
-    const { position, duration, seek } = useAudioPosition({ highRefreshRate: true });
-
-    const goToPosition = useCallback((position: number) => {
-        seek(position);
-    }, [seek]);
+    const { playing, togglePlayPause, volume, setVolumeLevel, toggleVolume, position, setToPosition, scrubToPosition, duration } = useAudioPlayback({ objectUrl });
 
     const getVolumeIcon = (volume: number) => {
         if (volume === 0) return <IconVolume3 size={18} />;
@@ -34,7 +24,7 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
     const durationStr = getTimeStampInSeconds(duration);
 
     const playPauseIcon = playing ? <IconPlayerPause {...iconProps} /> : <IconPlayerPlay {...iconProps} />;
-    const volumeIcon = getVolumeIcon(volume());
+    const volumeIcon = getVolumeIcon(volume);
 
     return (
         <>
@@ -47,7 +37,7 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
                     min={0}
                     max={duration}
                     value={position}
-                    onChange={goToPosition}
+                    onChange={setToPosition}
                     {...sliderProps}
                 />
                 <Text {...timeTextProps}>{ durationStr }</Text>
@@ -57,11 +47,7 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
                 >
                     <HoverCard.Target>
                         <ActionIcon
-                            onClick={() => {
-                                const vol = volume();
-                                if (vol === 0) volume(0.5);
-                                else volume(0);
-                            }}
+                            onClick={toggleVolume}
                         >
                             { volumeIcon }
                         </ActionIcon>
@@ -71,8 +57,8 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
                             min={0}
                             max={1}
                             step={0.01}
-                            value={volume()}
-                            onChange={volume}
+                            value={volume}
+                            onChange={setVolumeLevel}
                             {...sliderProps}
                         />
                     </HoverCard.Dropdown>
