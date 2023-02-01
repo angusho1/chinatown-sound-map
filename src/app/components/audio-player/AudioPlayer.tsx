@@ -4,6 +4,7 @@ import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 import dayjs from 'dayjs';
 import dur from 'dayjs/plugin/duration';
 import { getTimeStampInSeconds } from "utils/transformers.utils";
+import { useCallback } from "react";
 
 dayjs.extend(dur);
 
@@ -17,16 +18,19 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
         format: "mp3",
         autoplay: false,
     });
-    const { percentComplete, duration, seek } = useAudioPosition({ highRefreshRate: true });
+    const { position, duration, seek } = useAudioPosition({ highRefreshRate: true });
 
-    const percentageToDuration = (percentage: number) => 0.01 * percentage * duration;
+    const goToPosition = useCallback((position: number) => {
+        seek(position);
+    }, [seek]);
+
     const getVolumeIcon = (volume: number) => {
-        if (volume === 0) return <IconVolume3 />;
-        else if (volume < 0.5) return <IconVolume2 />;
-        return <IconVolume />;
+        if (volume === 0) return <IconVolume3 size={18} />;
+        else if (volume < 0.7) return <IconVolume2 size={18} />;
+        return <IconVolume size={18} />;
     };
 
-    const currentPositionStr = getTimeStampInSeconds(percentageToDuration(percentComplete));
+    const currentPositionStr = getTimeStampInSeconds(position);
     const durationStr = getTimeStampInSeconds(duration);
 
     const playPauseIcon = playing ? <IconPlayerPause {...iconProps} /> : <IconPlayerPlay {...iconProps} />;
@@ -41,11 +45,9 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
                 <Text {...timeTextProps}>{ currentPositionStr }</Text>
                 <Slider
                     min={0}
-                    max={100}
-                    value={percentComplete}
-                    onChange={(newVal) => {
-                        seek(percentageToDuration(newVal));
-                    }}
+                    max={duration}
+                    value={position}
+                    onChange={goToPosition}
                     {...sliderProps}
                 />
                 <Text {...timeTextProps}>{ durationStr }</Text>
