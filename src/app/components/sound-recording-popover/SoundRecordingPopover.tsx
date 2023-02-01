@@ -11,6 +11,7 @@ import { IconArrowDownLeftCircle, IconArrowUpRightCircle, IconX } from '@tabler/
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
 import AudioPlayer from '../audio-player/AudioPlayer';
 import { DEFAULT_IMAGE_URL } from 'constants/sound-recordings/sound-recording.constants';
+import { useAudioPlayback } from 'app/hooks/audio.hooks';
 
 dayjs.extend(localizedFormat);
 
@@ -26,10 +27,12 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const recordingFile = useSoundRecordingFile(soundRecording.id);
     const imageFiles = useSoundRecordingImageFiles(soundRecording);
 
-    const [imageModalState, setImageModalState] = useState<ImageModalState>({
-        opened: false,
-        selectedIndex: 0,
-    });
+    const audioPlayback = useAudioPlayback({ objectUrl: recordingFile?.objectUrl });
+
+    // const [imageModalState, setImageModalState] = useState<ImageModalState>({
+    //     opened: false,
+    //     selectedIndex: 0,
+    // });
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
@@ -53,7 +56,10 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                     </ActionIcon>
                 </Tooltip>
                 <Tooltip label="Close">
-                    <ActionIcon onClick={() => dispatch(setSelectedSoundRecording(null))}>
+                    <ActionIcon onClick={() => {
+                        audioPlayback.stop();
+                        dispatch(setSelectedSoundRecording(null));
+                    }}>
                         <IconX size={18} />
                     </ActionIcon>
                 </Tooltip>
@@ -74,7 +80,9 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                         </Anchor>
                     </Stack>
                     {recordingFile && (
-                        <AudioPlayer objectUrl={recordingFile.objectUrl} />
+                        <AudioPlayer
+                            audioPlayback={audioPlayback}
+                        />
                     )}
                     {/* <Stack align="center">
                         {imageFiles && (
@@ -108,7 +116,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 </Stack>
 
 
-                <ImageCarouselModal
+                {/* <ImageCarouselModal
                     opened={imageModalState.opened}
                     selectedIndex={imageModalState.selectedIndex}
                     images={imageFiles}
@@ -116,7 +124,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                         ...imageModalState,
                         opened: false,
                     })}
-                />
+                /> */}
             </Card>
         </Container>
     )

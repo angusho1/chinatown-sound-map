@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 
 interface AudioPlayerProps {
-    objectUrl: string;
+    objectUrl?: string;
 }
 
 export interface AudioPlayback {
@@ -15,15 +15,31 @@ export interface AudioPlayback {
     setToPosition: (position: number) => void;
     scrubToPosition: (position: number) => void;
     duration: number;
+    stop: () => void;
 }
 
+const nullAudioPlayback: AudioPlayback = {
+    playing: false,
+    togglePlayPause: () => {},
+    volume: 0,
+    setVolumeLevel: () => {},
+    toggleVolume: () => {},
+    position: 0,
+    setToPosition: (position: number) => {},
+    scrubToPosition: (position: number) => {},
+    duration: 0,
+    stop: () => {},
+};
+
 export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback => {
-    const { togglePlayPause, playing, volume } = useAudioPlayer({
-        src: objectUrl,
+    const audioplayer = useAudioPlayer({
+        src: objectUrl ? objectUrl : 'dummy.mp3',
         format: "mp3",
-        autoplay: false,
+        autoplay: !!objectUrl,
     });
-    const { position, duration, seek } = useAudioPosition({ highRefreshRate: true });
+    const { togglePlayPause, playing, volume, stop } = audioplayer;
+    const audioposition = useAudioPosition({ highRefreshRate: true });
+    const { position, duration, seek } = audioposition;
 
     const [volumeState, setVolumeState] = useState<number>(1);
     const [lastUnmutedVolumeLevel, setLastUnmutedVolumeLevel] = useState<number>(1);
@@ -49,12 +65,14 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
         setTrackPosition(position);
     }, [seek]);
 
-    const scrubToPosition = (position: number) => {
+    const scrubToPosition = useCallback((position: number) => {
         setScrubbing(true);
         setTrackPosition(position);
-    };
+    }, [setScrubbing, setTrackPosition]);
 
     const currentPosition = scrubbing ? trackPosition : position;
+
+    if (!objectUrl) return nullAudioPlayback;
 
     return {
         playing,
@@ -66,5 +84,6 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
         setToPosition,
         scrubToPosition,
         duration,
+        stop
     };
 };

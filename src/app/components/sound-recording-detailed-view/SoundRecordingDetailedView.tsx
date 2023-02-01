@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Container, Flex, Group, Image, Loader, LoadingOverlay, ScrollArea, Space, Stack, Text, TextProps, Title } from "@mantine/core";
+import { ActionIcon, Center, Container, Flex, Group, Image, Loader, LoadingOverlay, ScrollArea, Space, Stack, Text, Title } from "@mantine/core";
 import SoundRecording from "models/SoundRecording.model";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -10,6 +10,7 @@ import { DEFAULT_IMAGE_URL } from "constants/sound-recordings/sound-recording.co
 import { useAppDispatch } from "app/hooks";
 import { toggleDetailedView } from "features/sound-clips/soundClipSlice";
 import { IconX } from "@tabler/icons";
+import { useAudioPlayback } from "app/hooks/audio.hooks";
 dayjs.extend(localizedFormat);
 
 interface SoundRecordingDetailedViewProps {
@@ -20,6 +21,8 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
     const recordingFile = useSoundRecordingFile(soundRecording.id);
     const imageFiles = useSoundRecordingImageFiles(soundRecording);
     const dispatch = useAppDispatch();
+
+    const audioPlayback = useAudioPlayback({ objectUrl: recordingFile?.objectUrl });
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
 
@@ -63,7 +66,7 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                     </Center>
                 )}
                 {recordingFile && (
-                    <AudioPlayer objectUrl={recordingFile.objectUrl} />
+                    <AudioPlayer audioPlayback={audioPlayback} />
                 )}
                 {/* <Container px="sm">
                     <ImageCarousel
