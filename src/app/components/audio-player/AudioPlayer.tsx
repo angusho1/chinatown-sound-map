@@ -37,7 +37,8 @@ export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
                     min={0}
                     max={duration}
                     value={position}
-                    onChange={setToPosition}
+                    onChange={scrubToPosition}
+                    onChangeEnd={setToPosition}
                     {...sliderProps}
                 />
                 <Text {...timeTextProps}>{ durationStr }</Text>

@@ -27,6 +27,8 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
 
     const [volumeState, setVolumeState] = useState<number>(1);
     const [lastUnmutedVolumeLevel, setLastUnmutedVolumeLevel] = useState<number>(1);
+    const [trackPosition, setTrackPosition] = useState<number>(0);
+    const [scrubbing, setScrubbing] = useState<boolean>(false);
 
     const setVolumeLevel = useCallback((vol: number) => {
         setVolumeState(vol);
@@ -42,8 +44,17 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
     }, [volumeState, setVolumeLevel, lastUnmutedVolumeLevel]);
 
     const setToPosition = useCallback((position: number) => {
+        setScrubbing(false);
         seek(position);
+        setTrackPosition(position);
     }, [seek]);
+
+    const scrubToPosition = (position: number) => {
+        setScrubbing(true);
+        setTrackPosition(position);
+    };
+
+    const currentPosition = scrubbing ? trackPosition : position;
 
     return {
         playing,
@@ -51,9 +62,9 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
         volume: volumeState,
         setVolumeLevel,
         toggleVolume,
-        position,
+        position: currentPosition,
         setToPosition,
-        scrubToPosition: () => {},
+        scrubToPosition,
         duration,
     };
 };
