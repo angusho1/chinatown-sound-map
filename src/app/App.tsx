@@ -4,6 +4,7 @@ import AppRoutes from './App.routes';
 import { EventType, IPublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import { useEffect } from 'react';
+import { AudioPlayerProvider } from 'react-use-audio-player';
 
 interface AppProps {
   instance: IPublicClientApplication;
@@ -54,8 +55,10 @@ function App({ instance }: AppProps) {
   return (
     <MsalProvider instance={instance}>
       <div className="App">
-        <AppNavBar routes={links} />
-        <AppRoutes />
+        <AudioPlayerProvider>
+          <AppNavBar routes={links} />
+          <AppRoutes />
+        </AudioPlayerProvider>
       </div>
     </MsalProvider>
   );
