@@ -8,6 +8,7 @@ import SoundRecording from 'models/SoundRecording.model';
 import { GoogleMap, InfoWindowF, MarkerClusterer, MarkerF, useJsApiLoader } from '@react-google-maps/api';
 import { DEFAULT_SUBMISSION_LOCATION } from 'utils/form-validators.utils';
 import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
+import { playAudio } from 'features/audio/audioSlice';
 
 export default function SoundRecordingMap() {
     const dispatch = useAppDispatch();
@@ -77,7 +78,10 @@ export default function SoundRecordingMap() {
                 lng: soundRecording.location.lng,
             };
 
-            const onMarkerClick = () => dispatch(setSelectedSoundRecording(soundRecording));
+            const onMarkerClick = () => {
+                dispatch(setSelectedSoundRecording(soundRecording));
+                dispatch(playAudio());
+            };
 
             const onInfoWindowClose = () => dispatch(setSelectedSoundRecording(null));
 

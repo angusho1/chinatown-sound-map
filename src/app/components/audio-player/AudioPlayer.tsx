@@ -1,18 +1,14 @@
 import { ActionIcon, Group, HoverCard, MantineNumberSize, Slider, Text } from "@mantine/core";
 import { IconPlayerPause, IconPlayerPlay, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons";
-import dayjs from 'dayjs';
-import dur from 'dayjs/plugin/duration';
 import { getTimeStampInSeconds } from "utils/transformers.utils";
-import { useAudioPlayback } from "app/hooks/audio.hooks";
-
-dayjs.extend(dur);
+import { AudioPlayback } from "app/hooks/audio.hooks";
 
 interface AudioPlayerProps {
-    objectUrl: string;
+    audioPlayback: AudioPlayback;
 }
 
-export default function AudioPlayer({ objectUrl }: AudioPlayerProps) {
-    const { playing, togglePlayPause, volume, setVolumeLevel, toggleVolume, position, setToPosition, scrubToPosition, duration } = useAudioPlayback({ objectUrl });
+export default function AudioPlayer({ audioPlayback }: AudioPlayerProps) {
+    const { playing, togglePlayPause, volume, setVolumeLevel, toggleVolume, position, setToPosition, scrubToPosition, duration } = audioPlayback;
 
     const getVolumeIcon = (volume: number) => {
         if (volume === 0) return <IconVolume3 size={18} />;

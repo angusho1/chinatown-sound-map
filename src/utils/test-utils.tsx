@@ -9,6 +9,7 @@ import type { AppStore, RootState } from '../app/store';
 // As a basic setup, import your same slice reducers
 import soundClipReducer from '../features/sound-clips/soundClipSlice';
 import submissionReducer from '../features/submissions/submissionsSlice';
+import audioReducer from '../features/audio/audioSlice';
 import { BrowserRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -29,7 +30,8 @@ export const renderWithProviders = (ui: React.ReactElement,
       store = configureStore({
         reducer: {
           soundClips: soundClipReducer,
-          submissions: submissionReducer
+          submissions: submissionReducer,
+          audio: audioReducer,
         }, 
         preloadedState 
       }),
@@ -64,7 +66,8 @@ export const customRender = (ui: React.ReactElement,
       store = configureStore({
         reducer: {
           soundClips: soundClipReducer,
-          submissions: submissionReducer
+          submissions: submissionReducer,
+          audio: audioReducer,
         }, 
         preloadedState 
       }),

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import SoundRecording from 'models/SoundRecording.model';
 import { ActionIcon, Anchor, Card, Center, Container, Flex, Group, Image, Loader, LoadingOverlay, Stack, Text, Title, Tooltip } from '@mantine/core';
 import dayjs from 'dayjs';
@@ -12,6 +11,7 @@ import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/so
 import AudioPlayer from '../audio-player/AudioPlayer';
 import { DEFAULT_IMAGE_URL } from 'constants/sound-recordings/sound-recording.constants';
 import { useAudioPlayback } from 'app/hooks/audio.hooks';
+import { stopAudio } from 'features/audio/audioSlice';
 
 dayjs.extend(localizedFormat);
 
@@ -58,6 +58,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                 <Tooltip label="Close">
                     <ActionIcon onClick={() => {
                         audioPlayback.stop();
+                        dispatch(stopAudio());
                         dispatch(setSelectedSoundRecording(null));
                     }}>
                         <IconX size={18} />

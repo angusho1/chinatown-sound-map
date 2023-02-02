@@ -1,4 +1,6 @@
-import { useCallback, useState } from "react";
+import { useAppDispatch, useAppSelector } from "app/hooks";
+import { finishScrub, scrubTrackToPosition, selectPositionState, selectVolume, setTrackToPosition, setVolume, toggleVolume } from "features/audio/audioSlice";
+import { useCallback } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 
 interface AudioPlayerProps {
@@ -32,43 +34,37 @@ const nullAudioPlayback: AudioPlayback = {
 };
 
 export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback => {
-    const audioplayer = useAudioPlayer({
+    const dispatch = useAppDispatch();
+    const { volumeLevel, lastUnmutedVolumeLevel } = useAppSelector(selectVolume);
+    const { trackPosition, scrubbing } = useAppSelector(selectPositionState);
+
+    const { togglePlayPause, playing, volume, stop } = useAudioPlayer({
         src: objectUrl ? objectUrl : 'dummy.mp3',
         format: "mp3",
         autoplay: !!objectUrl,
+        onseek: () => dispatch(finishScrub()),
     });
-    const { togglePlayPause, playing, volume, stop } = audioplayer;
-    const audioposition = useAudioPosition({ highRefreshRate: true });
-    const { position, duration, seek } = audioposition;
-
-    const [volumeState, setVolumeState] = useState<number>(1);
-    const [lastUnmutedVolumeLevel, setLastUnmutedVolumeLevel] = useState<number>(1);
-    const [trackPosition, setTrackPosition] = useState<number>(0);
-    const [scrubbing, setScrubbing] = useState<boolean>(false);
+    const { position, duration, seek } = useAudioPosition({ highRefreshRate: true });
 
     const setVolumeLevel = useCallback((vol: number) => {
-        setVolumeState(vol);
+        dispatch(setVolume({ volumeLevel: vol }));
         volume(vol);
-    }, [volume]);
+    }, [dispatch, volume]);
 
-    const toggleVolume = useCallback(() => {
-        if (volumeState === 0) setVolumeLevel(lastUnmutedVolumeLevel);
-        else {
-            setLastUnmutedVolumeLevel(volumeState);
-            setVolumeLevel(0);
-        }
-    }, [volumeState, setVolumeLevel, lastUnmutedVolumeLevel]);
+    const toggleVolumeState = useCallback(() => {
+        dispatch(toggleVolume());
+        if (volumeLevel === 0) volume(lastUnmutedVolumeLevel);
+        else volume(0);
+    }, [dispatch, volume, volumeLevel, lastUnmutedVolumeLevel]);
 
     const setToPosition = useCallback((position: number) => {
-        setScrubbing(false);
         seek(position);
-        setTrackPosition(position);
-    }, [seek]);
+        dispatch(setTrackToPosition({ position }));
+    }, [dispatch, seek]);
 
     const scrubToPosition = useCallback((position: number) => {
-        setScrubbing(true);
-        setTrackPosition(position);
-    }, [setScrubbing, setTrackPosition]);
+        dispatch(scrubTrackToPosition({ position }));
+    }, [dispatch]);
 
     const currentPosition = scrubbing ? trackPosition : position;
 
@@ -77,9 +73,9 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
     return {
         playing,
         togglePlayPause,
-        volume: volumeState,
+        volume: volumeLevel,
         setVolumeLevel,
-        toggleVolume,
+        toggleVolume: toggleVolumeState,
         position: currentPosition,
         setToPosition,
         scrubToPosition,
