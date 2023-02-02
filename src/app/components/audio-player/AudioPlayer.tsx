@@ -1,4 +1,4 @@
-import { ActionIcon, Group, HoverCard, MantineNumberSize, Slider, Text } from "@mantine/core";
+import { ActionIcon, Group, HoverCard, MantineNumberSize, MantineTheme, Slider, Text } from "@mantine/core";
 import { IconPlayerPause, IconPlayerPlay, IconVolume, IconVolume2, IconVolume3 } from "@tabler/icons";
 import { getTimeStampInSeconds } from "utils/transformers.utils";
 import { AudioPlayback } from "app/hooks/audio.hooks";
@@ -24,7 +24,7 @@ export default function AudioPlayer({ audioPlayback }: AudioPlayerProps) {
 
     return (
         <>
-            <Group>
+            <Group w="100%">
                 <ActionIcon onClick={togglePlayPause}>
                     { playPauseIcon }
                 </ActionIcon>
@@ -36,6 +36,9 @@ export default function AudioPlayer({ audioPlayback }: AudioPlayerProps) {
                     onChange={scrubToPosition}
                     onChangeEnd={setToPosition}
                     {...sliderProps}
+                    sx={{
+                        flexGrow: 1,
+                    }}
                 />
                 <Text {...timeTextProps}>{ durationStr }</Text>
                 <HoverCard
@@ -51,6 +54,7 @@ export default function AudioPlayer({ audioPlayback }: AudioPlayerProps) {
                     </HoverCard.Target>
                     <HoverCard.Dropdown>
                         <Slider
+                            w={100}
                             min={0}
                             max={1}
                             step={0.01}
@@ -66,22 +70,31 @@ export default function AudioPlayer({ audioPlayback }: AudioPlayerProps) {
 }
 
 const sliderProps = {
-    sx: {
-        minWidth: '100px',
-    },
     size: 'xs' as MantineNumberSize,
-    thumbSize: 20,
+    thumbSize: 18,
     label: null,
+    styles: (theme: MantineTheme) => ({
+        track: {
+        },
+        thumb: {
+            borderWidth: 3,
+            boxShadow: theme.shadows.sm,
+        },
+    }),
 };
 
 const iconProps = {
     size: 18,
-    stroke: 1,
-    color: 'black',
+    stroke: 0,
     style: {
         fill: 'black',
     },
 };
 
 const timeTextProps = {
+    fz: 'sm',
+    fw: 250,
+    sx: {
+        width: '30px',
+    }
 };
