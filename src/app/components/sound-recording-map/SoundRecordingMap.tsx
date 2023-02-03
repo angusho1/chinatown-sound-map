@@ -47,6 +47,7 @@ export default function SoundRecordingMap() {
                     position={loc}
                     onClick={() => setSelectedSoundClip(soundClip)}
                     clusterer={clusterer}
+                    icon="marker-icons/clip-marker-icon.png"
                 >
                     { selectedSoundClip && selectedSoundClip.title === soundClip.title && (
                         <InfoWindowF
@@ -89,9 +90,9 @@ export default function SoundRecordingMap() {
                 <MarkerF
                     key={soundRecording.id}
                     position={loc}
-                    opacity={0.5}
                     onClick={onMarkerClick}
                     clusterer={clusterer}
+                    icon="marker-icons/recording-marker-icon.png"
                 >
                     { selectedRecording && selectedRecording.id === soundRecording.id && (
                         <InfoWindowF
@@ -132,6 +133,23 @@ export default function SoundRecordingMap() {
                 <MarkerClusterer
                     gridSize={40}
                     maxZoom={18}
+                    styles={[
+                        {
+                            url: "/marker-icons/cluster1.png",
+                            height: 40,
+                            width: 40
+                        },
+                        {
+                            url: "/marker-icons/cluster2.png",
+                            height: 40,
+                            width: 40
+                        },
+                        {
+                            url: "/marker-icons/cluster3.png",
+                            height: 40,
+                            width: 40
+                        },
+                    ]}
                 >
                     { (clusterer: any) => 
                         <>
