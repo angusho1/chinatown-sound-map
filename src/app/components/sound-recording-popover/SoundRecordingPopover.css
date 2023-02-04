@@ -25,7 +25,7 @@
 }
 
 /* TODO: Find a way around hard-coding classes that may change in the google maps API */
-.gm-style .gm-style-iw-c {
+.gm-style [aria-label='Sound Recording'].gm-style-iw-c {
     background-color: #e1d8e8f5;
     padding: 0 !important;
     border-radius: 15px;
@@ -33,15 +33,15 @@
     overflow-y: auto !important;
 }
 
-.gm-style-iw-tc::after {
+[aria-label='Sound Recording'] + .gm-style-iw-tc::after {
     background-color: #e1d8e8f5 !important;
 }
 
-.gm-style .gm-style-iw-c .gm-ui-hover-effect {
+.gm-style [aria-label='Sound Recording'].gm-style-iw-c .gm-ui-hover-effect {
     visibility: collapse;
 }
 
-.gm-style-iw-d {
+[aria-label='Sound Recording'] .gm-style-iw-d {
     overflow: visible !important;
     max-height: 80vh !important;
 }

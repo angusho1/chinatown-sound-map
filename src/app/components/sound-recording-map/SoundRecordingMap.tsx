@@ -96,6 +96,7 @@ export default function SoundRecordingMap() {
                 >
                     { selectedRecording && selectedRecording.id === soundRecording.id && (
                         <InfoWindowF
+                            options={{ ariaLabel: 'Sound Recording' }}
                             onCloseClick={onInfoWindowClose}
                         >
                             <SoundRecordingPopover

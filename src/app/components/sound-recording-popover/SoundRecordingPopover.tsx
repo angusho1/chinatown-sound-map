@@ -67,7 +67,7 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
             </Group>
             <Card sx={{ backgroundColor: '#e1d8e8f5' }} pt={0}>
                 <Stack align="center" spacing={8}>
-                    <Stack spacing={2}>
+                    <Stack spacing={2} sx={{ minWidth: 300 }}>
                         <Title order={4}>{soundRecording.title}</Title>
                         <Flex justify="space-between">
                             <Text size="sm" fw={400} color="gray">by {soundRecording.author}</Text>
