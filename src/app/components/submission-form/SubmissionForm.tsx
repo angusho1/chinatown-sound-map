@@ -7,7 +7,7 @@ import { createSubmission, resetSubmission, selectSubmissionStatus } from 'featu
 import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingTag from 'models/SoundRecordingTag.model';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator, tagsValidator } from 'utils/form-validators.utils';
 import TagInput from '../tag-input/TagInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
@@ -250,11 +250,11 @@ export default function SubmissionForm() {
         };
     };
 
-    const nextButtonProps = {
-        type: currStep === SubmissionFormStep.CONTRIBUTOR_INFO ? 'submit' as 'submit' : 'button' as 'button',
-        children: currStep === SubmissionFormStep.CONTRIBUTOR_INFO ? 'Submit' : 'Next',
-        disabled: currStep === SubmissionFormStep.SUBMISSION_RESULT,
-    };
+    useEffect(() => {
+        return () => {
+            resetForm();
+        };
+    }, []);
 
     const prevButtonProps = {
         children: currStep === SubmissionFormStep.SUBMISSION_RESULT ? 'Go Back' : 'Back',
@@ -416,10 +416,19 @@ export default function SubmissionForm() {
                             onClick={prevStep}
                             {...prevButtonProps}
                         />
-                        <Button
-                            onClick={nextStep}
-                            {...nextButtonProps}
-                        />
+                        { currStep < SubmissionFormStep.CONTRIBUTOR_INFO && (
+                            <Button
+                                children="Next"
+                                onClick={nextStep}
+                            />
+                        )}
+                        { currStep >= SubmissionFormStep.CONTRIBUTOR_INFO && (
+                            <Button
+                                type="submit"
+                                children="Submit"
+                                disabled={currStep === SubmissionFormStep.SUBMISSION_RESULT}
+                            />
+                        )}
                     </Group>
                 </Fragment>
             )}
