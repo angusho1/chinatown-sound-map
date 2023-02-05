@@ -8,10 +8,11 @@ import { RecordingLocation } from 'models/RecordingLocation.model';
 import SoundClipSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingTag from 'models/SoundRecordingTag.model';
 import { Fragment, useEffect, useState } from 'react';
-import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator, tagsValidator } from 'utils/form-validators.utils';
+import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator, tagsValidator, reCaptchaTokenValidator } from 'utils/form-validators.utils';
 import TagInput from '../tag-input/TagInput';
 import ImageUploadInput from '../image-upload-input/ImageUploadInput';
 import LocationPicker from '../location-picker/LocationPicker';
+import ReCAPTCHA from 'react-google-recaptcha';
 import './SubmissionForm.css';
 
 type SubmissionFormValues = Partial<SoundClipSubmission>;
@@ -42,6 +43,7 @@ export default function SubmissionForm() {
             images: [],
             tags: [] as SoundRecordingTag[],
             autoComplete: '',
+            reCaptchaToken: '',
         },
     
         validate: {
@@ -54,6 +56,7 @@ export default function SubmissionForm() {
             images: submissionImagesValidator,
             autoComplete: tagValidator,
             tags: tagsValidator,
+            reCaptchaToken: reCaptchaTokenValidator,
         },
         validateInputOnChange: ['recording', 'images', 'autoComplete', 'tags']
     });
@@ -250,6 +253,10 @@ export default function SubmissionForm() {
         };
     };
 
+    const onReCaptchaChange = (value: string | null) => {
+        form.setFieldValue('reCaptchaToken', !value ? '' : value);
+    };
+
     useEffect(() => {
         return () => {
             resetForm();
@@ -379,6 +386,11 @@ export default function SubmissionForm() {
                     { emailInput }
                     <Space h="md" />
                     { authorInput }
+                    <Space h="md" />
+                    <ReCAPTCHA
+                        sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY as string}
+                        onChange={onReCaptchaChange}
+                    />
                 </Stepper.Step>
                 <Stepper.Completed>
                 {submissionStatus === 'pending' && (

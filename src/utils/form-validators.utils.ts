@@ -67,3 +67,8 @@ export const tagsValidator = (value: SoundRecordingTag[]): string | null => {
     if (value.length > MAX_NUMBER_TAGS_PER_RECORDING) return `You cannot add more than ${MAX_NUMBER_TAGS_PER_RECORDING} tags`;
     return null;
 }
+
+export const reCaptchaTokenValidator = (value: string | null): string | null => {
+    if (!value) return 'Invalid token';
+    return null;
+}

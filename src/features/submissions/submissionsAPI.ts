@@ -109,6 +109,22 @@ export async function editSubmissionStatus(submissionId: string, status: Submiss
     }
 }
 
+export async function verifyReCaptchaToken(token: string): Promise<boolean> {
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json')
+    try {
+        const res = await fetch('/submission/verify-token', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ token }),
+        });
+        return res.ok;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
 function splitTagTypes(tags: SoundRecordingTag[]) {
     const existingTagIds: string[] = [];
     const newTags: string[] = []; 

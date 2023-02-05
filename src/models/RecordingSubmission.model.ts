@@ -11,6 +11,7 @@ export default interface SoundClipSubmission {
     date?: Date;
     images?: File[];
     tags: SoundRecordingTag[];
+    reCaptchaToken: string;
 }
 
 export interface SubmissionResponse {

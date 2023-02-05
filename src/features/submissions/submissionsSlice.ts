@@ -3,7 +3,7 @@ import { RootState } from "app/store";
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingTag from "models/SoundRecordingTag.model";
 import { NetworkRequestStatus } from "types/state/state.types";
-import { getSoundRecordingTags, submitRecording } from "./submissionsAPI";
+import { getSoundRecordingTags, submitRecording, verifyReCaptchaToken } from "./submissionsAPI";
 
 export interface SubmissionState {
     status: NetworkRequestStatus;
@@ -19,6 +19,8 @@ const initialState: SubmissionState = {
 
 export const createSubmission = createAsyncThunk('submissions/createSubmission', 
     async (submission: SoundClipSubmission) => {
+        const isTokenValid = await verifyReCaptchaToken(submission.reCaptchaToken);
+        if (!isTokenValid) throw new Error('Invalid token');
         const res: SubmissionResponse = await submitRecording(submission);
         return res;
     }
