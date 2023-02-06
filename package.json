@@ -7,7 +7,7 @@
     "@azure/msal-react": "^1.5.1",
     "@mantine/carousel": "^5.9.6",
     "@mantine/core": "^5.9.6",
-    "@mantine/dates": "^5.9.6",
+    "@mantine/dates": "^5.10.3",
     "@mantine/form": "^5.9.6",
     "@mantine/hooks": "^5.9.6",
     "@react-google-maps/api": "^2.17.1",
