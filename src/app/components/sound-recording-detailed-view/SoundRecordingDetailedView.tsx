@@ -24,7 +24,7 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
 
     const audioPlayback = useAudioPlayback({ objectUrl: recordingFile?.objectUrl });
 
-    const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : 'unknown';
+    const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : '';
 
     const areImagesLoading = imageFiles.length !== soundRecording.imageFiles?.length;
     const isAudioLoading = !recordingFile;
@@ -56,7 +56,9 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                 <Title order={2}>{soundRecording.title}</Title>
                 <Flex justify="space-between">
                     <Text size="md" fw={400} color="gray">by {soundRecording.author}</Text>
-                    <Text size="md" fw={400} color="gray">{dateStr}</Text>
+                    { dateStr && (
+                        <Text size="md" fw={400} color="gray">{dateStr}</Text>
+                    )}
                 </Flex>
             </Stack>
             <Stack align="center" spacing={5}>
