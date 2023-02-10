@@ -1,10 +1,12 @@
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { finishScrub, scrubTrackToPosition, selectPositionState, selectVolume, setTrackToPosition, setVolume, toggleVolume } from "features/audio/audioSlice";
-import { useCallback } from "react";
+import SoundRecording from "models/SoundRecording.model";
+import { useCallback, useEffect } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
 
 interface AudioPlayerProps {
     objectUrl?: string;
+    soundRecording: SoundRecording;
 }
 
 export interface AudioPlayback {
@@ -33,17 +35,19 @@ const nullAudioPlayback: AudioPlayback = {
     stop: () => {},
 };
 
-export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback => {
+export const useAudioPlayback = ({ objectUrl, soundRecording }: AudioPlayerProps): AudioPlayback => {
     const dispatch = useAppDispatch();
     const { volumeLevel, lastUnmutedVolumeLevel } = useAppSelector(selectVolume);
     const { trackPosition, scrubbing } = useAppSelector(selectPositionState);
 
-    const { togglePlayPause, playing, volume, stop } = useAudioPlayer({
+    const { togglePlayPause, playing, volume, stop, stopped } = useAudioPlayer({
         src: objectUrl ? objectUrl : 'dummy.mp3',
         format: "mp3",
         autoplay: !!objectUrl,
         onseek: () => dispatch(finishScrub()),
+        html5: true,
     });
+
     const { position, duration, seek } = useAudioPosition({ highRefreshRate: true });
 
     const setVolumeLevel = useCallback((vol: number) => {
@@ -68,6 +72,15 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
 
     const currentPosition = scrubbing ? trackPosition : position;
 
+    useMediaSession({
+        soundRecording,
+        playbackState: playing ? 'playing' : (stopped ? 'none' : 'paused'),
+        duration,
+        position,
+        togglePlayPause,
+        setToPosition,
+    });
+
     if (!objectUrl) return nullAudioPlayback;
 
     return {
@@ -82,4 +95,54 @@ export const useAudioPlayback = ({ objectUrl }: AudioPlayerProps): AudioPlayback
         duration,
         stop
     };
+};
+
+interface MediaSessionProps {
+    soundRecording: SoundRecording;
+    playbackState: MediaSessionPlaybackState;
+    duration: number;
+    position: number;
+    togglePlayPause: () => void;
+    setToPosition: (pos: number) => void;
+}
+
+export const useMediaSession = ({ soundRecording, playbackState, duration, position, togglePlayPause, setToPosition }: MediaSessionProps) => {
+    const mediaSessionAvailable = 'mediaSession' in navigator;
+
+    useEffect(() => {
+        if (!mediaSessionAvailable) return;
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: soundRecording.title,
+            artist: soundRecording.author,
+            album: 'Chinatown Sound Map',
+            artwork: [
+            ],
+        });
+    }, [mediaSessionAvailable, soundRecording]);
+
+    useEffect(() => {
+        if (!mediaSessionAvailable) return;
+
+        navigator.mediaSession.setActionHandler('play', togglePlayPause);
+        navigator.mediaSession.setActionHandler('pause', togglePlayPause);
+    }, [mediaSessionAvailable, togglePlayPause]);
+
+    useEffect(() => {
+        if (!mediaSessionAvailable) return;
+
+        navigator.mediaSession.setActionHandler('seekto', (details: MediaSessionActionDetails) => {
+            setToPosition(details.seekTime as number);
+        });
+    }, [mediaSessionAvailable, setToPosition]);
+
+    useEffect(() => {
+        if (!mediaSessionAvailable) return;
+        navigator.mediaSession.playbackState = playbackState;
+    }, [mediaSessionAvailable, playbackState]);
+
+    useEffect(() => {
+        if (!mediaSessionAvailable) return;
+        navigator.mediaSession.setPositionState({ duration, position });
+    }, [mediaSessionAvailable, duration, position]);
 };

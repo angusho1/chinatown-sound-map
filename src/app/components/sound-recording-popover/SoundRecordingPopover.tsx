@@ -29,7 +29,10 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
     const imageFiles = useSoundRecordingImageFiles(soundRecording);
     const descriptionTextRef = useRef() as Ref<HTMLParagraphElement>;
 
-    const audioPlayback = useAudioPlayback({ objectUrl: recordingFile?.objectUrl });
+    const audioPlayback = useAudioPlayback({
+        soundRecording,
+        objectUrl: recordingFile?.objectUrl,
+    });
 
     // const [imageModalState, setImageModalState] = useState<ImageModalState>({
     //     opened: false,

@@ -22,7 +22,10 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
     const imageFiles = useSoundRecordingImageFiles(soundRecording);
     const dispatch = useAppDispatch();
 
-    const audioPlayback = useAudioPlayback({ objectUrl: recordingFile?.objectUrl });
+    const audioPlayback = useAudioPlayback({
+        soundRecording,
+        objectUrl: recordingFile?.objectUrl,
+    });
 
     const dateStr = soundRecording.dateRecorded ? dayjs(new Date(soundRecording.dateRecorded)).format('LL') : '';
 
