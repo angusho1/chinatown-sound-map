@@ -1,13 +1,16 @@
+import { API_DOMAIN } from "constants/api/api.constants";
 import SoundClip from "models/SoundClip.model";
 import SoundRecording from "models/SoundRecording.model";
 import { SoundRecordingFileData } from "types/state/sound-recording-state.types";
 
+const baseUrl = API_DOMAIN;
+
 export function getSoundClips(): Promise<SoundClip[]> {
-    return fetch('/sound-clips').then(res => res.json());
+    return fetch(`${baseUrl}/sound-clips`).then(res => res.json());
 }
 
 export function getSoundRecordings(): Promise<SoundRecording[]> {
-    return fetch('/sound-recordings').then(res => res.json());
+    return fetch(`${baseUrl}/sound-recordings`).then(res => res.json());
 }
 
 export async function getSoundRecordingFile(id: string, token?: string): Promise<SoundRecordingFileData> {

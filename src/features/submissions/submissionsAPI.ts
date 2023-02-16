@@ -1,7 +1,10 @@
+import { API_DOMAIN } from "constants/api/api.constants";
 import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingTag from "models/SoundRecordingTag.model";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { GetSubmissionsOptions, SortColumn } from "types/api/submissions-api.types";
+
+const baseUrl = API_DOMAIN;
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
@@ -21,7 +24,7 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
         submission.images.forEach(image => formData.append('image', image));
     }
 
-    const res = await fetch('/submissions', {
+    const res = await fetch(`${baseUrl}/submissions`, {
         method: 'POST',
         body: formData
     });
@@ -34,7 +37,7 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
 }
 
 export function getSoundRecordingTags(): Promise<SoundRecordingTag[]> {
-    return fetch('/tags').then(res => res.json());
+    return fetch(`${baseUrl}/tags`).then(res => res.json());
 }
 
 export async function getSubmissions(token: string, options: GetSubmissionsOptions): Promise<Submission[]> {
@@ -53,7 +56,7 @@ export async function getSubmissions(token: string, options: GetSubmissionsOptio
     const queryParams = options.sort ? getQueryParams(options.sort) : '';
 
     try {
-        const res = await fetch(`/submissions${queryParams ? '?' + queryParams : ''}`, {
+        const res = await fetch(`${baseUrl}/submissions${queryParams ? '?' + queryParams : ''}`, {
             method: 'GET',
             headers
         });
@@ -76,7 +79,7 @@ export async function publishSubmission(submissionId: string, token: string): Pr
     headers.append("Authorization", bearer);
 
     try {
-        const res = await fetch(`/publish/${submissionId}`, {
+        const res = await fetch(`${baseUrl}/publish/${submissionId}`, {
             method: 'POST',
             headers
         });
@@ -97,7 +100,7 @@ export async function editSubmissionStatus(submissionId: string, status: Submiss
     });
 
     try {
-        const res = await fetch(`/submission/${submissionId}`, {
+        const res = await fetch(`${baseUrl}/submission/${submissionId}`, {
             method: 'PATCH',
             headers,
             body,
@@ -113,7 +116,7 @@ export async function verifyReCaptchaToken(token: string): Promise<boolean> {
     const headers = new Headers();
     headers.append('Content-Type', 'application/json')
     try {
-        const res = await fetch('/submission/verify-token', {
+        const res = await fetch(`${baseUrl}/submission/verify-token`, {
             method: 'POST',
             headers,
             body: JSON.stringify({ token }),

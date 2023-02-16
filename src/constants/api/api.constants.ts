@@ -1,0 +1,1 @@
+export const API_DOMAIN = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_DOMAIN : '';
