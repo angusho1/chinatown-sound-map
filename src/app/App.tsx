@@ -5,6 +5,7 @@ import { EventType, IPublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
 import { useEffect } from 'react';
 import { AudioPlayerProvider } from 'react-use-audio-player';
+import { Analytics } from '@vercel/analytics/react';
 
 interface AppProps {
   instance: IPublicClientApplication;
@@ -58,6 +59,7 @@ function App({ instance }: AppProps) {
         <AudioPlayerProvider>
           <AppNavBar routes={links} />
           <AppRoutes />
+          <Analytics />
         </AudioPlayerProvider>
       </div>
     </MsalProvider>
