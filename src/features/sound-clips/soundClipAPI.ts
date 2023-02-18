@@ -14,11 +14,11 @@ export function getSoundRecordings(): Promise<SoundRecording[]> {
 }
 
 export async function getSoundRecordingFile(id: string, token?: string): Promise<SoundRecordingFileData> {
-    return await getFile(`/sound-recording/${id}/download`, token);
+    return await getFile(`${baseUrl}/sound-recording/${id}/download`, token);
 }
 
 export async function getSoundRecordingImageFile(filename: string, token?: string): Promise<SoundRecordingFileData> {
-    return await getFile(`/sound-recording/image/${filename}/download`, token);
+    return await getFile(`${baseUrl}/sound-recording/image/${filename}/download`, token);
 }
 
 async function getFile(requestUri: string, token?: string): Promise<SoundRecordingFileData> {
