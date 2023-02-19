@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
-import ImageCarouselModal, { ImageModalState } from '../image-carousel/ImageCarouselModal';
 import './SoundRecordingPopover.css';
 import { IconArrowDownLeftCircle, IconArrowUpRightCircle, IconX } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';
@@ -102,47 +101,12 @@ export default function SoundRecordingPopover(props: SoundRecordingPopoverProps)
                             audioPlayback={audioPlayback}
                         />
                     )}
-                    {/* <Stack align="center">
-                        {imageFiles && (
-                            <Flex gap={5}>
-                                {
-                                    imageFiles.map((image, index) => (
-                                        <Image
-                                            className="popover-img"
-                                            sx={{ cursor: 'pointer' }}
-                                            key={image.objectUrl}
-                                            width={100}
-                                            height={80}
-                                            src={image.objectUrl}
-                                            onClick={() => {
-                                                setImageModalState({
-                                                    opened: true,
-                                                    selectedIndex: index,
-                                                });
-                                            }}
-                                        />
-                                    ))
-                                }
-                            </Flex>
-                        )}
-                    </Stack> */}
                     {isAudioLoading && (
                         <Center>
                             <Loader color={'pink'} />
                         </Center>
                     )}
                 </Stack>
-
-
-                {/* <ImageCarouselModal
-                    opened={imageModalState.opened}
-                    selectedIndex={imageModalState.selectedIndex}
-                    images={imageFiles}
-                    onClose={() => setImageModalState({
-                        ...imageModalState,
-                        opened: false,
-                    })}
-                /> */}
             </Card>
         </Container>
     )

@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from "app/hooks/sound-recording.hooks";
 import TagList from "../tag-list/TagList";
-import ImageCarousel from "../image-carousel/ImageCarousel";
 import AudioPlayer from "../audio-player/AudioPlayer";
 import { DEFAULT_IMAGE_URL } from "constants/sound-recordings/sound-recording.constants";
 import { useAppDispatch } from "app/hooks";
@@ -73,15 +72,6 @@ export default function SoundRecordingDetailedView({ soundRecording }: SoundReco
                 {recordingFile && (
                     <AudioPlayer audioPlayback={audioPlayback} />
                 )}
-                {/* <Container px="sm">
-                    <ImageCarousel
-                        selectedIndex={0}
-                        images={imageFiles}
-                        onSlideChange={() => {}}
-                        autoPlay={true}
-                        imageHeight={300}
-                    />
-                </Container> */}
             </Stack>
             <Stack align="left" spacing={8}>
                 <Text component="p" fz="md" fw={400}>

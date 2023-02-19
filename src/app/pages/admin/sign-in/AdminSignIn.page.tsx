@@ -14,7 +14,7 @@ export default function AdminSignInPage() {
     
     useEffect(() => {
         if (isAuthenticated) navigate('/admin/submissions');
-    }, [isAuthenticated]);
+    }, [navigate, isAuthenticated]);
 
     const signIn = async () => {
         try {

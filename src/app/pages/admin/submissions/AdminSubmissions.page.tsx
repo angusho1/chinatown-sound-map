@@ -44,10 +44,12 @@ export default function AdminSubmissionsPage() {
 
     useEffect(() => {
         if (isAuthenticated) fetchSubmissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
 
     useEffect(() => {
         if (!loading) fetchSubmissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sort]);
 
     const getToken = () => instance.acquireTokenSilent(tokenRequest);
