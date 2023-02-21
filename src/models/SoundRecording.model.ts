@@ -4,6 +4,7 @@ import SoundRecordingTag from './SoundRecordingTag.model';
 export default interface SoundRecording {
     id: string;
     title: string;
+    shortName: string;
     author?: string;
     description?: string;
     location: RecordingLocation;

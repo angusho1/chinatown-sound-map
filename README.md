@@ -5,3 +5,7 @@ This project is a complete rewrite of the existing [Chinatown Sound Map](https:/
 Server/API code can be found in [this repository](https://github.com/angusho1/chinatown-sound-map-api).
 
 Written in React + Redux + Mantine
+
+## Preview
+
+Working website preview: [https://chinatownsoundmap.vercel.app/](https://chinatownsoundmap.vercel.app/)
