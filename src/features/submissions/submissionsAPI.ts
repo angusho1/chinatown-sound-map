@@ -8,7 +8,6 @@ const baseUrl = API_DOMAIN;
 
 export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
-    const { existingTagIds, newTags } = splitTagTypes(submission.tags);
 
     formData.append('title', submission.title);
     formData.append('recording', submission.recording);
@@ -17,8 +16,7 @@ export async function submitRecording(submission: SoundClipSubmission): Promise<
     formData.append('author', submission.author || '');
     formData.append('description', submission.description || '');
     formData.append('date', submission.date ? submission.date.toUTCString() : '');
-    formData.append('existingTags', JSON.stringify(existingTagIds));
-    formData.append('newTags', JSON.stringify(newTags));
+    formData.append('tags', JSON.stringify(submission.tags));
 
     if (submission.images) {
         submission.images.forEach(image => formData.append('image', image));
@@ -126,18 +124,4 @@ export async function verifyReCaptchaToken(token: string): Promise<boolean> {
         console.log(e);
         return false;
     }
-}
-
-function splitTagTypes(tags: SoundRecordingTag[]) {
-    const existingTagIds: string[] = [];
-    const newTags: string[] = []; 
-
-    if (tags) {
-        tags.forEach(tag => {
-            if (tag.id === '') newTags.push(tag.name);
-            else existingTagIds.push(tag.id);
-        });
-    }
-
-    return { existingTagIds, newTags };
 }
