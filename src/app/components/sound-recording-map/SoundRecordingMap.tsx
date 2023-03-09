@@ -9,6 +9,7 @@ import { GoogleMap, InfoWindowF, MarkerClusterer, MarkerF, useJsApiLoader } from
 import { DEFAULT_SUBMISSION_LOCATION } from 'utils/form-validators.utils';
 import SoundRecordingPopover from '../sound-recording-popover/SoundRecordingPopover';
 import { playAudio } from 'features/audio/audioSlice';
+import { LoadingOverlay } from '@mantine/core';
 
 export default function SoundRecordingMap() {
     const dispatch = useAppDispatch();
@@ -131,6 +132,7 @@ export default function SoundRecordingMap() {
                 zoom={17}
                 options={mapOptions}
             >
+                <LoadingOverlay visible={soundRecordingStatus === 'pending'} overlayBlur={2} />
                 <MarkerClusterer
                     gridSize={40}
                     maxZoom={18}
