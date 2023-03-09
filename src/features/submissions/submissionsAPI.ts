@@ -1,12 +1,12 @@
 import { API_DOMAIN } from "constants/api/api.constants";
-import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
+import SoundRecordingSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingTag from "models/SoundRecordingTag.model";
 import Submission, { SubmissionStatus } from "models/Submission.model";
 import { GetSubmissionsOptions, SortColumn } from "types/api/submissions-api.types";
 
 const baseUrl = API_DOMAIN;
 
-export async function submitRecording(submission: SoundClipSubmission): Promise<SubmissionResponse> {
+export async function submitRecording(submission: SoundRecordingSubmission): Promise<SubmissionResponse> {
     const formData = new FormData();
 
     formData.append('title', submission.title);

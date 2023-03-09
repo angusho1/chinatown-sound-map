@@ -4,9 +4,9 @@ import SoundRecording from 'models/SoundRecording.model';
 import { SetImageFilePayload, SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
 import { SoundRecordingFileData, SoundRecordingFileMap, SoundRecordingImageMap } from 'types/state/sound-recording-state.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
-import { getSoundRecordings } from './soundClipAPI';
+import { getSoundRecordings } from './soundRecordingAPI';
 
-export interface SoundClipState {
+export interface SoundRecordingState {
     soundRecordings: SoundRecording[];
     soundRecordingFiles: SoundRecordingFileMap;
     soundRecordingImageFiles: SoundRecordingImageMap;
@@ -15,7 +15,7 @@ export interface SoundClipState {
     isDetailedViewOpen: boolean;
 }
 
-const initialState: SoundClipState = {
+const initialState: SoundRecordingState = {
     soundRecordings: [],
     soundRecordingStatus: 'idle',
     soundRecordingFiles: {},
@@ -24,15 +24,15 @@ const initialState: SoundClipState = {
     isDetailedViewOpen: false,
 }
 
-export const fetchSoundRecordings = createAsyncThunk('soundClips/fetchSoundRecordings',
+export const fetchSoundRecordings = createAsyncThunk('soundRecordings/fetchSoundRecordings',
     async () => {
         const res: SoundRecording[] = await getSoundRecordings();
         return res;
     }
 );
 
-export const soundClipSlice = createSlice({
-    name: 'soundClips',
+export const soundRecordingSlice = createSlice({
+    name: 'soundRecordings',
     initialState,
     reducers: {
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
@@ -73,14 +73,14 @@ export const soundClipSlice = createSlice({
     }
 });
 
-export const selectSoundRecordings = (state: RootState) => state.soundClips.soundRecordings;
-export const selectSoundRecordingStatus = (state: RootState) => state.soundClips.soundRecordingStatus;
-export const selectSoundRecordingFiles = (state: RootState) => state.soundClips.soundRecordingFiles;
-export const selectSoundRecordingFileById = (state: RootState, recordingId: string | undefined) => recordingId ? state.soundClips.soundRecordingFiles[recordingId] : null;
-export const selectSoundRecordingImageById = (state: RootState, recordingId: string | undefined) => recordingId ? state.soundClips.soundRecordingImageFiles[recordingId] : null;
-export const selectCurrentSoundRecording = (state: RootState) => state.soundClips.selectedSoundRecording;
-export const selectIsDetailedViewOpen = (state: RootState) => state.soundClips.isDetailedViewOpen;
+export const selectSoundRecordings = (state: RootState) => state.soundRecordings.soundRecordings;
+export const selectSoundRecordingStatus = (state: RootState) => state.soundRecordings.soundRecordingStatus;
+export const selectSoundRecordingFiles = (state: RootState) => state.soundRecordings.soundRecordingFiles;
+export const selectSoundRecordingFileById = (state: RootState, recordingId: string | undefined) => recordingId ? state.soundRecordings.soundRecordingFiles[recordingId] : null;
+export const selectSoundRecordingImageById = (state: RootState, recordingId: string | undefined) => recordingId ? state.soundRecordings.soundRecordingImageFiles[recordingId] : null;
+export const selectCurrentSoundRecording = (state: RootState) => state.soundRecordings.selectedSoundRecording;
+export const selectIsDetailedViewOpen = (state: RootState) => state.soundRecordings.isDetailedViewOpen;
 
-export const { setSoundRecordingFile, setSelectedSoundRecording, cacheSoundRecordingImageFile, toggleDetailedView } = soundClipSlice.actions;
+export const { setSoundRecordingFile, setSelectedSoundRecording, cacheSoundRecordingImageFile, toggleDetailedView } = soundRecordingSlice.actions;
 
-export default soundClipSlice.reducer;
+export default soundRecordingSlice.reducer;

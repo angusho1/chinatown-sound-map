@@ -3,7 +3,7 @@ import { ActionIcon, Anchor, Card, Center, Container, Flex, Group, Image, Loader
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
+import { selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-recordings/soundRecordingSlice';
 import './SoundRecordingPopover.css';
 import { IconArrowDownLeftCircle, IconArrowUpRightCircle, IconX } from '@tabler/icons';
 import { useSoundRecordingFile, useSoundRecordingImageFiles } from 'app/hooks/sound-recording.hooks';

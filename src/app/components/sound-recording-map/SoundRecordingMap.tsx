@@ -1,6 +1,6 @@
 import './SoundRecordingMap.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { fetchSoundRecordings, selectCurrentSoundRecording, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
+import { fetchSoundRecordings, selectCurrentSoundRecording, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-recordings/soundRecordingSlice';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
 import { GoogleMap, InfoWindowF, MarkerClusterer, MarkerF, useJsApiLoader } from '@react-google-maps/api';

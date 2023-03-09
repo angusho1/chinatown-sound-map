@@ -1,7 +1,7 @@
 import { Drawer } from '@mantine/core';
 import SoundRecordingDetailedView from 'app/components/sound-recording-detailed-view/SoundRecordingDetailedView';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { selectCurrentSoundRecording, selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-clips/soundClipSlice';
+import { selectCurrentSoundRecording, selectIsDetailedViewOpen, setSelectedSoundRecording, toggleDetailedView } from 'features/sound-recordings/soundRecordingSlice';
 import { Fragment, useEffect } from 'react';
 import SoundRecordingMap from '../../components/sound-recording-map/SoundRecordingMap';
 

@@ -7,7 +7,7 @@ import TagList from "../tag-list/TagList";
 import AudioPlayer from "../audio-player/AudioPlayer";
 import { DEFAULT_IMAGE_URL } from "constants/sound-recordings/sound-recording.constants";
 import { useAppDispatch } from "app/hooks";
-import { toggleDetailedView } from "features/sound-clips/soundClipSlice";
+import { toggleDetailedView } from "features/sound-recordings/soundRecordingSlice";
 import { IconX } from "@tabler/icons";
 import { useAudioPlayback } from "app/hooks/audio.hooks";
 dayjs.extend(localizedFormat);

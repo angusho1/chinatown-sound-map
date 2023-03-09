@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 
 import type { AppStore, RootState } from '../app/store';
 // As a basic setup, import your same slice reducers
-import soundClipReducer from '../features/sound-clips/soundClipSlice';
+import soundRecordingReducer from '../features/sound-recordings/soundRecordingSlice';
 import submissionReducer from '../features/submissions/submissionsSlice';
 import audioReducer from '../features/audio/audioSlice';
 import { BrowserRouter } from 'react-router-dom';
@@ -29,7 +29,7 @@ export const renderWithProviders = (ui: React.ReactElement,
       // Automatically create a store instance if no store was passed in
       store = configureStore({
         reducer: {
-          soundClips: soundClipReducer,
+          soundRecordings: soundRecordingReducer,
           submissions: submissionReducer,
           audio: audioReducer,
         }, 
@@ -65,7 +65,7 @@ export const customRender = (ui: React.ReactElement,
       route = '/',
       store = configureStore({
         reducer: {
-          soundClips: soundClipReducer,
+          soundRecordings: soundRecordingReducer,
           submissions: submissionReducer,
           audio: audioReducer,
         }, 

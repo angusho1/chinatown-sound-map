@@ -1,7 +1,7 @@
 import { RecordingLocation } from "./RecordingLocation.model";
 import SoundRecordingTag from "./SoundRecordingTag.model";
 
-export default interface SoundClipSubmission {
+export default interface SoundRecordingSubmission {
     title: string;
     recording: File;
     location: RecordingLocation;

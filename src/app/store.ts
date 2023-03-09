@@ -1,11 +1,11 @@
 import { configureStore, ThunkAction, Action, PreloadedState, combineReducers } from '@reduxjs/toolkit';
-import soundClipReducer from '../features/sound-clips/soundClipSlice';
+import soundRecordingReducer from '../features/sound-recordings/soundRecordingSlice';
 import submissionReducer from '../features/submissions/submissionsSlice';
 import audioReducer from '../features/audio/audioSlice';
 
 // Create the root reducer separately so we can extract the RootState type
 const rootReducer = combineReducers({
-  soundClips: soundClipReducer,
+  soundRecordings: soundRecordingReducer,
   submissions: submissionReducer,
   audio: audioReducer,
 });

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
-import SoundClipSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
+import SoundRecordingSubmission, { SubmissionResponse } from "models/RecordingSubmission.model";
 import SoundRecordingTag from "models/SoundRecordingTag.model";
 import { NetworkRequestStatus } from "types/state/state.types";
 import { getSoundRecordingTags, submitRecording, verifyReCaptchaToken } from "./submissionsAPI";
@@ -18,7 +18,7 @@ const initialState: SubmissionState = {
 }
 
 export const createSubmission = createAsyncThunk('submissions/createSubmission', 
-    async (submission: SoundClipSubmission) => {
+    async (submission: SoundRecordingSubmission) => {
         const isTokenValid = await verifyReCaptchaToken(submission.reCaptchaToken);
         if (!isTokenValid) throw new Error('Invalid token');
         const res: SubmissionResponse = await submitRecording(submission);
@@ -26,7 +26,7 @@ export const createSubmission = createAsyncThunk('submissions/createSubmission',
     }
 );
 
-export const fetchTags = createAsyncThunk('soundClips/getTags',
+export const fetchTags = createAsyncThunk('soundRecordings/getTags',
     async () => {
         const res: SoundRecordingTag[] = await getSoundRecordingTags();
         return res;

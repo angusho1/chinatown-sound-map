@@ -5,7 +5,7 @@ import { IconCircleX, IconFileUpload, IconListDetails, IconUserCircle } from '@t
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { createSubmission, resetSubmission, selectSubmissionStatus } from 'features/submissions/submissionsSlice';
 import { RecordingLocation } from 'models/RecordingLocation.model';
-import SoundClipSubmission from 'models/RecordingSubmission.model';
+import SoundRecordingSubmission from 'models/RecordingSubmission.model';
 import SoundRecordingTag from 'models/SoundRecordingTag.model';
 import { Fragment, useEffect, useState } from 'react';
 import { tagValidator, DEFAULT_SUBMISSION_LOCATION, submissionAuthorNameValidator, submissionDescriptionValidator, submissionEmailValidator, submissionImagesValidator, submissionLocationValidator, submissionRecordingValidator, submissionTitleValidator, tagsValidator, reCaptchaTokenValidator } from 'utils/form-validators.utils';
@@ -15,7 +15,7 @@ import LocationPicker from '../location-picker/LocationPicker';
 import ReCAPTCHA from 'react-google-recaptcha';
 import './SubmissionForm.css';
 
-type SubmissionFormValues = Partial<SoundClipSubmission>;
+type SubmissionFormValues = Partial<SoundRecordingSubmission>;
 
 enum SubmissionFormStep {
     UPLOAD,
@@ -66,7 +66,7 @@ export default function SubmissionForm() {
     const contributorInfoInputs = ['email', 'author'];
 
     const submitForm = (values: SubmissionFormValues) => {
-        const submission = values as SoundClipSubmission;
+        const submission = values as SoundRecordingSubmission;
         dispatch(createSubmission(submission));
         setStep(SubmissionFormStep.SUBMISSION_RESULT);
     }

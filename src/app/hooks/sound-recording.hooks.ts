@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { getSoundRecordingFile, getSoundRecordingImageFile } from "features/sound-clips/soundClipAPI";
-import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from "features/sound-clips/soundClipSlice";
+import { getSoundRecordingFile, getSoundRecordingImageFile } from "features/sound-recordings/soundRecordingAPI";
+import { cacheSoundRecordingImageFile, selectSoundRecordingFileById, selectSoundRecordingImageById, setSoundRecordingFile } from "features/sound-recordings/soundRecordingSlice";
 import SoundRecording from "models/SoundRecording.model";
 import { useEffect } from "react";
 import { useAccessToken } from "./auth.hooks";
