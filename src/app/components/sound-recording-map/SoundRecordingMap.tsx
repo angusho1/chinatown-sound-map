@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import './SoundRecordingMap.css';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
-import { fetchSoundClips, fetchSoundRecordings, selectCurrentSoundRecording, selectSoundClips, selectSoundClipStatus, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
-import SoundClip from 'models/SoundClip.model';
+import { fetchSoundRecordings, selectCurrentSoundRecording, selectSoundRecordings, selectSoundRecordingStatus, setSelectedSoundRecording } from 'features/sound-clips/soundClipSlice';
 import { GOOGLE_MAPS_STYLES } from './mapStyles';
 import SoundRecording from 'models/SoundRecording.model';
 import { GoogleMap, InfoWindowF, MarkerClusterer, MarkerF, useJsApiLoader } from '@react-google-maps/api';
@@ -13,10 +11,7 @@ import { LoadingOverlay } from '@mantine/core';
 
 export default function SoundRecordingMap() {
     const dispatch = useAppDispatch();
-    const [selectedSoundClip, setSelectedSoundClip] = useState<SoundClip | null>(null);
-    const soundClipStatus = useAppSelector(selectSoundClipStatus);
     const soundRecordingStatus = useAppSelector(selectSoundRecordingStatus);
-    const soundClips = useAppSelector(selectSoundClips);
     const soundRecordings = useAppSelector(selectSoundRecordings);
     const selectedRecording = useAppSelector(selectCurrentSoundRecording);
 
@@ -25,51 +20,9 @@ export default function SoundRecordingMap() {
         version: 'weekly',
     });
 
-    if (soundClipStatus === 'idle') {
-        dispatch(fetchSoundClips());
-    }
-
     if (soundRecordingStatus === 'idle') {
         dispatch(fetchSoundRecordings());
     }
-
-    const renderSoundClips = (clusterer: any) => {
-        const soundClipsToRender = soundClips.filter(soundFilter);
-
-        return soundClipsToRender.map((soundClip: SoundClip) => {
-            const loc = {
-                lat: soundClip.location.lat,
-                lng: soundClip.location.lng,
-            };
-
-            return (
-                <MarkerF
-                    key={soundClip.title}
-                    position={loc}
-                    onClick={() => setSelectedSoundClip(soundClip)}
-                    clusterer={clusterer}
-                    icon="marker-icons/clip-marker-icon.png"
-                >
-                    { selectedSoundClip && selectedSoundClip.title === soundClip.title && (
-                        <InfoWindowF
-                            onCloseClick={() => setSelectedSoundClip(null)}
-                        >
-                            <div>
-                                <h5>{soundClip.title}</h5>
-                                <div dangerouslySetInnerHTML={{
-                                    __html: soundClip.content
-                                }}></div>
-                                <div>Author: {soundClip.author}</div>
-                                <div>
-                                    Date: <>{soundClip.date ? soundClip.date : 'unknown'}</>
-                                </div>
-                            </div>
-                        </InfoWindowF>
-                    )}
-                </MarkerF>
-            );
-        });
-    };
 
     const renderSoundRecordings = (clusterer: any) => {
         const soundRecordingsToRender = soundRecordings.filter(soundFilter);
@@ -110,7 +63,7 @@ export default function SoundRecordingMap() {
         });
     };
 
-    const soundFilter = (sound: SoundClip | SoundRecording) => sound.location.lat && sound.location.lng;
+    const soundFilter = (sound: SoundRecording) => sound.location.lat && sound.location.lng;
 
     
     const renderMap = () => {
@@ -156,7 +109,6 @@ export default function SoundRecordingMap() {
                 >
                     { (clusterer: any) => 
                         <>
-                            { soundClipStatus === 'succeeded' && renderSoundClips(clusterer) }
                             { soundRecordingStatus === 'succeeded' && renderSoundRecordings(clusterer) }
                         </>
                     }

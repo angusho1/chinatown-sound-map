@@ -2,7 +2,6 @@ import App from './App';
 import { customRender } from 'utils/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { soundClipMock1 } from 'mocks/soundClips.mock';
 import { screen } from '@testing-library/react';
 import { MsalReactTester } from 'msal-react-tester';
 
@@ -10,9 +9,6 @@ let msalTester: MsalReactTester;
 
 // Mock requests
 const server = setupServer(
-  rest.get('/sound-clips', (req, res, ctx) => {
-    return res(ctx.json([ soundClipMock1 ]));
-  }),
 );
 
 // establish API mocking before all tests

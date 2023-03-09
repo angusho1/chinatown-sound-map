@@ -1,16 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from 'app/store';
-import SoundClip from 'models/SoundClip.model';
 import SoundRecording from 'models/SoundRecording.model';
 import { SetImageFilePayload, SetSoundRecordingFilePayload } from 'types/actions/sound-recording-actions.types';
 import { SoundRecordingFileData, SoundRecordingFileMap, SoundRecordingImageMap } from 'types/state/sound-recording-state.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
-import { getSoundClips, getSoundRecordings } from './soundClipAPI';
+import { getSoundRecordings } from './soundClipAPI';
 
 export interface SoundClipState {
-    soundClips: SoundClip[];
     soundRecordings: SoundRecording[];
-    soundClipStatus: NetworkRequestStatus;
     soundRecordingFiles: SoundRecordingFileMap;
     soundRecordingImageFiles: SoundRecordingImageMap;
     soundRecordingStatus: NetworkRequestStatus;
@@ -19,10 +16,8 @@ export interface SoundClipState {
 }
 
 const initialState: SoundClipState = {
-    soundClips: [],
     soundRecordings: [],
     soundRecordingStatus: 'idle',
-    soundClipStatus: 'idle',
     soundRecordingFiles: {},
     soundRecordingImageFiles: {},
     selectedSoundRecording: null,
@@ -32,13 +27,6 @@ const initialState: SoundClipState = {
 export const fetchSoundRecordings = createAsyncThunk('soundClips/fetchSoundRecordings',
     async () => {
         const res: SoundRecording[] = await getSoundRecordings();
-        return res;
-    }
-);
-
-export const fetchSoundClips = createAsyncThunk('soundClips/fetchSoundClips',
-    async () => {
-        const res: SoundClip[] = await getSoundClips();
         return res;
     }
 );
@@ -75,13 +63,6 @@ export const soundClipSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchSoundClips.pending, (state) => {
-                state.soundClipStatus = 'pending';
-            })
-            .addCase(fetchSoundClips.fulfilled, (state, action) => {
-                state.soundClipStatus = 'succeeded';
-                state.soundClips = action.payload;
-            })
             .addCase(fetchSoundRecordings.pending, (state) => {
                 state.soundRecordingStatus = 'pending';
             })
@@ -92,8 +73,6 @@ export const soundClipSlice = createSlice({
     }
 });
 
-export const selectSoundClips = (state: RootState) => state.soundClips.soundClips;
-export const selectSoundClipStatus = (state: RootState) => state.soundClips.soundClipStatus;
 export const selectSoundRecordings = (state: RootState) => state.soundClips.soundRecordings;
 export const selectSoundRecordingStatus = (state: RootState) => state.soundClips.soundRecordingStatus;
 export const selectSoundRecordingFiles = (state: RootState) => state.soundClips.soundRecordingFiles;
