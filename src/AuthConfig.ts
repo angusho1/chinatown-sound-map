@@ -38,8 +38,10 @@ export const msalConfig = {
         storeAuthStateInCookie: false,
     },
     system: {
+        piiLoggingEnabled: false,
         loggerOptions: {
             loggerCallback: (level: LogLevel, message: string, containsPii: boolean) => {
+                if (process.env.NODE_ENV === 'production') return;
                 if (containsPii) {
                     return;
                 }
