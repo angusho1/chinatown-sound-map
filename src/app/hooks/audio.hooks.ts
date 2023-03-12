@@ -143,6 +143,8 @@ export const useMediaSession = ({ soundRecording, playbackState, duration, posit
 
     useEffect(() => {
         if (!mediaSessionAvailable) return;
-        navigator.mediaSession.setPositionState({ duration, position });
+        if (position <= duration) { // Fixes bug where duration is set to 0 when switching to another recording while paused and the detailed view is open
+            navigator.mediaSession.setPositionState({ duration, position });
+        }
     }, [mediaSessionAvailable, duration, position]);
 };
