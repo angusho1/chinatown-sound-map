@@ -46,6 +46,7 @@ const convertFileDownloadToBlob = async (res: Response) => {
 
 const getFileName = (res: Response) => {
     const contentDispos = res.headers.get('Content-Disposition');
+    console.log('contentDispos', contentDispos);
     if (!contentDispos) return null;
     const splitStr = contentDispos.split('filename=');
     return splitStr.length > 1 ? splitStr[1] : null;
