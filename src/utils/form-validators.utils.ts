@@ -10,6 +10,8 @@ export const DEFAULT_SUBMISSION_LOCATION = { lat: 49.279470, lng: -123.099721 };
 export const MAX_IMAGE_UPLOAD_COUNT = 3;
 export const MAX_TAG_LABEL_LENGTH = 40;
 export const MAX_NUMBER_TAGS_PER_RECORDING = 5;
+export const MAX_CONTACT_NAME_LENGTH = 100;
+export const MAX_CONTACT_MESSAGE_LENGTH = 2000;
 
 export const submissionTitleValidator = (value: string): string | null => {
     if (!value) return 'Please give your recording a title';
@@ -70,5 +72,17 @@ export const tagsValidator = (value: SoundRecordingTag[]): string | null => {
 
 export const reCaptchaTokenValidator = (value: string | null): string | null => {
     if (!value) return 'Invalid token';
+    return null;
+}
+
+export const contactFormNameValidator = (value: string): string | null => {
+    if (value.length === 0) return `Please enter your name`;
+    if (value.length > MAX_CONTACT_NAME_LENGTH) return `Name cannot exceed ${MAX_CONTACT_NAME_LENGTH} characters.`
+    return null;
+}
+
+export const contactFormMessageValidator = (value: string): string | null => {
+    if (value.length === 0) return `Please include your message`;
+    if (value.length > MAX_CONTACT_MESSAGE_LENGTH) return `Message cannot exceed ${MAX_CONTACT_MESSAGE_LENGTH} characters.`
     return null;
 }
