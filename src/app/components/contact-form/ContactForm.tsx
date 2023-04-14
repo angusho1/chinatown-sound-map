@@ -4,7 +4,8 @@ import { submitContactForm } from 'features/contact/contactAPI';
 import { useState } from 'react';
 import { ContactFormValues } from 'types/api/contact-form.types';
 import { NetworkRequestStatus } from 'types/state/state.types';
-import { contactFormMessageValidator, contactFormNameValidator, submissionEmailValidator } from 'utils/form-validators.utils';
+import { contactFormMessageValidator, contactFormNameValidator, reCaptchaTokenValidator, submissionEmailValidator } from 'utils/form-validators.utils';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function ContactForm() {
     const [submissionStatus, setSubmissionStatus] = useState<NetworkRequestStatus>('idle');
@@ -12,13 +13,15 @@ export default function ContactForm() {
         initialValues: {
             name: '',
             email: '',
-            message: ''
+            message: '',
+            reCaptchaToken: '',
         },
     
         validate: {
             name: contactFormNameValidator, 
             email: submissionEmailValidator,
             message: contactFormMessageValidator,
+            reCaptchaToken: reCaptchaTokenValidator,
         },
     });
 
@@ -36,6 +39,10 @@ export default function ContactForm() {
     const resetForm = () => {
         setSubmissionStatus('idle');
         form.reset();
+    };
+
+    const onReCaptchaChange = (value: string | null) => {
+        form.setFieldValue('reCaptchaToken', !value ? '' : value);
     };
 
     return (
@@ -65,6 +72,11 @@ export default function ContactForm() {
                             minRows={6}
                             maxRows={15}
                             {...form.getInputProps('message')}
+                        />
+                        <Space h="md" />
+                        <ReCAPTCHA
+                            sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY as string}
+                            onChange={onReCaptchaChange}
                         />
 
                         <Group position="right" mt="md">
