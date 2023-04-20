@@ -13,4 +13,5 @@ export type SoundRecordingImages = {
 export type SoundRecordingFileData = {
     fileName: string;
     objectUrl: string;
+    type?: string;
 }

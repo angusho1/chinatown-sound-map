@@ -3,6 +3,7 @@ import { finishScrub, scrubTrackToPosition, selectPositionState, selectVolume, s
 import SoundRecording from "models/SoundRecording.model";
 import { useCallback, useEffect } from "react";
 import { useAudioPlayer, useAudioPosition } from "react-use-audio-player";
+import { useSoundRecordingImageFiles } from "./sound-recording.hooks";
 
 interface AudioPlayerProps {
     objectUrl?: string;
@@ -108,6 +109,13 @@ interface MediaSessionProps {
 
 export const useMediaSession = ({ soundRecording, playbackState, duration, position, togglePlayPause, setToPosition }: MediaSessionProps) => {
     const mediaSessionAvailable = 'mediaSession' in navigator;
+    const imageFiles = useSoundRecordingImageFiles(soundRecording);
+    const mediaImages: MediaImage[] = imageFiles.map(imageFile => {
+        return {
+            src: imageFile.objectUrl,
+            type: imageFile.type,
+        };
+    });
 
     useEffect(() => {
         if (!mediaSessionAvailable) return;
@@ -116,10 +124,9 @@ export const useMediaSession = ({ soundRecording, playbackState, duration, posit
             title: soundRecording.title,
             artist: soundRecording.author,
             album: 'Chinatown Sound Map',
-            artwork: [
-            ],
+            artwork: mediaImages,
         });
-    }, [mediaSessionAvailable, soundRecording]);
+    }, [mediaSessionAvailable, soundRecording, mediaImages, mediaImages.length]);
 
     useEffect(() => {
         if (!mediaSessionAvailable) return;

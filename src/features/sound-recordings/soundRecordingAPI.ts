@@ -33,14 +33,16 @@ async function getFile(requestUri: string, token?: string): Promise<SoundRecordi
     return {
         fileName: fileName ? fileName : '',
         objectUrl: URL.createObjectURL(fileBlob),
+        type: fileBlob.type,
     };
 }
 
 const convertFileDownloadToBlob = async (res: Response) => {
     const buffer = await res.arrayBuffer();
+    const contentType = res.headers.get('Content-Type') as string;
 
     return new Blob([buffer], {
-        type: res.headers.get('Content-Type') as string,
+        type: contentType.split(';')[0],
     });
 };
 
