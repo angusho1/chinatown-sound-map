@@ -36,16 +36,17 @@ export const soundRecordingSlice = createSlice({
     initialState,
     reducers: {
         setSoundRecordingFile(state, action: PayloadAction<SetSoundRecordingFilePayload>) {
-            const { recordingId, fileName, objectUrl } = action.payload;
+            const { recordingId, fileName, objectUrl, type } = action.payload;
             state.soundRecordingFiles[recordingId] = {
                 fileName,
-                objectUrl
+                objectUrl,
+                type,
             };
         },
         cacheSoundRecordingImageFile(state, action: PayloadAction<SetImageFilePayload>) {
-            const { fileName, recordingId, uniqueFileName, objectUrl } = action.payload;
+            const { fileName, recordingId, uniqueFileName, objectUrl, type } = action.payload;
             const files = state.soundRecordingImageFiles[recordingId];
-            const fileDataObject: SoundRecordingFileData = { fileName, objectUrl };
+            const fileDataObject: SoundRecordingFileData = { fileName, objectUrl, type };
             if (!files) {
                 state.soundRecordingImageFiles[recordingId] = {
                     [uniqueFileName]: fileDataObject,

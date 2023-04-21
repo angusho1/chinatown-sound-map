@@ -2,6 +2,7 @@ export type SetSoundRecordingFilePayload = {
     recordingId: string;
     fileName: string;
     objectUrl: string;
+    type?: string;
 }
 
 export type SetImageFilePayload = {
@@ -9,4 +10,5 @@ export type SetImageFilePayload = {
     uniqueFileName: string;
     fileName: string;
     objectUrl: string;
+    type?: string;
 }
